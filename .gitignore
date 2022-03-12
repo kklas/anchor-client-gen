@@ -1,0 +1,11 @@
+tests/example-program/target
+tests/example-program/Cargo.lock
+tests/example-program-gen/act
+tests/example-program-gen/idl.json
+node_modules/
+.parcel-cache
+.DS_Store
+.anchor
+**/*.rs.bk
+.test-ledger
+dist/

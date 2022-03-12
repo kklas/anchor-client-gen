@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "esModuleInterop": true,
+        "module": "CommonJS",
+        "target": "ES6",
+        "outDir": "dist",
+        "sourceMap": true,
+        "moduleResolution": "node",
+    },
+    "include": ["src"]
+}
