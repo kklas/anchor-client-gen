@@ -9,7 +9,7 @@ Generate typescript solana web3 clients from [anchor](https://github.com/project
 $ npm install --global anchor-client-gen
 
 # yarn
-$ yarn add global anchor-client-gen
+$ yarn global add anchor-client-gen
 ```
 
 ## Usage
