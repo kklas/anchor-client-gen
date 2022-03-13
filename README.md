@@ -201,3 +201,7 @@ The client generator pulls the program ID from:
 These are then written into the `programId.ts` file.
 
 The `PROGRAM_ID` constant inside `programId.ts` can be (and should be) modified to define the correct program ID as the client relies on it to do checks when fetching accounts etc. The `PROGRAM_ID` constant is safe to modify as it will be preserved across multiple code generations. The imports in this file are also preserved.
+
+## Versioning
+
+The package minor versions match anchor minor versions. So, for example, package version `v0.22.x` will match anchor `v0.22.y`. The earliest supported anchor version is `v0.22`, but the generator probably also works with older versions of anchor since the IDL format is mostly backwards compatible.
