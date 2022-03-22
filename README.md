@@ -1,5 +1,7 @@
 # anchor-client-gen
 
+[![npm](https://img.shields.io/npm/v/anchor-client-gen.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/anchor-client-gen)
+
 Generate typescript solana web3 clients from [anchor](https://github.com/project-serum/anchor) IDLs.
 
 ## Installation
