@@ -13,6 +13,10 @@ export function genInstructions(
   idl: Idl,
   outPath: (path: string) => string
 ) {
+  if (idl.instructions.length === 0) {
+    return
+  }
+
   genIndexFile(project, idl, outPath)
   genInstructionFiles(project, idl, outPath)
 }
@@ -81,10 +85,12 @@ function genInstructionFiles(
       namespaceImport: "borsh",
       moduleSpecifier: "@project-serum/borsh",
     })
-    src.addImportDeclaration({
-      namespaceImport: "types",
-      moduleSpecifier: "../types",
-    })
+    if (idl.types && idl.types.length > 0) {
+      src.addImportDeclaration({
+        namespaceImport: "types",
+        moduleSpecifier: "../types",
+      })
+    }
     src.addImportDeclaration({
       namedImports: ["PROGRAM_ID"],
       moduleSpecifier: "../programId",

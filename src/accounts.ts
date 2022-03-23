@@ -18,6 +18,10 @@ export function genAccounts(
   idl: Idl,
   outPath: (path: string) => string
 ) {
+  if (idl.accounts === undefined || idl.accounts.length === 0) {
+    return
+  }
+
   genIndexFile(project, idl, outPath)
   genAccountFiles(project, idl, outPath)
 }
@@ -70,10 +74,12 @@ function genAccountFiles(
       namespaceImport: "borsh",
       moduleSpecifier: "@project-serum/borsh",
     })
-    src.addImportDeclaration({
-      namespaceImport: "types",
-      moduleSpecifier: "../types",
-    })
+    if (idl.types && idl.types.length > 0) {
+      src.addImportDeclaration({
+        namespaceImport: "types",
+        moduleSpecifier: "../types",
+      })
+    }
     src.addImportDeclaration({
       namedImports: ["PROGRAM_ID"],
       moduleSpecifier: "../programId",

@@ -23,6 +23,10 @@ export function genTypes(
   idl: Idl,
   outPath: (path: string) => string
 ) {
+  if (idl.types === undefined || idl.types.length === 0) {
+    return
+  }
+
   genIndexFile(project, idl, outPath)
   genTypeFiles(project, idl, outPath)
 }
