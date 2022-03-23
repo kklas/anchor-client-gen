@@ -16,7 +16,7 @@ $ yarn global add anchor-client-gen
 
 ## Usage
 
-```sh
+```
 Usage: main [options] <idl> <out>
 
 Generate solana web3 client code from the specified anchor IDL.
@@ -27,6 +27,7 @@ Arguments:
 
 Options:
   --program-id <PROGRAM_ID>  optional program ID to be included in the code
+  -V, --version              output the version number
   -h, --help                 display help for command
 ```
 
@@ -46,11 +47,11 @@ This will generate code to `output/directory`:
 ├── instructions
 │   ├── someInstruction.ts
 │   ├── otherInstruction.ts
-│   ├── index.ts
+│   └── index.ts
 ├── types
-│    ├── BarStruct.ts
-│    ├── BazEnum.ts
-│    └── index.ts
+│   ├── BarStruct.ts
+│   ├── BazEnum.ts
+│   └── index.ts
 ├── programId.ts
 └── errors.ts
 ```
