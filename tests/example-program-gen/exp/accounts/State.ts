@@ -170,6 +170,24 @@ export class State {
     return this.decode(info.data)
   }
 
+  static async fetchMultiple(
+    c: Connection,
+    addresses: PublicKey[]
+  ): Promise<Array<State | null>> {
+    const infos = await c.getMultipleAccountsInfo(addresses)
+
+    return infos.map((info) => {
+      if (info === null) {
+        return null
+      }
+      if (!info.owner.equals(PROGRAM_ID)) {
+        throw new Error("account doesn't belong to this program")
+      }
+
+      return this.decode(info.data)
+    })
+  }
+
   static decode(data: Buffer): State {
     if (!data.slice(0, 8).equals(State.discriminator)) {
       throw new Error("invalid account discriminator")

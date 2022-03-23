@@ -223,6 +223,46 @@ test("init and account fetch", async () => {
   }
 })
 
+test("fetch multiple", async () => {
+  const state = new Keypair()
+  const another_state = new Keypair()
+  const non_state = new Keypair()
+
+  const tx = new Transaction({ feePayer: payer.publicKey })
+  tx.add(
+    initialize({
+      state: state.publicKey,
+      payer: payer.publicKey,
+      nested: {
+        clock: SYSVAR_CLOCK_PUBKEY,
+        rent: SYSVAR_RENT_PUBKEY,
+      },
+      systemProgram: SystemProgram.programId,
+    })
+  )
+  tx.add(
+    initialize({
+      state: another_state.publicKey,
+      payer: payer.publicKey,
+      nested: {
+        clock: SYSVAR_CLOCK_PUBKEY,
+        rent: SYSVAR_RENT_PUBKEY,
+      },
+      systemProgram: SystemProgram.programId,
+    })
+  )
+
+  await sendAndConfirmTransaction(c, tx, [state, another_state, payer])
+
+  const res = await State.fetchMultiple(c, [
+    state.publicKey,
+    non_state.publicKey,
+    another_state.publicKey,
+  ])
+
+  expect(res).toEqual([expect.any(State), null, expect.any(State)])
+})
+
 test("instruction with args", async () => {
   const state = new Keypair()
 

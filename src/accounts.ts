@@ -208,6 +208,50 @@ function genAccountFiles(
       ],
     })
 
+    // fetchMultiple
+    cls.addMethod({
+      isStatic: true,
+      isAsync: true,
+      name: "fetchMultiple",
+      parameters: [
+        {
+          name: "c",
+          type: "Connection",
+        },
+        {
+          name: "addresses",
+          type: "PublicKey[]",
+        },
+      ],
+      returnType: `Promise<Array<${name} | null>>`,
+      statements: [
+        (writer) => {
+          writer.writeLine(
+            "const infos = await c.getMultipleAccountsInfo(addresses)"
+          )
+          writer.blankLine()
+          writer.write("return infos.map((info) => ")
+          writer.inlineBlock(() => {
+            writer.write("if (info === null)")
+            writer.inlineBlock(() => {
+              writer.writeLine("return null")
+            })
+            writer.write("")
+
+            writer.write("if (!info.owner.equals(PROGRAM_ID))")
+            writer.inlineBlock(() => {
+              writer.writeLine(
+                `throw new Error("account doesn't belong to this program")`
+              )
+            })
+            writer.blankLine()
+            writer.writeLine("return this.decode(info.data)")
+          })
+          writer.write(")")
+        },
+      ],
+    })
+
     // decode
     cls.addMethod({
       isStatic: true,
