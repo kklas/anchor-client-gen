@@ -217,7 +217,7 @@ function genAccountFiles(
           type: "PublicKey[]",
         },
       ],
-      returnType: `Promise<(${name} | null)[]>`,
+      returnType: `Promise<Array<${name} | null>>`,
       statements: [
         (writer) => {
           writer.writeLine(

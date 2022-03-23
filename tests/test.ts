@@ -223,7 +223,6 @@ test("init and account fetch", async () => {
   }
 })
 
-
 test("fetch multiple", async () => {
   const state = new Keypair()
   const another_state = new Keypair()
