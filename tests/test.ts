@@ -27,7 +27,7 @@ import {
 } from "./example-program-gen/act/types/FooEnum"
 import * as path from "path"
 
-const c = new Connection("http://localhost:8899", "processed")
+const c = new Connection("http://127.0.0.1:8899", "processed")
 const faucet = JSON.parse(
   fs.readFileSync("tests/.test-ledger/faucet-keypair.json").toString()
 )
