@@ -1,6 +1,8 @@
 # anchor-client-gen
 
-[![npm](https://img.shields.io/npm/v/anchor-client-gen.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/anchor-client-gen)
+[![npm](https://img.shields.io/npm/v/anchor-client-gen/latest.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/anchor-client-gen/v/latest)
+[![npm](https://img.shields.io/npm/v/anchor-client-gen/beta.svg?style=flat-square&color=blue)](https://www.npmjs.com/package/anchor-client-gen/v/beta)
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kklas/anchor-client-gen/Tests?label=build&style=flat-square)](https://github.com/kklas/anchor-client-gen/actions/workflows/tests.yaml)
 
 Generate typescript solana web3 clients from [anchor](https://github.com/project-serum/anchor) IDLs.
 
@@ -13,6 +15,8 @@ $ npm install --global anchor-client-gen
 # yarn
 $ yarn global add anchor-client-gen
 ```
+
+To get the beta build which has unreleased features, install with `anchor-client-gen@beta`.
 
 ## Usage
 
