@@ -23,7 +23,7 @@ async function main() {
       "--program-id <PROGRAM_ID>",
       "optional program ID to be included in the code"
     )
-    .version("anchor-client-gen 0.23.1")
+    .version("anchor-client-gen 0.24.0-beta.1")
     .parse()
 
   const idlPath = program.args[0]
