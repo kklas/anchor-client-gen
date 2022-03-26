@@ -1,4 +1,4 @@
-tests/example-program/target
+target/
 tests/example-program/Cargo.lock
 tests/example-program-gen/act
 node_modules/
