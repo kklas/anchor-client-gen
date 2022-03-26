@@ -122,6 +122,10 @@ function genStruct(
     moduleSpecifier: "@project-serum/borsh",
   })
   src.addImportDeclaration({
+    namedImports: ["PublicKey"],
+    moduleSpecifier: "@solana/web3.js",
+  })
+  src.addImportDeclaration({
     defaultImport: "BN",
     moduleSpecifier: "bn.js",
   })
@@ -320,6 +324,10 @@ function genEnum(
   src.addImportDeclaration({
     namespaceImport: "borsh",
     moduleSpecifier: "@project-serum/borsh",
+  })
+  src.addImportDeclaration({
+    namedImports: ["PublicKey"],
+    moduleSpecifier: "@solana/web3.js",
   })
   src.addImportDeclaration({
     defaultImport: "BN",
