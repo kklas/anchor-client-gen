@@ -1,4 +1,5 @@
 import * as borsh from "@project-serum/borsh"
+import { PublicKey } from "@solana/web3.js"
 import BN from "bn.js"
 import * as types from "."
 
