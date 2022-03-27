@@ -117,22 +117,12 @@ function genStruct(
   fields: Array<IdlField>
 ) {
   // imports
-  src.addImportDeclaration({
-    namespaceImport: "borsh",
-    moduleSpecifier: "@project-serum/borsh",
-  })
-  src.addImportDeclaration({
-    namedImports: ["PublicKey"],
-    moduleSpecifier: "@solana/web3.js",
-  })
-  src.addImportDeclaration({
-    defaultImport: "BN",
-    moduleSpecifier: "bn.js",
-  })
-  src.addImportDeclaration({
-    namespaceImport: "types",
-    moduleSpecifier: ".",
-  })
+  src.addStatements([
+    `import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import * as borsh from "@project-serum/borsh"`,
+  ])
 
   // fields interface
   src.addInterface({
@@ -321,22 +311,12 @@ function genEnum(
   variants: Array<IdlEnumVariant>
 ) {
   // imports
-  src.addImportDeclaration({
-    namespaceImport: "borsh",
-    moduleSpecifier: "@project-serum/borsh",
-  })
-  src.addImportDeclaration({
-    namedImports: ["PublicKey"],
-    moduleSpecifier: "@solana/web3.js",
-  })
-  src.addImportDeclaration({
-    defaultImport: "BN",
-    moduleSpecifier: "bn.js",
-  })
-  src.addImportDeclaration({
-    namespaceImport: "types",
-    moduleSpecifier: ".",
-  })
+  src.addStatements([
+    `import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import * as borsh from "@project-serum/borsh"`,
+  ])
 
   // variants
   variants.forEach((variant, i) => {
