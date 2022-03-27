@@ -16,7 +16,7 @@
     "test": "yarn test:prepare && start-server-and-test test:start-validator http://127.0.0.1:8899/health 'jest test --detectOpenHandles --watch'",
     "test:no-watch": "yarn test:prepare && start-server-and-test test:start-validator http://127.0.0.1:8899/health 'jest test --detectOpenHandles'",
     "test:prepare": "yarn build:example-program && yarn test:generate-test-client",
-    "test:generate-test-client": "rimraf tests/example-program-gen/act && node dist/main.js tests/example-program-gen/idl.json tests/example-program-gen/act --program-id 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8",
+    "test:generate-test-client": "rimraf tests/example-program-gen/act && node dist/main.js tests/example-program/target/idl/example_program.json tests/example-program-gen/act --program-id 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8",
     "test:start-validator": "solana-test-validator --ledger tests/.test-ledger --bpf-program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 tests/example-program/target/deploy/example_program.so --quiet --reset",
     "lint": "eslint",
     "lint:fix": "eslint --fix"
