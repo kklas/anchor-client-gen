@@ -60,6 +60,8 @@ This will generate code to `output/directory`:
 └── errors.ts
 ```
 
+For more examples of the generated code, check out the [examples](https://github.com/kklas/anchor-client-gen/tree/master/examples) directory.
+
 ## Using the generated client
 
 The following packages are required for the generated client to work:
