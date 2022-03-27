@@ -15,4 +15,5 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["@typescript-eslint", "prettier"],
+  ignorePatterns: ["/dist", "target/"],
 }

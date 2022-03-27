@@ -21,8 +21,8 @@
     "test:prepare": "yarn build:example-program && yarn test:generate-test-client",
     "test:generate-test-client": "rimraf tests/example-program-gen/act && node dist/main.js tests/example-program/target/idl/example_program.json tests/example-program-gen/act --program-id 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8",
     "test:start-validator": "solana-test-validator --ledger tests/.test-ledger --bpf-program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 tests/example-program/target/deploy/example_program.so --quiet --reset",
-    "lint": "eslint",
-    "lint:fix": "eslint --fix"
+    "lint": "eslint . ",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
     "@project-serum/anchor-cli": "^0.23.0",
