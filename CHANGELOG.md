@@ -14,3 +14,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Don't generate instruction, account, and type index files when they don't exist [b5c3009](https://github.com/kklas/anchor-client-gen/commit/b5c3009ae03ca1b26792d27e9290f9e9235880e2)
+- Fixed field value generation for some nested types [1c3a355](https://github.com/kklas/anchor-client-gen/commit/1c3a35552aaae8e318a29e3faf2b4c5df5cc0229)
