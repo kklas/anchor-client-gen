@@ -231,10 +231,15 @@ export function fieldToEncodable(
       return `Buffer.from(${valPrefix}${ty.name})`
     default:
       if ("vec" in ty.type) {
-        const mapBody = fieldToEncodable(idl, {
-          name: "item",
-          type: ty.type.vec,
-        })
+        const mapBody = fieldToEncodable(
+          idl,
+          {
+            name: "item",
+            type: ty.type.vec,
+          },
+          "",
+          definedTypesPrefix
+        )
         // skip mapping when not needed
         if (mapBody === "item") {
           return `${valPrefix}${ty.name}`
@@ -245,7 +250,8 @@ export function fieldToEncodable(
         const encodable = fieldToEncodable(
           idl,
           { name: ty.name, type: ty.type.option },
-          valPrefix
+          valPrefix,
+          definedTypesPrefix
         )
         // skip coercion when not needed
         if (encodable === `${valPrefix}${ty.name}`) {
@@ -273,10 +279,15 @@ export function fieldToEncodable(
         }
       }
       if ("array" in ty.type) {
-        const mapBody = fieldToEncodable(idl, {
-          name: "item",
-          type: ty.type.array[0],
-        })
+        const mapBody = fieldToEncodable(
+          idl,
+          {
+            name: "item",
+            type: ty.type.array[0],
+          },
+          "",
+          definedTypesPrefix
+        )
         // skip mapping when not needed
         if (mapBody === "item") {
           return `${valPrefix}${ty.name}`
@@ -316,10 +327,15 @@ export function fieldFromDecoded(
       return `Array.from(${valPrefix}${ty.name})`
     default:
       if ("vec" in ty.type) {
-        const mapBody = fieldFromDecoded(idl, {
-          name: "item",
-          type: ty.type.vec,
-        })
+        const mapBody = fieldFromDecoded(
+          idl,
+          {
+            name: "item",
+            type: ty.type.vec,
+          },
+          "",
+          definedTypesPrefix
+        )
         // skip mapping when not needed
         if (mapBody === "item") {
           return `${valPrefix}${ty.name}`
@@ -359,10 +375,15 @@ export function fieldFromDecoded(
         }
       }
       if ("array" in ty.type) {
-        const mapBody = fieldFromDecoded(idl, {
-          name: "item",
-          type: ty.type.array[0],
-        })
+        const mapBody = fieldFromDecoded(
+          idl,
+          {
+            name: "item",
+            type: ty.type.array[0],
+          },
+          "",
+          definedTypesPrefix
+        )
         // skip mapping when not needed
         if (mapBody === "item") {
           return `${valPrefix}${ty.name}`
@@ -598,19 +619,19 @@ export function idlTypeToJSONType(
       return "Array<number>"
     default:
       if ("vec" in ty) {
-        const inner = idlTypeToJSONType(ty.vec)
+        const inner = idlTypeToJSONType(ty.vec, definedTypesPrefix)
         return `Array<${inner}>`
       }
       if ("array" in ty) {
-        const inner = idlTypeToJSONType(ty.array[0])
+        const inner = idlTypeToJSONType(ty.array[0], definedTypesPrefix)
         return `Array<${inner}>`
       }
       if ("option" in ty) {
-        const inner = idlTypeToJSONType(ty.option)
+        const inner = idlTypeToJSONType(ty.option, definedTypesPrefix)
         return `${inner} | null`
       }
       if ("coption" in ty) {
-        const inner = idlTypeToJSONType(ty.coption)
+        const inner = idlTypeToJSONType(ty.coption, definedTypesPrefix)
         return `${inner} | null`
       }
       if ("defined" in ty) {
@@ -656,7 +677,8 @@ export function fieldFromJSON(
             name: "item",
             type: ty.type.vec,
           },
-          ""
+          "",
+          definedTypesPrefix
         )
         // skip mapping when not needed
         if (mapBody === "item") {
@@ -670,7 +692,8 @@ export function fieldFromJSON(
             name: "item",
             type: ty.type.array[0],
           },
-          ""
+          "",
+          definedTypesPrefix
         )
         // skip mapping when not needed
         if (mapBody === "item") {
@@ -679,7 +702,11 @@ export function fieldFromJSON(
         return `${paramPrefix}${ty.name}.map((item) => ${mapBody})`
       }
       if ("option" in ty.type) {
-        const inner = fieldFromJSON({ name: ty.name, type: ty.type.option })
+        const inner = fieldFromJSON(
+          { name: ty.name, type: ty.type.option },
+          jsonParamName,
+          definedTypesPrefix
+        )
         // skip coercion when not needed
         if (inner === `${paramPrefix}${ty.name}`) {
           return inner
@@ -687,7 +714,11 @@ export function fieldFromJSON(
         return `(${paramPrefix}${ty.name} && ${inner}) || null`
       }
       if ("coption" in ty.type) {
-        const inner = fieldFromJSON({ name: ty.name, type: ty.type.coption })
+        const inner = fieldFromJSON(
+          { name: ty.name, type: ty.type.coption },
+          jsonParamName,
+          definedTypesPrefix
+        )
         // skip coercion when not needed
         if (inner === `${paramPrefix}${ty.name}`) {
           return inner
