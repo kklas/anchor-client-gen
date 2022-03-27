@@ -73,28 +73,13 @@ function genInstructionFiles(
     )
 
     // imports
-    src.addImportDeclaration({
-      namedImports: ["PublicKey", "TransactionInstruction"],
-      moduleSpecifier: "@solana/web3.js",
-    })
-    src.addImportDeclaration({
-      defaultImport: "BN",
-      moduleSpecifier: "bn.js",
-    })
-    src.addImportDeclaration({
-      namespaceImport: "borsh",
-      moduleSpecifier: "@project-serum/borsh",
-    })
-    if (idl.types && idl.types.length > 0) {
-      src.addImportDeclaration({
-        namespaceImport: "types",
-        moduleSpecifier: "../types",
-      })
-    }
-    src.addImportDeclaration({
-      namedImports: ["PROGRAM_ID"],
-      moduleSpecifier: "../programId",
-    })
+    src.addStatements([
+      `import { TransactionInstruction, PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { PROGRAM_ID } from "../programId"`,
+    ])
 
     // args interface
     if (ix.args.length > 0) {

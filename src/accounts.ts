@@ -62,28 +62,13 @@ function genAccountFiles(
     )
 
     // imports
-    src.addImportDeclaration({
-      namedImports: ["PublicKey", "Connection"],
-      moduleSpecifier: "@solana/web3.js",
-    })
-    src.addImportDeclaration({
-      defaultImport: "BN",
-      moduleSpecifier: "bn.js",
-    })
-    src.addImportDeclaration({
-      namespaceImport: "borsh",
-      moduleSpecifier: "@project-serum/borsh",
-    })
-    if (idl.types && idl.types.length > 0) {
-      src.addImportDeclaration({
-        namespaceImport: "types",
-        moduleSpecifier: "../types",
-      })
-    }
-    src.addImportDeclaration({
-      namedImports: ["PROGRAM_ID"],
-      moduleSpecifier: "../programId",
-    })
+    src.addStatements([
+      `import { PublicKey, Connection } from "@solana/web3.js"`,
+      `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { PROGRAM_ID } from "../programId"`,
+    ])
 
     if (acc.type.kind === "enum") {
       throw new Error("invariant violation: account type cannot be enum")
