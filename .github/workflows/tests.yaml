@@ -33,7 +33,8 @@ jobs:
           key: cargo-${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
       - uses: ./.github/actions/setup-solana/
       - run: yarn --frozen-lockfile
-      - run: yarn build:cli
+      - run: yarn build
+      - uses: ./.github/actions/git-diff/
       - run: yarn test:no-watch
 
   run-linters:
