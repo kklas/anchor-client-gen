@@ -60,7 +60,7 @@ export function genProgramId(
   if (idlProgramId) {
     src.addStatements([
       "\n",
-      "// Program ID passed with the cli --program-id flag when running the code generator. Do not edit, it will get overwritten.",
+      "// Program ID defined in the provided IDL. Do not edit, it will get overwritten.",
     ])
     src.addVariableStatement({
       declarationKind: VariableDeclarationKind.Const,
@@ -76,7 +76,7 @@ export function genProgramId(
   if (cliProgramId) {
     src.addStatements([
       "\n",
-      "// Program ID defined in the provided IDL. Do not edit, it will get overwritten.",
+      "// Program ID passed with the cli --program-id flag when running the code generator. Do not edit, it will get overwritten.",
     ])
     src.addVariableStatement({
       declarationKind: VariableDeclarationKind.Const,
