@@ -66,7 +66,11 @@ function genAccountFiles(
       `import { PublicKey, Connection } from "@solana/web3.js"`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-      `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      ...(idl.types && idl.types.length > 0
+        ? [
+            `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+          ]
+        : []),
       `import { PROGRAM_ID } from "../programId"`,
     ])
 
