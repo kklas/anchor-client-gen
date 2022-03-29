@@ -30,8 +30,9 @@ jobs:
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             ./tests/example-program/target/
-          key: cargo-${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}-${{ env.SOLANA_CLI_VERSION }}-v0000
       - uses: ./.github/actions/setup-solana/
+      - run: rustup toolchain list -v
       - run: yarn --frozen-lockfile
       - run: yarn build
       - uses: ./.github/actions/git-diff/
