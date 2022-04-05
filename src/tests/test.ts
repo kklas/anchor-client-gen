@@ -29,14 +29,14 @@ import * as path from "path"
 
 const c = new Connection("http://127.0.0.1:8899", "processed")
 const faucet = JSON.parse(
-  fs.readFileSync("tests/.test-ledger/faucet-keypair.json").toString()
+  fs.readFileSync("src/tests/.test-ledger/faucet-keypair.json").toString()
 )
 const payer = Keypair.fromSecretKey(Uint8Array.from(faucet))
 
 test("generator output", async () => {
   const res = await dircompare.compare(
-    "tests/example-program-gen/exp",
-    "tests/example-program-gen/act",
+    "src/tests/example-program-gen/exp",
+    "src/tests/example-program-gen/act",
     {
       compareContent: true,
       compareFileAsync:
