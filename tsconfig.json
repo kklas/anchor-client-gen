@@ -8,7 +8,7 @@
         "outDir": "dist",
         "sourceMap": true,
         "moduleResolution": "node",
+        "noEmit": true
     },
-    "include": ["src"],
-    "exclude": ["src/tests"]
+    "include": ["src", "tests", "examples"],
 }
