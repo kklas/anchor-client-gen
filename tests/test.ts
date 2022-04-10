@@ -11,12 +11,13 @@ import {
 import BN from "bn.js"
 import * as dircompare from "dir-compare"
 import * as fs from "fs"
-import { State } from "./example-program-gen/act/accounts"
+import { State, State2 } from "./example-program-gen/act/accounts"
 import { fromTxError, SomeError } from "./example-program-gen/act/errors"
 import {
   causeError,
   initialize,
   initializeWithValues,
+  initializeWithValues2,
 } from "./example-program-gen/act/instructions"
 import { BarStruct, FooStruct } from "./example-program-gen/act/types"
 import {
@@ -265,6 +266,7 @@ test("fetch multiple", async () => {
 
 test("instruction with args", async () => {
   const state = new Keypair()
+  const state2 = new Keypair()
 
   const tx = new Transaction({ feePayer: payer.publicKey })
   tx.add(
@@ -368,12 +370,28 @@ test("instruction with args", async () => {
       }
     )
   )
+  tx.add(
+    initializeWithValues2(
+      {
+        vecOfOption: [null, new BN(20)],
+      },
+      {
+        state: state2.publicKey,
+        payer: payer.publicKey,
+        systemProgram: SystemProgram.programId,
+      }
+    )
+  )
 
-  await sendAndConfirmTransaction(c, tx, [state, payer])
+  await sendAndConfirmTransaction(c, tx, [state, state2, payer])
 
   const res = await State.fetch(c, state.publicKey)
   if (res === null) {
-    fail("account not found")
+    fail("account for State not found")
+  }
+  const res2 = await State2.fetch(c, state2.publicKey)
+  if (res2 === null) {
+    fail("account for State2 not found")
   }
 
   expect(res.boolField).toBe(true)
@@ -512,6 +530,10 @@ test("instruction with args", async () => {
     }
     expect(act.kind).toBe("NoFields")
   }
+
+  // vecOfOption
+  expect(res2.vecOfOption[0]).toBe(null)
+  expect(res2.vecOfOption[1] !== null && res2.vecOfOption[1].eqn(20)).toBe(true)
 })
 
 test("tx error", async () => {

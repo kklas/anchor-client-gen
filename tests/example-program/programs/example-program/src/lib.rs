@@ -74,6 +74,16 @@ pub mod example_program {
         Ok(())
     }
 
+    // a separate instruction due to initialize_with_values having too many arguments
+    // https://github.com/solana-labs/solana/issues/23978
+    pub fn initialize_with_values2(
+        ctx: Context<Initialize2>,
+        vec_of_option: Vec<Option<u64>>,
+    ) -> Result<()> {
+        ctx.accounts.state.set_inner(State2 { vec_of_option });
+        Ok(())
+    }
+
     pub fn cause_error(_ctx: Context<CauseError>) -> Result<()> {
         return Err(error!(ErrorCode::SomeError));
     }
@@ -204,6 +214,18 @@ impl Default for State {
     }
 }
 
+#[account]
+pub struct State2 {
+    vec_of_option: Vec<Option<u64>>,
+}
+impl Default for State2 {
+    fn default() -> Self {
+        return State2 {
+            vec_of_option: vec![None, Some(10)],
+        };
+    }
+}
+
 #[derive(Accounts)]
 pub struct NestedAccounts<'info> {
     clock: Sysvar<'info, Clock>,
@@ -220,6 +242,20 @@ pub struct Initialize<'info> {
     state: Account<'info, State>,
 
     nested: NestedAccounts<'info>,
+
+    #[account(mut)]
+    payer: Signer<'info>,
+    system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct Initialize2<'info> {
+    #[account(
+        init,
+        space = 8 + 1000, // TODO: use exact space required
+        payer = payer,
+    )]
+    state: Account<'info, State2>,
 
     #[account(mut)]
     payer: Signer<'info>,
