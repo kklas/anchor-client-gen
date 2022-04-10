@@ -1,36 +1,11 @@
-import { PROGRAM_ID } from "./programId"
+import { PROGRAM_ID } from "../programId"
+import * as anchor from "./anchor"
+import * as custom from "./custom"
 
-export type CustomError = SomeError | OtherError
-
-export class SomeError extends Error {
-  readonly code = 6000
-  readonly name = "SomeError"
-  readonly msg = "Example error."
-
-  constructor() {
-    super("6000: Example error.")
-  }
-}
-
-export class OtherError extends Error {
-  readonly code = 6001
-  readonly name = "OtherError"
-  readonly msg = "Another error."
-
-  constructor() {
-    super("6001: Another error.")
-  }
-}
-
-export function fromCode(code: number): CustomError | null {
-  switch (code) {
-    case 6000:
-      return new SomeError()
-    case 6001:
-      return new OtherError()
-  }
-
-  return null
+export function fromCode(
+  code: number
+): custom.CustomError | anchor.AnchorError | null {
+  return code >= 6000 ? custom.fromCode(code) : anchor.fromCode(code)
 }
 
 function hasOwnProperty<X extends object, Y extends PropertyKey>(
@@ -42,7 +17,9 @@ function hasOwnProperty<X extends object, Y extends PropertyKey>(
 
 const errorRe = /Program (\w+) failed: custom program error: (\w+)/
 
-export function fromTxError(err: unknown): CustomError | null {
+export function fromTxError(
+  err: unknown
+): custom.CustomError | anchor.AnchorError | null {
   if (
     typeof err !== "object" ||
     err === null ||

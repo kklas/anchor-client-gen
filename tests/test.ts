@@ -12,7 +12,9 @@ import BN from "bn.js"
 import * as dircompare from "dir-compare"
 import * as fs from "fs"
 import { State, State2 } from "./example-program-gen/act/accounts"
-import { fromTxError, SomeError } from "./example-program-gen/act/errors"
+import { fromTxError } from "./example-program-gen/act/errors"
+import { SomeError } from "./example-program-gen/act/errors/custom"
+import { InvalidProgramId } from "./example-program-gen/act/errors/anchor"
 import {
   causeError,
   initialize,
@@ -566,7 +568,7 @@ describe("fromTxError", () => {
     expect(fromTxError(errMock)).toBe(null)
   })
 
-  it("returns null on anchor error", () => {
+  it("parses anchor error correctly", () => {
     const errMock = {
       logs: [
         "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
@@ -581,7 +583,7 @@ describe("fromTxError", () => {
       ],
     }
 
-    expect(fromTxError(errMock)).toBe(null)
+    expect(fromTxError(errMock)).toBeInstanceOf(InvalidProgramId)
   })
 })
 
