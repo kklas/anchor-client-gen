@@ -207,6 +207,36 @@
       ]
     },
     {
+      "name": "initializeWithValues2",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "vecOfOption",
+          "type": {
+            "vec": {
+              "option": "u64"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "causeError",
       "accounts": [],
       "args": []
@@ -347,6 +377,22 @@
             "name": "enumField4",
             "type": {
               "defined": "FooEnum"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "State2",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "vecOfOption",
+            "type": {
+              "vec": {
+                "option": "u64"
+              }
             }
           }
         ]
