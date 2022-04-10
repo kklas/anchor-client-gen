@@ -183,7 +183,8 @@ const ix = someInstrution({
 ### Errors
 
 ```ts
-import { SomeCustomError, fromTxError } from "./output/directory/errors"
+import { fromTxError } from "./output/directory/errors"
+import { SomeCustomError } from "./output/directory/errors/custom"
 
 try {
   await sendAndConfirmTransaction(c, tx, [payer])
