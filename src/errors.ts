@@ -1,5 +1,5 @@
 import { Idl } from "@project-serum/anchor"
-import { Project } from "ts-morph"
+import { Project, VariableDeclarationKind } from "ts-morph"
 
 export function genErrors(
   project: Project,
@@ -106,6 +106,16 @@ export function genErrors(
   })
   hasOwnPropertyFn.setBodyText("return Object.hasOwnProperty.call(obj, prop);")
 
+  src.addVariableStatement({
+    declarationKind: VariableDeclarationKind.Const,
+    declarations: [
+      {
+        name: "errorRe",
+        initializer: "/Program (\\w+) failed: custom program error: (\\w+)/",
+      },
+    ],
+  })
+
   // fromTxError function
   const fromTxErrorFn = src.addFunction({
     isExported: true,
@@ -118,46 +128,38 @@ export function genErrors(
     ],
     returnType: "CustomError | null",
   })
-  fromTxErrorFn.setBodyText((writer) => {
-    writer
-      .writeLine("if (")
-      .newLine()
-      .indent(() => {
-        writer
-          .writeLine('typeof err !== "object" ||')
-          .writeLine("err === null ||")
-          .writeLine('!hasOwnProperty(err, "logs") ||')
-          .writeLine("!Array.isArray(err.logs)")
-      })
-      .writeLine(")")
-      .block(() => {
-        writer.writeLine("return null;")
-      })
-      .blankLine()
-      .writeLine("const log = err.logs.slice(-1)[0];")
-      .writeLine('if (typeof log !== "string")')
-      .block(() => {
-        writer.writeLine("return null;")
-      })
-      .blankLine()
-      .writeLine(
-        "const components = log.split(`${PROGRAM_ID} failed: custom program error: `)"
-      )
-      .writeLine("if (components.length !== 2)")
-      .block(() => {
-        writer.writeLine("return null;")
-      })
-      .blankLine()
-      .writeLine("let errorCode: number;")
-      .writeLine("try")
-      .block(() => {
-        writer.writeLine("errorCode = parseInt(components[1], 16);")
-      })
-      .write("catch (parseErr)")
-      .block(() => {
-        writer.writeLine("return null;")
-      })
-      .blankLine()
-      .writeLine("return fromCode(errorCode);")
-  })
+  fromTxErrorFn.setBodyText(`if (
+  typeof err !== "object" ||
+  err === null ||
+  !hasOwnProperty(err, "logs") ||
+  !Array.isArray(err.logs)
+) {
+  return null
+}
+
+let firstMatch: RegExpExecArray | null = null
+for (const logLine of err.logs) {
+  firstMatch = errorRe.exec(logLine)
+  if (firstMatch !== null) {
+    break
+  }
+}
+
+if (firstMatch === null) {
+  return null
+}
+
+const [programIdRaw, codeRaw] = firstMatch.slice(1)
+if (programIdRaw !== PROGRAM_ID.toString()) {
+  return null
+}
+
+let errorCode: number
+try {
+  errorCode = parseInt(codeRaw, 16)
+} catch (parseErr) {
+  return null
+}
+
+return fromCode(errorCode)`)
 }

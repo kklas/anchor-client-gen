@@ -81,6 +81,8 @@ function hasOwnProperty<X extends object, Y extends PropertyKey>(
   return Object.hasOwnProperty.call(obj, prop)
 }
 
+const errorRe = /Program (\w+) failed: custom program error: (\w+)/
+
 export function fromTxError(err: unknown): CustomError | null {
   if (
     typeof err !== "object" ||
@@ -91,19 +93,26 @@ export function fromTxError(err: unknown): CustomError | null {
     return null
   }
 
-  const log = err.logs.slice(-1)[0]
-  if (typeof log !== "string") {
+  let firstMatch: RegExpExecArray | null = null
+  for (const logLine of err.logs) {
+    firstMatch = errorRe.exec(logLine)
+    if (firstMatch !== null) {
+      break
+    }
+  }
+
+  if (firstMatch === null) {
     return null
   }
 
-  const components = log.split(`${PROGRAM_ID} failed: custom program error: `)
-  if (components.length !== 2) {
+  const [programIdRaw, codeRaw] = firstMatch.slice(1)
+  if (programIdRaw !== PROGRAM_ID.toString()) {
     return null
   }
 
   let errorCode: number
   try {
-    errorCode = parseInt(components[1], 16)
+    errorCode = parseInt(codeRaw, 16)
   } catch (parseErr) {
     return null
   }

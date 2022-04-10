@@ -549,6 +549,42 @@ test("tx error", async () => {
   }).rejects.toThrow(SomeError)
 })
 
+describe("fromTxError", () => {
+  it("returns null when CPI call fails", async () => {
+    const errMock = {
+      logs: [
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
+        "Program log: Instruction: CauseError",
+        "Program 11111111111111111111111111111111 invoke [2]",
+        "Allocate: requested 1000000000000000000, max allowed 10485760",
+        "Program 11111111111111111111111111111111 failed: custom program error: 0x3",
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 7958 of 1400000 compute units",
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x3",
+      ],
+    }
+
+    expect(fromTxError(errMock)).toBe(null)
+  })
+
+  it("returns null on anchor error", () => {
+    const errMock = {
+      logs: [
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
+        "Program log: Instruction: CauseError",
+        "Program log: AnchorError caused by account: system_program. Error Code: InvalidProgramId. Error Number: 3008. Error Message: Program ID was not as expected.",
+        "Program log: Left:",
+        "Program log: 24S58Cp5Myf6iGx4umBNd7RgDrZ9nkKzvkfFHBMDomNa",
+        "Program log: Right:",
+        "Program log: 11111111111111111111111111111111",
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 5043 of 1400000 compute units",
+        "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0xbc0",
+      ],
+    }
+
+    expect(fromTxError(errMock)).toBe(null)
+  })
+})
+
 test("toJSON", async () => {
   const state = new State({
     boolField: true,
