@@ -74,9 +74,6 @@ function genAccountFiles(
       `import { PROGRAM_ID } from "../programId"`,
     ])
 
-    if (acc.type.kind === "enum") {
-      throw new Error("invariant violation: account type cannot be enum")
-    }
     const fields = acc.type.fields
     const name = acc.name
 

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.24.0]
+
 ### Features
 
 - Add fetchMultiple method to generated account classes (#4)

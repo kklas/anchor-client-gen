@@ -36,7 +36,8 @@
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [],
+      "returns": null
     },
     {
       "name": "initializeWithValues",
@@ -204,7 +205,8 @@
             "defined": "FooEnum"
           }
         }
-      ]
+      ],
+      "returns": null
     },
     {
       "name": "initializeWithValues2",
@@ -234,12 +236,14 @@
             }
           }
         }
-      ]
+      ],
+      "returns": null
     },
     {
       "name": "causeError",
       "accounts": [],
-      "args": []
+      "args": [],
+      "returns": null
     }
   ],
   "accounts": [
