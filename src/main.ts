@@ -40,7 +40,7 @@ async function main() {
 
   console.log("generating programId.ts...")
   genProgramId(project, idl, programIdOpt, outPath)
-  console.log("generating errors.ts...")
+  console.log("generating errors...")
   genErrors(project, idl, outPath)
   console.log("generating instructions...")
   genInstructions(project, idl, outPath)

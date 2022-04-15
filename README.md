@@ -56,8 +56,11 @@ This will generate code to `output/directory`:
 │   ├── BarStruct.ts
 │   ├── BazEnum.ts
 │   └── index.ts
-├── programId.ts
-└── errors.ts
+├── errors
+│   ├── anchor.ts
+│   ├── custom.ts
+│   └── index.ts
+└── programId.ts
 ```
 
 For more examples of the generated code, check out the [examples](https://github.com/kklas/anchor-client-gen/tree/master/examples) directory.

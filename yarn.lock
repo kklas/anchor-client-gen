@@ -616,15 +616,15 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@project-serum/anchor-cli@^0.24.1":
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/@project-serum/anchor-cli/-/anchor-cli-0.24.1.tgz#ba5be720eae86536aa499a6a3c6ef49d5cf160e3"
-  integrity sha512-uDok4/u2BwHnAnJYjq9x6UNNK1fjDmrHwrjiX+b/tVWmUD37sZxyXMG823uDAHXkSq3IAt0NBhxODwawTsROtA==
+"@project-serum/anchor-cli@^0.24.2":
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/@project-serum/anchor-cli/-/anchor-cli-0.24.2.tgz#5276e9e9f55bd7b0c18e246c67ab02ad053c26b3"
+  integrity sha512-3D+fB3n/PAmY5AF2P+zxNvV2ZKx6YLoDlqHXqFa7wGqxVZfTo4WM2O7ChJjU2WIxS/WoTt6qXnehbuGUJ1JXig==
 
-"@project-serum/anchor@^0.24.1":
-  version "0.24.1"
-  resolved "https://registry.yarnpkg.com/@project-serum/anchor/-/anchor-0.24.1.tgz#521c3d610d3db7e24f143736e9c945b54fb8ef85"
-  integrity sha512-Oab6rPKsoBKf7/m/AyZcx3ahzcRiOFbqYRoDX6Gnxiqeu2zLKS+LyV6v/2XEVnwhIhOtwETtsgSZAwbqjM5Ywg==
+"@project-serum/anchor@^0.24.2":
+  version "0.24.2"
+  resolved "https://registry.yarnpkg.com/@project-serum/anchor/-/anchor-0.24.2.tgz#a3c52a99605c80735f446ca9b3a4885034731004"
+  integrity sha512-0/718g8/DnEuwAidUwh5wLYphUYXhUbiClkuRNhvNoa+1Y8a4g2tJyxoae+emV+PG/Gikd/QUBNMkIcimiIRTA==
   dependencies:
     "@project-serum/borsh" "^0.2.5"
     "@solana/web3.js" "^1.36.0"
