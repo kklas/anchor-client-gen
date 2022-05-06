@@ -1,1 +1,2 @@
-export { Counter, CounterFields, CounterJSON } from "./Counter"
+export { Counter } from "./Counter"
+export type { CounterFields, CounterJSON } from "./Counter"

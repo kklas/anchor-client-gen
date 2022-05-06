@@ -43,18 +43,25 @@ function genIndexFile(
   })
 
   idl.instructions.forEach((ix) => {
-    const namedExports = [ix.name]
-    if (ix.args.length > 0) {
-      namedExports.push(argsInterfaceName(ix.name))
-    }
-    if (ix.accounts.length > 0) {
-      namedExports.push(accountsInterfaceName(ix.name))
-    }
-
     src.addExportDeclaration({
-      namedExports,
+      namedExports: [ix.name],
       moduleSpecifier: `./${ix.name}`,
     })
+
+    const typeExports: string[] = []
+    if (ix.args.length > 0) {
+      typeExports.push(argsInterfaceName(ix.name))
+    }
+    if (ix.accounts.length > 0) {
+      typeExports.push(accountsInterfaceName(ix.name))
+    }
+    if (typeExports.length > 0) {
+      src.addExportDeclaration({
+        namedExports: typeExports,
+        isTypeOnly: true,
+        moduleSpecifier: `./${ix.name}`,
+      })
+    }
   })
 }
 

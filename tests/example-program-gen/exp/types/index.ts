@@ -1,7 +1,9 @@
 import * as FooEnum from "./FooEnum"
 
-export { BarStruct, BarStructFields, BarStructJSON } from "./BarStruct"
-export { FooStruct, FooStructFields, FooStructJSON } from "./FooStruct"
+export { BarStruct } from "./BarStruct"
+export type { BarStructFields, BarStructJSON } from "./BarStruct"
+export { FooStruct } from "./FooStruct"
+export type { FooStructFields, FooStructJSON } from "./FooStruct"
 export { FooEnum }
 
 export type FooEnumKind =

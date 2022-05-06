@@ -1,7 +1,8 @@
 import * as GameState from "./GameState"
 import * as Sign from "./Sign"
 
-export { Tile, TileFields, TileJSON } from "./Tile"
+export { Tile } from "./Tile"
+export type { TileFields, TileJSON } from "./Tile"
 export { GameState }
 
 export type GameStateKind = GameState.Active | GameState.Tie | GameState.Won
