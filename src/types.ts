@@ -44,11 +44,15 @@ function genIndexFile(
     switch (ty.type.kind) {
       case "struct":
         src.addExportDeclaration({
+          namedExports: [ty.name],
+          moduleSpecifier: `./${ty.name}`,
+        })
+        src.addExportDeclaration({
           namedExports: [
-            ty.name,
             fieldsInterfaceName(ty.name),
             jsonInterfaceName(ty.name),
           ],
+          isTypeOnly: true,
           moduleSpecifier: `./${ty.name}`,
         })
         return

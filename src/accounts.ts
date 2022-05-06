@@ -37,11 +37,12 @@ function genIndexFile(
 
   idl.accounts?.forEach((ix) => {
     src.addExportDeclaration({
-      namedExports: [
-        ix.name,
-        fieldsInterfaceName(ix.name),
-        jsonInterfaceName(ix.name),
-      ],
+      namedExports: [ix.name],
+      moduleSpecifier: `./${ix.name}`,
+    })
+    src.addExportDeclaration({
+      namedExports: [fieldsInterfaceName(ix.name), jsonInterfaceName(ix.name)],
+      isTypeOnly: true,
       moduleSpecifier: `./${ix.name}`,
     })
   })
