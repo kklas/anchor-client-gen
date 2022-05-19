@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Features
+
+- Errors now include error log lines ([#34](https://github.com/kklas/anchor-client-gen/pull/34))
+
 ### Fixes
 
 - Export types as types to satisfy ts isolatedModules setting ([#30](https://github.com/kklas/anchor-client-gen/pull/30))
