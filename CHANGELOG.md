@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Export types as types to satisfy ts isolatedModules setting ([#30](https://github.com/kklas/anchor-client-gen/pull/30))
 
+### Breaking
+
+- Don't generate a msg field in custom errors when there's no message ([#32](https://github.com/kklas/anchor-client-gen/pull/32))
+
 ## [v0.24.0]
 
 ### Features
