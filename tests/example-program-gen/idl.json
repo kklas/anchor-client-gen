@@ -547,6 +547,10 @@
       "code": 6001,
       "name": "OtherError",
       "msg": "Another error."
+    },
+    {
+      "code": 6002,
+      "name": "ErrorWithoutMsg"
     }
   ]
 }

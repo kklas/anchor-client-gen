@@ -170,30 +170,34 @@ export function genCustomErrors(
 
   // error classes
   errors.forEach((error) => {
+    const properties = [
+      {
+        name: "code",
+        initializer: error.code.toString(),
+        isReadonly: true,
+      },
+      {
+        name: "name",
+        initializer: `"${error.name}"`,
+        isReadonly: true,
+      },
+    ]
+    if (error.msg) {
+      properties.push({
+        name: "msg",
+        initializer: `"${error.msg}"`,
+        isReadonly: true,
+      })
+    }
+
     const cls = src.addClass({
       isExported: true,
       name: error.name,
       extends: "Error",
-      properties: [
-        {
-          name: "code",
-          initializer: error.code.toString(),
-          isReadonly: true,
-        },
-        {
-          name: "name",
-          initializer: `"${error.name}"`,
-          isReadonly: true,
-        },
-        {
-          name: "msg",
-          initializer: `"${error.msg}"`,
-          isReadonly: true,
-        },
-      ],
+      properties,
     })
     const ctor = cls.addConstructor()
-    ctor.setBodyText(`super("${error.code}: ${error.msg}")`)
+    ctor.setBodyText(`super("${error.code}: ${error.msg || ""}")`)
   })
 
   // fromCode function
