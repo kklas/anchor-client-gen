@@ -13,7 +13,6 @@ import * as dircompare from "dir-compare"
 import * as fs from "fs"
 import { State, State2 } from "./example-program-gen/act/accounts"
 import { fromTxError } from "./example-program-gen/act/errors"
-import { SomeError } from "./example-program-gen/act/errors/custom"
 import { InvalidProgramId } from "./example-program-gen/act/errors/anchor"
 import {
   causeError,
@@ -542,13 +541,31 @@ test("tx error", async () => {
   const tx = new Transaction({ feePayer: payer.publicKey })
 
   tx.add(causeError())
-  await expect(async () => {
-    try {
-      await sendAndConfirmTransaction(c, tx, [payer])
-    } catch (e) {
-      throw fromTxError(e)
+
+  try {
+    await sendAndConfirmTransaction(c, tx, [payer])
+  } catch (e) {
+    const parsed = fromTxError(e)
+
+    expect(parsed).not.toBe(null)
+    if (parsed === null) {
+      fail()
     }
-  }).rejects.toThrow(SomeError)
+
+    expect(parsed.message).toBe("6000: Example error.")
+    expect(parsed.code).toBe(6000)
+    expect(parsed.name).toBe("SomeError")
+    expect("msg" in parsed && parsed.msg).toBe("Example error.")
+    expect(parsed.logs).toStrictEqual([
+      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
+      "Program log: Instruction: CauseError",
+      "Program log: AnchorError thrown in programs/example-program/src/lib.rs:88. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
+      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 3092 of 1400000 compute units",
+      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x1770",
+    ])
+
+    return
+  }
 })
 
 describe("fromTxError", () => {
