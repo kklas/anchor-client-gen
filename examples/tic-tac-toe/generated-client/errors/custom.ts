@@ -8,50 +8,45 @@ export type CustomError =
 export class TileOutOfBounds extends Error {
   readonly code = 6000
   readonly name = "TileOutOfBounds"
-  readonly msg = "undefined"
 
   constructor() {
-    super("6000: undefined")
+    super("6000: ")
   }
 }
 
 export class TileAlreadySet extends Error {
   readonly code = 6001
   readonly name = "TileAlreadySet"
-  readonly msg = "undefined"
 
   constructor() {
-    super("6001: undefined")
+    super("6001: ")
   }
 }
 
 export class GameAlreadyOver extends Error {
   readonly code = 6002
   readonly name = "GameAlreadyOver"
-  readonly msg = "undefined"
 
   constructor() {
-    super("6002: undefined")
+    super("6002: ")
   }
 }
 
 export class NotPlayersTurn extends Error {
   readonly code = 6003
   readonly name = "NotPlayersTurn"
-  readonly msg = "undefined"
 
   constructor() {
-    super("6003: undefined")
+    super("6003: ")
   }
 }
 
 export class GameAlreadyStarted extends Error {
   readonly code = 6004
   readonly name = "GameAlreadyStarted"
-  readonly msg = "undefined"
 
   constructor() {
-    super("6004: undefined")
+    super("6004: ")
   }
 }
 

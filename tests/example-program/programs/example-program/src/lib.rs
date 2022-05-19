@@ -271,4 +271,5 @@ pub enum ErrorCode {
     SomeError,
     #[msg("Another error.")]
     OtherError,
+    ErrorWithoutMsg,
 }
