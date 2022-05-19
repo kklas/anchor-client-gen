@@ -9,7 +9,7 @@ export class TileOutOfBounds extends Error {
   readonly code = 6000
   readonly name = "TileOutOfBounds"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("6000: ")
   }
 }
@@ -18,7 +18,7 @@ export class TileAlreadySet extends Error {
   readonly code = 6001
   readonly name = "TileAlreadySet"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("6001: ")
   }
 }
@@ -27,7 +27,7 @@ export class GameAlreadyOver extends Error {
   readonly code = 6002
   readonly name = "GameAlreadyOver"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("6002: ")
   }
 }
@@ -36,7 +36,7 @@ export class NotPlayersTurn extends Error {
   readonly code = 6003
   readonly name = "NotPlayersTurn"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("6003: ")
   }
 }
@@ -45,23 +45,23 @@ export class GameAlreadyStarted extends Error {
   readonly code = 6004
   readonly name = "GameAlreadyStarted"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("6004: ")
   }
 }
 
-export function fromCode(code: number): CustomError | null {
+export function fromCode(code: number, logs?: string[]): CustomError | null {
   switch (code) {
     case 6000:
-      return new TileOutOfBounds()
+      return new TileOutOfBounds(logs)
     case 6001:
-      return new TileAlreadySet()
+      return new TileAlreadySet(logs)
     case 6002:
-      return new GameAlreadyOver()
+      return new GameAlreadyOver(logs)
     case 6003:
-      return new NotPlayersTurn()
+      return new NotPlayersTurn(logs)
     case 6004:
-      return new GameAlreadyStarted()
+      return new GameAlreadyStarted(logs)
   }
 
   return null

@@ -1,8 +1,11 @@
 import { PROGRAM_ID } from "../programId"
 import * as anchor from "./anchor"
 
-export function fromCode(code: number): anchor.AnchorError | null {
-  return anchor.fromCode(code)
+export function fromCode(
+  code: number,
+  logs?: string[]
+): anchor.AnchorError | null {
+  return anchor.fromCode(code, logs)
 }
 
 function hasOwnProperty<X extends object, Y extends PropertyKey>(
@@ -48,5 +51,5 @@ export function fromTxError(err: unknown): anchor.AnchorError | null {
     return null
   }
 
-  return fromCode(errorCode)
+  return fromCode(errorCode, err.logs)
 }

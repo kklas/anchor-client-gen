@@ -1,5 +1,10 @@
 import { Idl } from "@project-serum/anchor"
-import { Project, VariableDeclarationKind } from "ts-morph"
+import {
+  OptionalKind,
+  Project,
+  PropertyDeclarationStructure,
+  VariableDeclarationKind,
+} from "ts-morph"
 import {
   LangErrorCode,
   LangErrorMessage,
@@ -50,6 +55,11 @@ export function genIndex(
         name: "code",
         type: "number",
       },
+      {
+        name: "logs",
+        type: "string[]",
+        hasQuestionToken: true,
+      },
     ],
     returnType: hasCustomErrors
       ? "custom.CustomError | anchor.AnchorError | null"
@@ -57,9 +67,9 @@ export function genIndex(
   })
   hasCustomErrors
     ? fromCodeFn.setBodyText(
-        "return code >= 6000 ? custom.fromCode(code) : anchor.fromCode(code)"
+        "return code >= 6000 ? custom.fromCode(code, logs) : anchor.fromCode(code, logs)"
       )
-    : fromCodeFn.setBodyText("return anchor.fromCode(code)")
+    : fromCodeFn.setBodyText("return anchor.fromCode(code, logs)")
 
   // hasOwnProperty function
   const hasOwnPropertyFn = src.addFunction({
@@ -144,7 +154,7 @@ try {
   return null
 }
 
-return fromCode(errorCode)`)
+return fromCode(errorCode, err.logs)`)
 }
 
 export function genCustomErrors(
@@ -170,7 +180,7 @@ export function genCustomErrors(
 
   // error classes
   errors.forEach((error) => {
-    const properties = [
+    const properties: OptionalKind<PropertyDeclarationStructure>[] = [
       {
         name: "code",
         initializer: error.code.toString(),
@@ -196,7 +206,16 @@ export function genCustomErrors(
       extends: "Error",
       properties,
     })
-    const ctor = cls.addConstructor()
+    const ctor = cls.addConstructor({
+      parameters: [
+        {
+          name: "logs",
+          isReadonly: true,
+          hasQuestionToken: true,
+          type: "string[]",
+        },
+      ],
+    })
     ctor.setBodyText(`super("${error.code}: ${error.msg || ""}")`)
   })
 
@@ -209,6 +228,11 @@ export function genCustomErrors(
         name: "code",
         type: "number",
       },
+      {
+        name: "logs",
+        type: "string[]",
+        hasQuestionToken: true,
+      },
     ],
     returnType: "CustomError | null",
   })
@@ -218,7 +242,7 @@ export function genCustomErrors(
       .block(() => {
         errors.forEach((error) => {
           writer.writeLine(`case ${error.code}:`).indent(() => {
-            writer.writeLine(`return new ${error.name}();`)
+            writer.writeLine(`return new ${error.name}(logs);`)
           })
         })
       })
@@ -270,7 +294,16 @@ export function genAnchorErrors(
         },
       ],
     })
-    const ctor = cls.addConstructor()
+    const ctor = cls.addConstructor({
+      parameters: [
+        {
+          name: "logs",
+          isReadonly: true,
+          hasQuestionToken: true,
+          type: "string[]",
+        },
+      ],
+    })
     ctor.setBodyText(`super("${code}: ${message}")`)
   })
 
@@ -283,6 +316,11 @@ export function genAnchorErrors(
         name: "code",
         type: "number",
       },
+      {
+        name: "logs",
+        type: "string[]",
+        hasQuestionToken: true,
+      },
     ],
     returnType: "AnchorError | null",
   })
@@ -292,7 +330,7 @@ export function genAnchorErrors(
       .block(() => {
         Object.keys(LangErrorCode).forEach((errorName) => {
           writer.writeLine(`case ${LangErrorCode[errorName]}:`).indent(() => {
-            writer.writeLine(`return new ${errorName}();`)
+            writer.writeLine(`return new ${errorName}(logs);`)
           })
         })
       })

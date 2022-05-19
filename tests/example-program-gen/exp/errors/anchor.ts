@@ -57,7 +57,7 @@ export class InstructionMissing extends Error {
   readonly name = "InstructionMissing"
   readonly msg = "8 byte instruction identifier not provided"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("100: 8 byte instruction identifier not provided")
   }
 }
@@ -67,7 +67,7 @@ export class InstructionFallbackNotFound extends Error {
   readonly name = "InstructionFallbackNotFound"
   readonly msg = "Fallback functions are not supported"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("101: Fallback functions are not supported")
   }
 }
@@ -77,7 +77,7 @@ export class InstructionDidNotDeserialize extends Error {
   readonly name = "InstructionDidNotDeserialize"
   readonly msg = "The program could not deserialize the given instruction"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("102: The program could not deserialize the given instruction")
   }
 }
@@ -87,7 +87,7 @@ export class InstructionDidNotSerialize extends Error {
   readonly name = "InstructionDidNotSerialize"
   readonly msg = "The program could not serialize the given instruction"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("103: The program could not serialize the given instruction")
   }
 }
@@ -97,7 +97,7 @@ export class IdlInstructionStub extends Error {
   readonly name = "IdlInstructionStub"
   readonly msg = "The program was compiled without idl instructions"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("1000: The program was compiled without idl instructions")
   }
 }
@@ -108,7 +108,7 @@ export class IdlInstructionInvalidProgram extends Error {
   readonly msg =
     "The transaction was given an invalid program for the IDL instruction"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super(
       "1001: The transaction was given an invalid program for the IDL instruction"
     )
@@ -120,7 +120,7 @@ export class ConstraintMut extends Error {
   readonly name = "ConstraintMut"
   readonly msg = "A mut constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2000: A mut constraint was violated")
   }
 }
@@ -130,7 +130,7 @@ export class ConstraintHasOne extends Error {
   readonly name = "ConstraintHasOne"
   readonly msg = "A has_one constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2001: A has_one constraint was violated")
   }
 }
@@ -140,7 +140,7 @@ export class ConstraintSigner extends Error {
   readonly name = "ConstraintSigner"
   readonly msg = "A signer constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2002: A signer constraint was violated")
   }
 }
@@ -150,7 +150,7 @@ export class ConstraintRaw extends Error {
   readonly name = "ConstraintRaw"
   readonly msg = "A raw constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2003: A raw constraint was violated")
   }
 }
@@ -160,7 +160,7 @@ export class ConstraintOwner extends Error {
   readonly name = "ConstraintOwner"
   readonly msg = "An owner constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2004: An owner constraint was violated")
   }
 }
@@ -170,7 +170,7 @@ export class ConstraintRentExempt extends Error {
   readonly name = "ConstraintRentExempt"
   readonly msg = "A rent exemption constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2005: A rent exemption constraint was violated")
   }
 }
@@ -180,7 +180,7 @@ export class ConstraintSeeds extends Error {
   readonly name = "ConstraintSeeds"
   readonly msg = "A seeds constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2006: A seeds constraint was violated")
   }
 }
@@ -190,7 +190,7 @@ export class ConstraintExecutable extends Error {
   readonly name = "ConstraintExecutable"
   readonly msg = "An executable constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2007: An executable constraint was violated")
   }
 }
@@ -200,7 +200,7 @@ export class ConstraintState extends Error {
   readonly name = "ConstraintState"
   readonly msg = "A state constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2008: A state constraint was violated")
   }
 }
@@ -210,7 +210,7 @@ export class ConstraintAssociated extends Error {
   readonly name = "ConstraintAssociated"
   readonly msg = "An associated constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2009: An associated constraint was violated")
   }
 }
@@ -220,7 +220,7 @@ export class ConstraintAssociatedInit extends Error {
   readonly name = "ConstraintAssociatedInit"
   readonly msg = "An associated init constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2010: An associated init constraint was violated")
   }
 }
@@ -230,7 +230,7 @@ export class ConstraintClose extends Error {
   readonly name = "ConstraintClose"
   readonly msg = "A close constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2011: A close constraint was violated")
   }
 }
@@ -240,7 +240,7 @@ export class ConstraintAddress extends Error {
   readonly name = "ConstraintAddress"
   readonly msg = "An address constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2012: An address constraint was violated")
   }
 }
@@ -250,7 +250,7 @@ export class ConstraintZero extends Error {
   readonly name = "ConstraintZero"
   readonly msg = "Expected zero account discriminant"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2013: Expected zero account discriminant")
   }
 }
@@ -260,7 +260,7 @@ export class ConstraintTokenMint extends Error {
   readonly name = "ConstraintTokenMint"
   readonly msg = "A token mint constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2014: A token mint constraint was violated")
   }
 }
@@ -270,7 +270,7 @@ export class ConstraintTokenOwner extends Error {
   readonly name = "ConstraintTokenOwner"
   readonly msg = "A token owner constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2015: A token owner constraint was violated")
   }
 }
@@ -280,7 +280,7 @@ export class ConstraintMintMintAuthority extends Error {
   readonly name = "ConstraintMintMintAuthority"
   readonly msg = "A mint mint authority constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2016: A mint mint authority constraint was violated")
   }
 }
@@ -290,7 +290,7 @@ export class ConstraintMintFreezeAuthority extends Error {
   readonly name = "ConstraintMintFreezeAuthority"
   readonly msg = "A mint freeze authority constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2017: A mint freeze authority constraint was violated")
   }
 }
@@ -300,7 +300,7 @@ export class ConstraintMintDecimals extends Error {
   readonly name = "ConstraintMintDecimals"
   readonly msg = "A mint decimals constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2018: A mint decimals constraint was violated")
   }
 }
@@ -310,7 +310,7 @@ export class ConstraintSpace extends Error {
   readonly name = "ConstraintSpace"
   readonly msg = "A space constraint was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2019: A space constraint was violated")
   }
 }
@@ -320,7 +320,7 @@ export class RequireViolated extends Error {
   readonly name = "RequireViolated"
   readonly msg = "A require expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2500: A require expression was violated")
   }
 }
@@ -330,7 +330,7 @@ export class RequireEqViolated extends Error {
   readonly name = "RequireEqViolated"
   readonly msg = "A require_eq expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2501: A require_eq expression was violated")
   }
 }
@@ -340,7 +340,7 @@ export class RequireKeysEqViolated extends Error {
   readonly name = "RequireKeysEqViolated"
   readonly msg = "A require_keys_eq expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2502: A require_keys_eq expression was violated")
   }
 }
@@ -350,7 +350,7 @@ export class RequireNeqViolated extends Error {
   readonly name = "RequireNeqViolated"
   readonly msg = "A require_neq expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2503: A require_neq expression was violated")
   }
 }
@@ -360,7 +360,7 @@ export class RequireKeysNeqViolated extends Error {
   readonly name = "RequireKeysNeqViolated"
   readonly msg = "A require_keys_neq expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2504: A require_keys_neq expression was violated")
   }
 }
@@ -370,7 +370,7 @@ export class RequireGtViolated extends Error {
   readonly name = "RequireGtViolated"
   readonly msg = "A require_gt expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2505: A require_gt expression was violated")
   }
 }
@@ -380,7 +380,7 @@ export class RequireGteViolated extends Error {
   readonly name = "RequireGteViolated"
   readonly msg = "A require_gte expression was violated"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("2506: A require_gte expression was violated")
   }
 }
@@ -390,7 +390,7 @@ export class AccountDiscriminatorAlreadySet extends Error {
   readonly name = "AccountDiscriminatorAlreadySet"
   readonly msg = "The account discriminator was already set on this account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3000: The account discriminator was already set on this account")
   }
 }
@@ -400,7 +400,7 @@ export class AccountDiscriminatorNotFound extends Error {
   readonly name = "AccountDiscriminatorNotFound"
   readonly msg = "No 8 byte discriminator was found on the account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3001: No 8 byte discriminator was found on the account")
   }
 }
@@ -410,7 +410,7 @@ export class AccountDiscriminatorMismatch extends Error {
   readonly name = "AccountDiscriminatorMismatch"
   readonly msg = "8 byte discriminator did not match what was expected"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3002: 8 byte discriminator did not match what was expected")
   }
 }
@@ -420,7 +420,7 @@ export class AccountDidNotDeserialize extends Error {
   readonly name = "AccountDidNotDeserialize"
   readonly msg = "Failed to deserialize the account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3003: Failed to deserialize the account")
   }
 }
@@ -430,7 +430,7 @@ export class AccountDidNotSerialize extends Error {
   readonly name = "AccountDidNotSerialize"
   readonly msg = "Failed to serialize the account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3004: Failed to serialize the account")
   }
 }
@@ -440,7 +440,7 @@ export class AccountNotEnoughKeys extends Error {
   readonly name = "AccountNotEnoughKeys"
   readonly msg = "Not enough account keys given to the instruction"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3005: Not enough account keys given to the instruction")
   }
 }
@@ -450,7 +450,7 @@ export class AccountNotMutable extends Error {
   readonly name = "AccountNotMutable"
   readonly msg = "The given account is not mutable"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3006: The given account is not mutable")
   }
 }
@@ -461,7 +461,7 @@ export class AccountOwnedByWrongProgram extends Error {
   readonly msg =
     "The given account is owned by a different program than expected"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super(
       "3007: The given account is owned by a different program than expected"
     )
@@ -473,7 +473,7 @@ export class InvalidProgramId extends Error {
   readonly name = "InvalidProgramId"
   readonly msg = "Program ID was not as expected"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3008: Program ID was not as expected")
   }
 }
@@ -483,7 +483,7 @@ export class InvalidProgramExecutable extends Error {
   readonly name = "InvalidProgramExecutable"
   readonly msg = "Program account is not executable"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3009: Program account is not executable")
   }
 }
@@ -493,7 +493,7 @@ export class AccountNotSigner extends Error {
   readonly name = "AccountNotSigner"
   readonly msg = "The given account did not sign"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3010: The given account did not sign")
   }
 }
@@ -503,7 +503,7 @@ export class AccountNotSystemOwned extends Error {
   readonly name = "AccountNotSystemOwned"
   readonly msg = "The given account is not owned by the system program"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3011: The given account is not owned by the system program")
   }
 }
@@ -513,7 +513,7 @@ export class AccountNotInitialized extends Error {
   readonly name = "AccountNotInitialized"
   readonly msg = "The program expected this account to be already initialized"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3012: The program expected this account to be already initialized")
   }
 }
@@ -523,7 +523,7 @@ export class AccountNotProgramData extends Error {
   readonly name = "AccountNotProgramData"
   readonly msg = "The given account is not a program data account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3013: The given account is not a program data account")
   }
 }
@@ -533,7 +533,7 @@ export class AccountNotAssociatedTokenAccount extends Error {
   readonly name = "AccountNotAssociatedTokenAccount"
   readonly msg = "The given account is not the associated token account"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3014: The given account is not the associated token account")
   }
 }
@@ -543,7 +543,7 @@ export class AccountSysvarMismatch extends Error {
   readonly name = "AccountSysvarMismatch"
   readonly msg = "The given public key does not match the required sysvar"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("3015: The given public key does not match the required sysvar")
   }
 }
@@ -553,7 +553,7 @@ export class StateInvalidAddress extends Error {
   readonly name = "StateInvalidAddress"
   readonly msg = "The given state account does not have the correct address"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("4000: The given state account does not have the correct address")
   }
 }
@@ -563,7 +563,7 @@ export class DeclaredProgramIdMismatch extends Error {
   readonly name = "DeclaredProgramIdMismatch"
   readonly msg = "The declared program id does not match the actual program id"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("4100: The declared program id does not match the actual program id")
   }
 }
@@ -573,117 +573,117 @@ export class Deprecated extends Error {
   readonly name = "Deprecated"
   readonly msg = "The API being used is deprecated and should no longer be used"
 
-  constructor() {
+  constructor(readonly logs?: string[]) {
     super("5000: The API being used is deprecated and should no longer be used")
   }
 }
 
-export function fromCode(code: number): AnchorError | null {
+export function fromCode(code: number, logs?: string[]): AnchorError | null {
   switch (code) {
     case 100:
-      return new InstructionMissing()
+      return new InstructionMissing(logs)
     case 101:
-      return new InstructionFallbackNotFound()
+      return new InstructionFallbackNotFound(logs)
     case 102:
-      return new InstructionDidNotDeserialize()
+      return new InstructionDidNotDeserialize(logs)
     case 103:
-      return new InstructionDidNotSerialize()
+      return new InstructionDidNotSerialize(logs)
     case 1000:
-      return new IdlInstructionStub()
+      return new IdlInstructionStub(logs)
     case 1001:
-      return new IdlInstructionInvalidProgram()
+      return new IdlInstructionInvalidProgram(logs)
     case 2000:
-      return new ConstraintMut()
+      return new ConstraintMut(logs)
     case 2001:
-      return new ConstraintHasOne()
+      return new ConstraintHasOne(logs)
     case 2002:
-      return new ConstraintSigner()
+      return new ConstraintSigner(logs)
     case 2003:
-      return new ConstraintRaw()
+      return new ConstraintRaw(logs)
     case 2004:
-      return new ConstraintOwner()
+      return new ConstraintOwner(logs)
     case 2005:
-      return new ConstraintRentExempt()
+      return new ConstraintRentExempt(logs)
     case 2006:
-      return new ConstraintSeeds()
+      return new ConstraintSeeds(logs)
     case 2007:
-      return new ConstraintExecutable()
+      return new ConstraintExecutable(logs)
     case 2008:
-      return new ConstraintState()
+      return new ConstraintState(logs)
     case 2009:
-      return new ConstraintAssociated()
+      return new ConstraintAssociated(logs)
     case 2010:
-      return new ConstraintAssociatedInit()
+      return new ConstraintAssociatedInit(logs)
     case 2011:
-      return new ConstraintClose()
+      return new ConstraintClose(logs)
     case 2012:
-      return new ConstraintAddress()
+      return new ConstraintAddress(logs)
     case 2013:
-      return new ConstraintZero()
+      return new ConstraintZero(logs)
     case 2014:
-      return new ConstraintTokenMint()
+      return new ConstraintTokenMint(logs)
     case 2015:
-      return new ConstraintTokenOwner()
+      return new ConstraintTokenOwner(logs)
     case 2016:
-      return new ConstraintMintMintAuthority()
+      return new ConstraintMintMintAuthority(logs)
     case 2017:
-      return new ConstraintMintFreezeAuthority()
+      return new ConstraintMintFreezeAuthority(logs)
     case 2018:
-      return new ConstraintMintDecimals()
+      return new ConstraintMintDecimals(logs)
     case 2019:
-      return new ConstraintSpace()
+      return new ConstraintSpace(logs)
     case 2500:
-      return new RequireViolated()
+      return new RequireViolated(logs)
     case 2501:
-      return new RequireEqViolated()
+      return new RequireEqViolated(logs)
     case 2502:
-      return new RequireKeysEqViolated()
+      return new RequireKeysEqViolated(logs)
     case 2503:
-      return new RequireNeqViolated()
+      return new RequireNeqViolated(logs)
     case 2504:
-      return new RequireKeysNeqViolated()
+      return new RequireKeysNeqViolated(logs)
     case 2505:
-      return new RequireGtViolated()
+      return new RequireGtViolated(logs)
     case 2506:
-      return new RequireGteViolated()
+      return new RequireGteViolated(logs)
     case 3000:
-      return new AccountDiscriminatorAlreadySet()
+      return new AccountDiscriminatorAlreadySet(logs)
     case 3001:
-      return new AccountDiscriminatorNotFound()
+      return new AccountDiscriminatorNotFound(logs)
     case 3002:
-      return new AccountDiscriminatorMismatch()
+      return new AccountDiscriminatorMismatch(logs)
     case 3003:
-      return new AccountDidNotDeserialize()
+      return new AccountDidNotDeserialize(logs)
     case 3004:
-      return new AccountDidNotSerialize()
+      return new AccountDidNotSerialize(logs)
     case 3005:
-      return new AccountNotEnoughKeys()
+      return new AccountNotEnoughKeys(logs)
     case 3006:
-      return new AccountNotMutable()
+      return new AccountNotMutable(logs)
     case 3007:
-      return new AccountOwnedByWrongProgram()
+      return new AccountOwnedByWrongProgram(logs)
     case 3008:
-      return new InvalidProgramId()
+      return new InvalidProgramId(logs)
     case 3009:
-      return new InvalidProgramExecutable()
+      return new InvalidProgramExecutable(logs)
     case 3010:
-      return new AccountNotSigner()
+      return new AccountNotSigner(logs)
     case 3011:
-      return new AccountNotSystemOwned()
+      return new AccountNotSystemOwned(logs)
     case 3012:
-      return new AccountNotInitialized()
+      return new AccountNotInitialized(logs)
     case 3013:
-      return new AccountNotProgramData()
+      return new AccountNotProgramData(logs)
     case 3014:
-      return new AccountNotAssociatedTokenAccount()
+      return new AccountNotAssociatedTokenAccount(logs)
     case 3015:
-      return new AccountSysvarMismatch()
+      return new AccountSysvarMismatch(logs)
     case 4000:
-      return new StateInvalidAddress()
+      return new StateInvalidAddress(logs)
     case 4100:
-      return new DeclaredProgramIdMismatch()
+      return new DeclaredProgramIdMismatch(logs)
     case 5000:
-      return new Deprecated()
+      return new Deprecated(logs)
   }
 
   return null

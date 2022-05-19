@@ -3,9 +3,12 @@ import * as anchor from "./anchor"
 import * as custom from "./custom"
 
 export function fromCode(
-  code: number
+  code: number,
+  logs?: string[]
 ): custom.CustomError | anchor.AnchorError | null {
-  return code >= 6000 ? custom.fromCode(code) : anchor.fromCode(code)
+  return code >= 6000
+    ? custom.fromCode(code, logs)
+    : anchor.fromCode(code, logs)
 }
 
 function hasOwnProperty<X extends object, Y extends PropertyKey>(
@@ -53,5 +56,5 @@ export function fromTxError(
     return null
   }
 
-  return fromCode(errorCode)
+  return fromCode(errorCode, err.logs)
 }
