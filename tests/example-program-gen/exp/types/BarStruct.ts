@@ -4,16 +4,20 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import * as borsh from "@project-serum/borsh"
 
 export interface BarStructFields {
+  /** Some field */
   someField: boolean
   otherField: number
 }
 
 export interface BarStructJSON {
+  /** Some field */
   someField: boolean
   otherField: number
 }
 
+/** Bar struct type */
 export class BarStruct {
+  /** Some field */
   readonly someField: boolean
   readonly otherField: number
 

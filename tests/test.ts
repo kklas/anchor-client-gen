@@ -559,7 +559,7 @@ test("tx error", async () => {
     expect(parsed.logs).toStrictEqual([
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
       "Program log: Instruction: CauseError",
-      "Program log: AnchorError thrown in programs/example-program/src/lib.rs:88. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
+      "Program log: AnchorError thrown in programs/example-program/src/lib.rs:90. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 3092 of 1400000 compute units",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x1770",
     ])

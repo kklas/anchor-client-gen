@@ -72,11 +72,13 @@ export class UnnamedSingle {
 }
 
 export type NamedFields = {
+  /** A bool field inside a struct tuple kind */
   boolField: boolean
   u8Field: number
   nested: types.BarStructFields
 }
 export type NamedValue = {
+  /** A bool field inside a struct tuple kind */
   boolField: boolean
   u8Field: number
   nested: types.BarStruct
@@ -85,6 +87,7 @@ export type NamedValue = {
 export interface NamedJSON {
   kind: "Named"
   value: {
+    /** A bool field inside a struct tuple kind */
     boolField: boolean
     u8Field: number
     nested: types.BarStructJSON

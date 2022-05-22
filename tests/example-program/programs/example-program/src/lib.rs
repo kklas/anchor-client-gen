@@ -4,6 +4,7 @@ use anchor_lang::prelude::*;
 
 declare_id!("3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8");
 
+/// This is an example program used for testing
 #[program]
 pub mod example_program {
     use super::*;
@@ -13,6 +14,7 @@ pub mod example_program {
         Ok(())
     }
 
+    /// Initializes an account with specified values
     pub fn initialize_with_values(
         ctx: Context<Initialize>,
         bool_field: bool,
@@ -74,8 +76,8 @@ pub mod example_program {
         Ok(())
     }
 
-    // a separate instruction due to initialize_with_values having too many arguments
-    // https://github.com/solana-labs/solana/issues/23978
+    /// a separate instruction due to initialize_with_values having too many arguments
+    /// https://github.com/solana-labs/solana/issues/23978
     pub fn initialize_with_values2(
         ctx: Context<Initialize2>,
         vec_of_option: Vec<Option<u64>>,
@@ -89,11 +91,14 @@ pub mod example_program {
     }
 }
 
+/// Enum type
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub enum FooEnum {
+    /// Tuple kind
     Unnamed(bool, u8, BarStruct),
     UnnamedSingle(BarStruct),
     Named {
+        /// A bool field inside a struct tuple kind
         bool_field: bool,
         u8_field: u8,
         nested: BarStruct,
@@ -104,8 +109,10 @@ pub enum FooEnum {
     NoFields,
 }
 
+/// Bar struct type
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct BarStruct {
+    /// Some field
     some_field: bool,
     other_field: u8,
 }
@@ -146,8 +153,10 @@ impl Default for FooStruct {
     }
 }
 
+/// An account containing various fields
 #[account]
 pub struct State {
+    /// A boolean field
     bool_field: bool,
     u8_field: u8,
     i8_field: i8,
@@ -228,12 +237,14 @@ impl Default for State2 {
 
 #[derive(Accounts)]
 pub struct NestedAccounts<'info> {
+    /// Sysvar clock
     clock: Sysvar<'info, Clock>,
     rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
 pub struct Initialize<'info> {
+    /// State account
     #[account(
         init,
         space = 8 + 1000, // TODO: use exact space required
