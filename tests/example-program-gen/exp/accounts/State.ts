@@ -5,6 +5,7 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import { PROGRAM_ID } from "../programId"
 
 export interface StateFields {
+  /** A boolean field */
   boolField: boolean
   u8Field: number
   i8Field: number
@@ -34,6 +35,7 @@ export interface StateFields {
 }
 
 export interface StateJSON {
+  /** A boolean field */
   boolField: boolean
   u8Field: number
   i8Field: number
@@ -62,7 +64,9 @@ export interface StateJSON {
   enumField4: types.FooEnumJSON
 }
 
+/** An account containing various fields */
 export class State {
+  /** A boolean field */
   readonly boolField: boolean
   readonly u8Field: number
   readonly i8Field: number

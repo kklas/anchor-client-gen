@@ -86,6 +86,7 @@ function genAccountFiles(
         return {
           name: field.name,
           type: tsTypeFromIdl(idl, field.type),
+          docs: field.docs && [field.docs.join("\n")],
         }
       }),
     })
@@ -98,6 +99,7 @@ function genAccountFiles(
         return {
           name: field.name,
           type: idlTypeToJSONType(field.type),
+          docs: field.docs && [field.docs.join("\n")],
         }
       }),
     })
@@ -111,8 +113,10 @@ function genAccountFiles(
           isReadonly: true,
           name: field.name,
           type: tsTypeFromIdl(idl, field.type, "types.", false),
+          docs: field.docs && [field.docs.join("\n")],
         }
       }),
+      docs: (acc as any).docs && [(acc as any).docs.join("\n")],
     })
 
     // discriminator

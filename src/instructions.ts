@@ -117,6 +117,9 @@ function genInstructionFiles(
       }
       writer.block(() => {
         accItem.accounts.forEach((item) => {
+          if (item.docs) {
+            writer.writeLine(`/** ${item.docs.join(" ")} */`)
+          }
           writer.write(`${item.name}: `)
           genAccIfPropTypeRec(item, writer)
           writer.newLine()
@@ -131,10 +134,10 @@ function genInstructionFiles(
         properties: ix.accounts.map((acc) => {
           return {
             name: acc.name,
-            //type: "PublicKey",
             type: (writer) => {
               genAccIfPropTypeRec(acc, writer)
             },
+            docs: acc.docs && [acc.docs.join("\n")],
           }
         }),
       })
@@ -166,6 +169,7 @@ function genInstructionFiles(
     const ixFn = src.addFunction({
       isExported: true,
       name: ix.name,
+      docs: ix.docs && [ix.docs.join("\n")],
     })
     if (ix.args.length > 0) {
       ixFn.addParameter({

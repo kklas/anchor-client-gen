@@ -5,8 +5,10 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import { PROGRAM_ID } from "../programId"
 
 export interface InitializeAccounts {
+  /** State account */
   state: PublicKey
   nested: {
+    /** Sysvar clock */
     clock: PublicKey
     rent: PublicKey
   }

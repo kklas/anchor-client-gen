@@ -72,6 +72,7 @@ function genIndexFile(
               return `${ty.name}.${variant.name}`
             })
             .join(" | "),
+          docs: (ty as any).docs && [(ty as any).docs.join("\n")],
         })
         src.addTypeAlias({
           isExported: true,
@@ -101,7 +102,7 @@ function genTypeFiles(
 
     switch (ty.type.kind) {
       case "struct": {
-        genStruct(idl, src, ty.name, ty.type.fields)
+        genStruct(idl, src, ty.name, ty.type.fields, (ty as any).docs)
         return
       }
       case "enum": {
@@ -118,7 +119,8 @@ function genStruct(
   idl: Idl,
   src: SourceFile,
   name: string,
-  fields: Array<IdlField>
+  fields: Array<IdlField>,
+  docs?: Array<string>
 ) {
   // imports
   src.addStatements([
@@ -136,6 +138,7 @@ function genStruct(
       return {
         name: field.name,
         type: tsTypeFromIdl(idl, field.type),
+        docs: field.docs && [field.docs.join("\n")],
       }
     }),
   })
@@ -148,6 +151,7 @@ function genStruct(
       return {
         name: field.name,
         type: idlTypeToJSONType(field.type),
+        docs: field.docs && [field.docs.join("\n")],
       }
     }),
   })
@@ -161,8 +165,10 @@ function genStruct(
         isReadonly: true,
         name: field.name,
         type: tsTypeFromIdl(idl, field.type, "types.", false),
+        docs: field.docs && [field.docs.join("\n")],
       }
     }),
+    docs: docs && [docs.join("\n")],
   })
 
   // constructor
@@ -339,6 +345,9 @@ function genEnum(
           writer.write("{")
 
           fields.forEach((field) => {
+            if (field.docs) {
+              writer.writeLine(`/** ${field.docs.join("\n")} */`)
+            }
             writer.writeLine(
               `${camelcase(field.name)}: ${tsTypeFromIdl(idl, field.type)}`
             )
@@ -351,6 +360,9 @@ function genEnum(
           writer.write("{")
 
           fields.forEach((field) => {
+            if (field.docs) {
+              writer.writeLine(`/** ${field.docs.join("\n")} */`)
+            }
             writer.writeLine(
               `${camelcase(field.name)}: ${tsTypeFromIdl(
                 idl,
@@ -415,6 +427,9 @@ function genEnum(
         if (typeof fields[0] === "object" && "name" in fields[0]) {
           writer.inlineBlock(() => {
             fields.forEach((field) => {
+              if (field.docs) {
+                writer.writeLine(`/** ${field.docs.join("\n")} */`)
+              }
               const name = camelcase(field.name)
               writer.writeLine(`${name}: ${idlTypeToJSONType(field.type)},`)
             })

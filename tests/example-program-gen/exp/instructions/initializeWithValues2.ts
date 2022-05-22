@@ -18,6 +18,10 @@ export const layout = borsh.struct([
   borsh.vec(borsh.option(borsh.u64()), "vecOfOption"),
 ])
 
+/**
+ * a separate instruction due to initialize_with_values having too many arguments
+ * https://github.com/solana-labs/solana/issues/23978
+ */
 export function initializeWithValues2(
   args: InitializeWithValues2Args,
   accounts: InitializeWithValues2Accounts
