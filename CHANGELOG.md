@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Features
 
 - Errors now include error log lines ([#34](https://github.com/kklas/anchor-client-gen/pull/34))
+- Comments are now generated based on doc fields in the idl ([#36](https://github.com/kklas/anchor-client-gen/pull/36))
 
 ### Fixes
 
