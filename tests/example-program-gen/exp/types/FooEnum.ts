@@ -12,6 +12,8 @@ export interface UnnamedJSON {
 }
 
 export class Unnamed {
+  static readonly discriminator = 0
+  static readonly kind = "Unnamed"
   readonly discriminator = 0
   readonly kind = "Unnamed"
   readonly value: UnnamedValue
@@ -47,6 +49,8 @@ export interface UnnamedSingleJSON {
 }
 
 export class UnnamedSingle {
+  static readonly discriminator = 1
+  static readonly kind = "UnnamedSingle"
   readonly discriminator = 1
   readonly kind = "UnnamedSingle"
   readonly value: UnnamedSingleValue
@@ -95,6 +99,8 @@ export interface NamedJSON {
 }
 
 export class Named {
+  static readonly discriminator = 2
+  static readonly kind = "Named"
   readonly discriminator = 2
   readonly kind = "Named"
   readonly value: NamedValue
@@ -138,6 +144,8 @@ export interface StructJSON {
 }
 
 export class Struct {
+  static readonly discriminator = 3
+  static readonly kind = "Struct"
   readonly discriminator = 3
   readonly kind = "Struct"
   readonly value: StructValue
@@ -171,6 +179,8 @@ export interface OptionStructJSON {
 }
 
 export class OptionStruct {
+  static readonly discriminator = 4
+  static readonly kind = "OptionStruct"
   readonly discriminator = 4
   readonly kind = "OptionStruct"
   readonly value: OptionStructValue
@@ -205,6 +215,8 @@ export interface VecStructJSON {
 }
 
 export class VecStruct {
+  static readonly discriminator = 5
+  static readonly kind = "VecStruct"
   readonly discriminator = 5
   readonly kind = "VecStruct"
   readonly value: VecStructValue
@@ -234,6 +246,8 @@ export interface NoFieldsJSON {
 }
 
 export class NoFields {
+  static readonly discriminator = 6
+  static readonly kind = "NoFields"
   readonly discriminator = 6
   readonly kind = "NoFields"
 

@@ -185,6 +185,12 @@ export function genCustomErrors(
         name: "code",
         initializer: error.code.toString(),
         isReadonly: true,
+        isStatic: true,
+      },
+      {
+        name: "code",
+        initializer: error.code.toString(),
+        isReadonly: true,
       },
       {
         name: "name",
@@ -277,6 +283,12 @@ export function genAnchorErrors(
       name: errorName,
       extends: "Error",
       properties: [
+        {
+          name: "code",
+          initializer: code.toString(),
+          isReadonly: true,
+          isStatic: true,
+        },
         {
           name: "code",
           initializer: code.toString(),

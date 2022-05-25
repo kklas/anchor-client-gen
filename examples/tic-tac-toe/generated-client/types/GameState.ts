@@ -8,6 +8,8 @@ export interface ActiveJSON {
 }
 
 export class Active {
+  static readonly discriminator = 0
+  static readonly kind = "Active"
   readonly discriminator = 0
   readonly kind = "Active"
 
@@ -29,6 +31,8 @@ export interface TieJSON {
 }
 
 export class Tie {
+  static readonly discriminator = 1
+  static readonly kind = "Tie"
   readonly discriminator = 1
   readonly kind = "Tie"
 
@@ -60,6 +64,8 @@ export interface WonJSON {
 }
 
 export class Won {
+  static readonly discriminator = 2
+  static readonly kind = "Won"
   readonly discriminator = 2
   readonly kind = "Won"
   readonly value: WonValue
