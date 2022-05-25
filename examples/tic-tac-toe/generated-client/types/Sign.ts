@@ -8,6 +8,8 @@ export interface XJSON {
 }
 
 export class X {
+  static readonly discriminator = 0
+  static readonly kind = "X"
   readonly discriminator = 0
   readonly kind = "X"
 
@@ -29,6 +31,8 @@ export interface OJSON {
 }
 
 export class O {
+  static readonly discriminator = 1
+  static readonly kind = "O"
   readonly discriminator = 1
   readonly kind = "O"
 

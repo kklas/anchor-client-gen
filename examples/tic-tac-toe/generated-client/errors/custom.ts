@@ -6,6 +6,7 @@ export type CustomError =
   | GameAlreadyStarted
 
 export class TileOutOfBounds extends Error {
+  static readonly code = 6000
   readonly code = 6000
   readonly name = "TileOutOfBounds"
 
@@ -15,6 +16,7 @@ export class TileOutOfBounds extends Error {
 }
 
 export class TileAlreadySet extends Error {
+  static readonly code = 6001
   readonly code = 6001
   readonly name = "TileAlreadySet"
 
@@ -24,6 +26,7 @@ export class TileAlreadySet extends Error {
 }
 
 export class GameAlreadyOver extends Error {
+  static readonly code = 6002
   readonly code = 6002
   readonly name = "GameAlreadyOver"
 
@@ -33,6 +36,7 @@ export class GameAlreadyOver extends Error {
 }
 
 export class NotPlayersTurn extends Error {
+  static readonly code = 6003
   readonly code = 6003
   readonly name = "NotPlayersTurn"
 
@@ -42,6 +46,7 @@ export class NotPlayersTurn extends Error {
 }
 
 export class GameAlreadyStarted extends Error {
+  static readonly code = 6004
   readonly code = 6004
   readonly name = "GameAlreadyStarted"
 

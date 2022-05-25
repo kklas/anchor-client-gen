@@ -1,6 +1,7 @@
 export type CustomError = SomeError | OtherError | ErrorWithoutMsg
 
 export class SomeError extends Error {
+  static readonly code = 6000
   readonly code = 6000
   readonly name = "SomeError"
   readonly msg = "Example error."
@@ -11,6 +12,7 @@ export class SomeError extends Error {
 }
 
 export class OtherError extends Error {
+  static readonly code = 6001
   readonly code = 6001
   readonly name = "OtherError"
   readonly msg = "Another error."
@@ -21,6 +23,7 @@ export class OtherError extends Error {
 }
 
 export class ErrorWithoutMsg extends Error {
+  static readonly code = 6002
   readonly code = 6002
   readonly name = "ErrorWithoutMsg"
 

@@ -461,6 +461,18 @@ function genEnum(
           isReadonly: true,
           name: "discriminator",
           initializer: discriminator.toString(),
+          isStatic: true,
+        },
+        {
+          isReadonly: true,
+          name: "kind",
+          initializer: `"${variant.name}"`,
+          isStatic: true,
+        },
+        {
+          isReadonly: true,
+          name: "discriminator",
+          initializer: discriminator.toString(),
         },
         {
           isReadonly: true,
