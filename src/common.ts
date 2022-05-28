@@ -56,7 +56,7 @@ export function tsTypeFromIdl(
     case "i128":
       return "BN"
     case "bytes":
-      return "Array<number>"
+      return "Uint8Array"
     case "string":
       return "string"
     case "publicKey":
