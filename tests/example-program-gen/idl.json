@@ -1,9 +1,6 @@
 {
   "version": "0.1.0",
   "name": "example_program",
-  "docs": [
-    "This is an example program used for testing"
-  ],
   "instructions": [
     {
       "name": "initialize",
@@ -11,10 +8,7 @@
         {
           "name": "state",
           "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "State account"
-          ]
+          "isSigner": true
         },
         {
           "name": "nested",
@@ -22,10 +16,7 @@
             {
               "name": "clock",
               "isMut": false,
-              "isSigner": false,
-              "docs": [
-                "Sysvar clock"
-              ]
+              "isSigner": false
             },
             {
               "name": "rent",
@@ -49,17 +40,11 @@
     },
     {
       "name": "initializeWithValues",
-      "docs": [
-        "Initializes an account with specified values"
-      ],
       "accounts": [
         {
           "name": "state",
           "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "State account"
-          ]
+          "isSigner": true
         },
         {
           "name": "nested",
@@ -67,10 +52,7 @@
             {
               "name": "clock",
               "isMut": false,
-              "isSigner": false,
-              "docs": [
-                "Sysvar clock"
-              ]
+              "isSigner": false
             },
             {
               "name": "rent",
@@ -226,10 +208,6 @@
     },
     {
       "name": "initializeWithValues2",
-      "docs": [
-        "a separate instruction due to initialize_with_values having too many arguments",
-        "https://github.com/solana-labs/solana/issues/23978"
-      ],
       "accounts": [
         {
           "name": "state",
@@ -267,17 +245,11 @@
   "accounts": [
     {
       "name": "State",
-      "docs": [
-        "An account containing various fields"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "boolField",
-            "docs": [
-              "A boolean field"
-            ],
             "type": "bool"
           },
           {
@@ -430,17 +402,11 @@
   "types": [
     {
       "name": "BarStruct",
-      "docs": [
-        "Bar struct type"
-      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "someField",
-            "docs": [
-              "Some field"
-            ],
             "type": "bool"
           },
           {
@@ -496,9 +462,6 @@
     },
     {
       "name": "FooEnum",
-      "docs": [
-        "Enum type"
-      ],
       "type": {
         "kind": "enum",
         "variants": [
@@ -525,9 +488,6 @@
             "fields": [
               {
                 "name": "bool_field",
-                "docs": [
-                  "A bool field inside a struct tuple kind"
-                ],
                 "type": "bool"
               },
               {

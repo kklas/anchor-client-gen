@@ -6,7 +6,6 @@ export { FooStruct } from "./FooStruct"
 export type { FooStructFields, FooStructJSON } from "./FooStruct"
 export { FooEnum }
 
-/** Enum type */
 export type FooEnumKind =
   | FooEnum.Unnamed
   | FooEnum.UnnamedSingle

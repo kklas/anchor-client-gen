@@ -226,9 +226,8 @@ export function fieldToEncodable(
     case "i128":
     case "string":
     case "publicKey":
-      return `${valPrefix}${ty.name}`
     case "bytes":
-      return `Buffer.from(${valPrefix}${ty.name})`
+      return `${valPrefix}${ty.name}`
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldToEncodable(
@@ -322,9 +321,8 @@ export function fieldFromDecoded(
     case "i128":
     case "string":
     case "publicKey":
-      return `${valPrefix}${ty.name}`
     case "bytes":
-      return `Array.from(${valPrefix}${ty.name})`
+      return `${valPrefix}${ty.name}`
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldFromDecoded(
@@ -521,7 +519,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
     case "publicKey":
       return `${valPrefix}${ty.name}.toString()`
     case "bytes":
-      return `${valPrefix}${ty.name}`
+      return `Array.from(${valPrefix}${ty.name}.values())`
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldToJSON(idl, {
@@ -661,8 +659,9 @@ export function fieldFromJSON(
     case "f32":
     case "f64":
     case "string":
-    case "bytes":
       return `${paramPrefix}${ty.name}`
+    case "bytes":
+      return `Buffer.from(${paramPrefix}${ty.name})`
     case "u64":
     case "i64":
     case "u128":

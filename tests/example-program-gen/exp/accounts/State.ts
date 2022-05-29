@@ -5,7 +5,6 @@ import * as types from "../types" // eslint-disable-line @typescript-eslint/no-u
 import { PROGRAM_ID } from "../programId"
 
 export interface StateFields {
-  /** A boolean field */
   boolField: boolean
   u8Field: number
   i8Field: number
@@ -19,7 +18,7 @@ export interface StateFields {
   f64Field: number
   u128Field: BN
   i128Field: BN
-  bytesField: Array<number>
+  bytesField: Uint8Array
   stringField: string
   pubkeyField: PublicKey
   vecField: Array<BN>
@@ -35,7 +34,6 @@ export interface StateFields {
 }
 
 export interface StateJSON {
-  /** A boolean field */
   boolField: boolean
   u8Field: number
   i8Field: number
@@ -64,9 +62,7 @@ export interface StateJSON {
   enumField4: types.FooEnumJSON
 }
 
-/** An account containing various fields */
 export class State {
-  /** A boolean field */
   readonly boolField: boolean
   readonly u8Field: number
   readonly i8Field: number
@@ -80,7 +76,7 @@ export class State {
   readonly f64Field: number
   readonly u128Field: BN
   readonly i128Field: BN
-  readonly bytesField: Array<number>
+  readonly bytesField: Uint8Array
   readonly stringField: string
   readonly pubkeyField: PublicKey
   readonly vecField: Array<BN>
@@ -213,7 +209,7 @@ export class State {
       f64Field: dec.f64Field,
       u128Field: dec.u128Field,
       i128Field: dec.i128Field,
-      bytesField: Array.from(dec.bytesField),
+      bytesField: dec.bytesField,
       stringField: dec.stringField,
       pubkeyField: dec.pubkeyField,
       vecField: dec.vecField,
@@ -249,7 +245,7 @@ export class State {
       f64Field: this.f64Field,
       u128Field: this.u128Field.toString(),
       i128Field: this.i128Field.toString(),
-      bytesField: this.bytesField,
+      bytesField: Array.from(this.bytesField.values()),
       stringField: this.stringField,
       pubkeyField: this.pubkeyField.toString(),
       vecField: this.vecField.map((item) => item.toString()),
@@ -281,7 +277,7 @@ export class State {
       f64Field: obj.f64Field,
       u128Field: new BN(obj.u128Field),
       i128Field: new BN(obj.i128Field),
-      bytesField: obj.bytesField,
+      bytesField: Buffer.from(obj.bytesField),
       stringField: obj.stringField,
       pubkeyField: new PublicKey(obj.pubkeyField),
       vecField: obj.vecField.map((item) => new BN(item)),
