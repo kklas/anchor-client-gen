@@ -7,6 +7,7 @@
   "homepage": "https://github.com/kklas/anchor-client-gen",
   "scripts": {
     "watch": "tsc --project tsconfig.build.json --watch",
+    "postinstall": "yarn build:cli && chmod a+x dist/main.js",
     "build": "yarn build:cli && yarn build:test-fixture && yarn generate-examples",
     "build:cli": "rimraf ./dist && tsc --project tsconfig.build.json",
     "build:test-fixture": "yarn build:example-program && yarn build:test-fixture:copy-idl && yarn build:test-fixture:generate-exp",
@@ -36,10 +37,8 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "^28.1.0",
-    "rimraf": "^3.0.2",
     "start-server-and-test": "^1.14.0",
-    "ts-jest": "^28.0.2",
-    "typescript": "^4.6.4"
+    "ts-jest": "^28.0.2"
   },
   "dependencies": {
     "@project-serum/anchor": "https://github.com/kklas/anchor-nightly/releases/download/anchor-latest/anchor-0.24.2-90bbc8b.tgz",
@@ -51,6 +50,8 @@
     "js-sha256": "^0.9.0",
     "prettier": "^2.6.2",
     "snake-case": "^3.0.4",
-    "ts-morph": "^14.0.0"
+    "ts-morph": "^14.0.0",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.6.4"
   }
 }
