@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Breaking
 
 - Don't generate a msg field in custom errors when there's no message ([#32](https://github.com/kklas/anchor-client-gen/pull/32))
+- Bytes fields are now Uint8Array instead of number[] to improve performance ([#40](https://github.com/kklas/anchor-client-gen/pull/40))
 
 ## [v0.24.0]
 
