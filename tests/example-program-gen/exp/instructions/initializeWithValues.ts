@@ -18,7 +18,7 @@ export interface InitializeWithValuesArgs {
   f64Field: number
   u128Field: BN
   i128Field: BN
-  bytesField: Array<number>
+  bytesField: Uint8Array
   stringField: string
   pubkeyField: PublicKey
   vecField: Array<BN>
@@ -103,7 +103,11 @@ export function initializeWithValues(
       f64Field: args.f64Field,
       u128Field: args.u128Field,
       i128Field: args.i128Field,
-      bytesField: Buffer.from(args.bytesField),
+      bytesField: Buffer.from(
+        args.bytesField.buffer,
+        args.bytesField.byteOffset,
+        args.bytesField.length
+      ),
       stringField: args.stringField,
       pubkeyField: args.pubkeyField,
       vecField: args.vecField,

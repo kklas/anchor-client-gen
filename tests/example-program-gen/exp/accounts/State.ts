@@ -19,7 +19,7 @@ export interface StateFields {
   f64Field: number
   u128Field: BN
   i128Field: BN
-  bytesField: Array<number>
+  bytesField: Uint8Array
   stringField: string
   pubkeyField: PublicKey
   vecField: Array<BN>
@@ -80,7 +80,7 @@ export class State {
   readonly f64Field: number
   readonly u128Field: BN
   readonly i128Field: BN
-  readonly bytesField: Array<number>
+  readonly bytesField: Uint8Array
   readonly stringField: string
   readonly pubkeyField: PublicKey
   readonly vecField: Array<BN>
@@ -213,7 +213,11 @@ export class State {
       f64Field: dec.f64Field,
       u128Field: dec.u128Field,
       i128Field: dec.i128Field,
-      bytesField: Array.from(dec.bytesField),
+      bytesField: new Uint8Array(
+        dec.bytesField.buffer,
+        dec.bytesField.byteOffset,
+        dec.bytesField.length
+      ),
       stringField: dec.stringField,
       pubkeyField: dec.pubkeyField,
       vecField: dec.vecField,
@@ -249,7 +253,7 @@ export class State {
       f64Field: this.f64Field,
       u128Field: this.u128Field.toString(),
       i128Field: this.i128Field.toString(),
-      bytesField: this.bytesField,
+      bytesField: Array.from(this.bytesField.values()),
       stringField: this.stringField,
       pubkeyField: this.pubkeyField.toString(),
       vecField: this.vecField.map((item) => item.toString()),
@@ -281,7 +285,7 @@ export class State {
       f64Field: obj.f64Field,
       u128Field: new BN(obj.u128Field),
       i128Field: new BN(obj.i128Field),
-      bytesField: obj.bytesField,
+      bytesField: Uint8Array.from(obj.bytesField),
       stringField: obj.stringField,
       pubkeyField: new PublicKey(obj.pubkeyField),
       vecField: obj.vecField.map((item) => new BN(item)),

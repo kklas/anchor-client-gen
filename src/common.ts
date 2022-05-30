@@ -56,7 +56,7 @@ export function tsTypeFromIdl(
     case "i128":
       return "BN"
     case "bytes":
-      return "Array<number>"
+      return "Uint8Array"
     case "string":
       return "string"
     case "publicKey":
@@ -227,8 +227,10 @@ export function fieldToEncodable(
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
-    case "bytes":
-      return `Buffer.from(${valPrefix}${ty.name})`
+    case "bytes": {
+      const v = `${valPrefix}${ty.name}`
+      return `Buffer.from(${v}.buffer, ${v}.byteOffset, ${v}.length)`
+    }
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldToEncodable(
@@ -323,8 +325,10 @@ export function fieldFromDecoded(
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
-    case "bytes":
-      return `Array.from(${valPrefix}${ty.name})`
+    case "bytes": {
+      const v = `${valPrefix}${ty.name}`
+      return `new Uint8Array(${v}.buffer, ${v}.byteOffset, ${v}.length)`
+    }
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldFromDecoded(
@@ -521,7 +525,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
     case "publicKey":
       return `${valPrefix}${ty.name}.toString()`
     case "bytes":
-      return `${valPrefix}${ty.name}`
+      return `Array.from(${valPrefix}${ty.name}.values())`
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldToJSON(idl, {
@@ -661,8 +665,9 @@ export function fieldFromJSON(
     case "f32":
     case "f64":
     case "string":
-    case "bytes":
       return `${paramPrefix}${ty.name}`
+    case "bytes":
+      return `Uint8Array.from(${paramPrefix}${ty.name})`
     case "u64":
     case "i64":
     case "u128":
