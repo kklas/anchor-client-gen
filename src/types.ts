@@ -641,11 +641,11 @@ function genEnum(
                     idl,
                     {
                       ...field,
-                      name: `val["${field.name}"],`,
+                      name: `val["${field.name}"]`,
                     },
                     ""
                   )
-                  writer.writeLine(`${camelcase(field.name)}: ${decoded}`)
+                  writer.writeLine(`${camelcase(field.name)}: ${decoded},`)
                 })
                 writer.writeLine(`})`)
               } else {

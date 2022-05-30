@@ -34,8 +34,10 @@ export interface InitializeWithValuesArgs {
 }
 
 export interface InitializeWithValuesAccounts {
+  /** State account */
   state: PublicKey
   nested: {
+    /** Sysvar clock */
     clock: PublicKey
     rent: PublicKey
   }
@@ -72,6 +74,7 @@ export const layout = borsh.struct([
   types.FooEnum.layout("enumField4"),
 ])
 
+/** Initializes an account with specified values */
 export function initializeWithValues(
   args: InitializeWithValuesArgs,
   accounts: InitializeWithValuesAccounts
@@ -100,7 +103,11 @@ export function initializeWithValues(
       f64Field: args.f64Field,
       u128Field: args.u128Field,
       i128Field: args.i128Field,
-      bytesField: args.bytesField,
+      bytesField: Buffer.from(
+        args.bytesField.buffer,
+        args.bytesField.byteOffset,
+        args.bytesField.length
+      ),
       stringField: args.stringField,
       pubkeyField: args.pubkeyField,
       vecField: args.vecField,

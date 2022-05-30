@@ -226,8 +226,11 @@ export function fieldToEncodable(
     case "i128":
     case "string":
     case "publicKey":
-    case "bytes":
       return `${valPrefix}${ty.name}`
+    case "bytes": {
+      const v = `${valPrefix}${ty.name}`
+      return `Buffer.from(${v}.buffer, ${v}.byteOffset, ${v}.length)`
+    }
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldToEncodable(
@@ -321,8 +324,11 @@ export function fieldFromDecoded(
     case "i128":
     case "string":
     case "publicKey":
-    case "bytes":
       return `${valPrefix}${ty.name}`
+    case "bytes": {
+      const v = `${valPrefix}${ty.name}`
+      return `new Uint8Array(${v}.buffer, ${v}.byteOffset, ${v}.length)`
+    }
     default:
       if ("vec" in ty.type) {
         const mapBody = fieldFromDecoded(

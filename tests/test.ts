@@ -99,7 +99,7 @@ test("init and account fetch", async () => {
   expect(
     res.i128Field.eq(new BN("-85070591730234615865843651857942052874"))
   ).toBe(true)
-  expect(res.bytesField).toEqual(Buffer.from([1, 2, 255, 254]))
+  expect(res.bytesField).toEqual(Uint8Array.from([1, 2, 255, 254]))
   expect(res.stringField).toBe("hello")
   expect(
     res.pubkeyField.equals(
@@ -286,7 +286,7 @@ test("instruction with args", async () => {
         f64Field: 1234567892.445,
         u128Field: new BN("170141183460469231731687303715884105740"),
         i128Field: new BN("-85070591730234615865843651857942052877"),
-        bytesField: Buffer.from([5, 10, 255]),
+        bytesField: Uint8Array.from([5, 10, 255]),
         stringField: "string value",
         pubkeyField: new PublicKey(
           "GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"
@@ -412,7 +412,7 @@ test("instruction with args", async () => {
   expect(
     res.i128Field.eq(new BN("-85070591730234615865843651857942052877"))
   ).toBe(true)
-  expect(res.bytesField).toEqual(Buffer.from([5, 10, 255]))
+  expect(res.bytesField).toEqual(Uint8Array.from([5, 10, 255]))
   expect(res.stringField).toBe("string value")
   expect(
     res.pubkeyField.equals(
