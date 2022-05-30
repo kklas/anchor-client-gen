@@ -619,7 +619,7 @@ test("toJSON", async () => {
     f64Field: 1234567891.35,
     u128Field: new BN("170141183460469231731687303715884105760"),
     i128Field: new BN("-85070591730234615865843651857942052897"),
-    bytesField: Buffer.from([1, 255]),
+    bytesField: Uint8Array.from([1, 255]),
     stringField: "a string",
     pubkeyField: new PublicKey("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"),
     vecField: [new BN("10"), new BN("1234567890123456")],

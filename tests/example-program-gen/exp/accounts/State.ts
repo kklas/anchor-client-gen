@@ -277,7 +277,7 @@ export class State {
       f64Field: obj.f64Field,
       u128Field: new BN(obj.u128Field),
       i128Field: new BN(obj.i128Field),
-      bytesField: Buffer.from(obj.bytesField),
+      bytesField: Uint8Array.from(obj.bytesField),
       stringField: obj.stringField,
       pubkeyField: new PublicKey(obj.pubkeyField),
       vecField: obj.vecField.map((item) => new BN(item)),

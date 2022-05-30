@@ -661,7 +661,7 @@ export function fieldFromJSON(
     case "string":
       return `${paramPrefix}${ty.name}`
     case "bytes":
-      return `Buffer.from(${paramPrefix}${ty.name})`
+      return `Uint8Array.from(${paramPrefix}${ty.name})`
     case "u64":
     case "i64":
     case "u128":
