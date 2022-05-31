@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Errors now include error log lines ([#34](https://github.com/kklas/anchor-client-gen/pull/34))
 - Comments are now generated based on doc fields in the idl ([#36](https://github.com/kklas/anchor-client-gen/pull/36))
 - Static fields have been added to enum and error classes for the discriminator, kind, and code fields ([#38](https://github.com/kklas/anchor-client-gen/pull/38))
+- IDL can now be read from stdin ([#43](https://github.com/kklas/anchor-client-gen/pull/43))
 
 ### Fixes
 
