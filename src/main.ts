@@ -17,7 +17,7 @@ async function main() {
     .description(
       "Generate solana web3 client code from the specified anchor IDL."
     )
-    .argument("<idl>", "anchor IDL file path")
+    .argument("<idl>", "anchor IDL file path or '-' to read from stdin")
     .argument("<out>", "output directory")
     .option(
       "--program-id <PROGRAM_ID>",
@@ -34,7 +34,8 @@ async function main() {
     return path.join(outBase, filePath)
   }
 
-  const idl = JSON.parse(fs.readFileSync(idlPath).toString()) as Idl
+  const pathOrStdin = idlPath === "-" ? 0 : idlPath
+  const idl = JSON.parse(fs.readFileSync(pathOrStdin, "utf-8")) as Idl
 
   const project = new Project()
 
