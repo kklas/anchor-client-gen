@@ -1,7 +1,7 @@
 {
   "name": "anchor-client-gen",
   "description": "A tool for generating solana web3 clients from anchor IDLs.",
-  "version": "0.24.0",
+  "version": "0.25.0-beta.1",
   "bin": "dist/main.js",
   "license": "MIT",
   "homepage": "https://github.com/kklas/anchor-client-gen",
