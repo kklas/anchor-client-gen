@@ -1,4 +1,4 @@
-import { TransactionInstruction, PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -17,7 +17,7 @@ export interface SetupGameAccounts {
 export const layout = borsh.struct([borsh.publicKey("playerTwo")])
 
 export function setupGame(args: SetupGameArgs, accounts: SetupGameAccounts) {
-  const keys = [
+  const keys: Array<AccountMeta> = [
     { pubkey: accounts.game, isSigner: true, isWritable: true },
     { pubkey: accounts.playerOne, isSigner: true, isWritable: true },
     { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },

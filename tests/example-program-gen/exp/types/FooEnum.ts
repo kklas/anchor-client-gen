@@ -303,7 +303,11 @@ export function fromDecoded(obj: any): types.FooEnumKind {
   if ("VecStruct" in obj) {
     const val = obj["VecStruct"]
     return new VecStruct([
-      val["_0"].map((item) => types.BarStruct.fromDecoded(item)),
+      val["_0"].map(
+        (
+          item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */
+        ) => types.BarStruct.fromDecoded(item)
+      ),
     ])
   }
   if ("NoFields" in obj) {
