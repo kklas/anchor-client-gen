@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixes
 
 - Export types as types to satisfy ts isolatedModules setting ([#30](https://github.com/kklas/anchor-client-gen/pull/30))
+- Fixed issues with the generated code not satisfying noImplicitAny tsconfig rule ([#45](https://github.com/kklas/anchor-client-gen/pull/45))
 
 ### Breaking
 
