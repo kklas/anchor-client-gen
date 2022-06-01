@@ -221,8 +221,10 @@ export class State {
       stringField: dec.stringField,
       pubkeyField: dec.pubkeyField,
       vecField: dec.vecField,
-      vecStructField: dec.vecStructField.map((item) =>
-        types.FooStruct.fromDecoded(item)
+      vecStructField: dec.vecStructField.map(
+        (
+          item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */
+        ) => types.FooStruct.fromDecoded(item)
       ),
       optionField: dec.optionField,
       optionStructField:

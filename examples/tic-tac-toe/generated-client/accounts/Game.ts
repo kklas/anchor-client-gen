@@ -83,8 +83,15 @@ export class Game {
     return new Game({
       players: dec.players,
       turn: dec.turn,
-      board: dec.board.map((item) =>
-        item.map((item) => (item && types.Sign.fromDecoded(item)) || null)
+      board: dec.board.map(
+        (
+          item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */
+        ) =>
+          item.map(
+            (
+              item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */
+            ) => (item && types.Sign.fromDecoded(item)) || null
+          )
       ),
       state: types.GameState.fromDecoded(dec.state),
     })

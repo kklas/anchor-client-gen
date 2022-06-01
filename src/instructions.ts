@@ -81,7 +81,7 @@ function genInstructionFiles(
 
     // imports
     src.addStatements([
-      `import { TransactionInstruction, PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
@@ -190,6 +190,7 @@ function genInstructionFiles(
       declarations: [
         {
           name: "keys",
+          type: "Array<AccountMeta>",
           initializer: (writer) => {
             writer.write("[")
 

@@ -63,7 +63,11 @@ export class FooStruct {
       field1: obj.field1,
       field2: obj.field2,
       nested: types.BarStruct.fromDecoded(obj.nested),
-      vecNested: obj.vecNested.map((item) => types.BarStruct.fromDecoded(item)),
+      vecNested: obj.vecNested.map(
+        (
+          item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */
+        ) => types.BarStruct.fromDecoded(item)
+      ),
       optionNested:
         (obj.optionNested && types.BarStruct.fromDecoded(obj.optionNested)) ||
         null,
