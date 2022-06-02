@@ -26,7 +26,7 @@ Usage: main [options] <idl> <out>
 Generate solana web3 client code from the specified anchor IDL.
 
 Arguments:
-  idl                        anchor IDL file path
+  idl                        anchor IDL file path or '-' to read from stdin
   out                        output directory
 
 Options:
