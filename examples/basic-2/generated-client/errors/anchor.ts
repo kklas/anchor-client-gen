@@ -48,6 +48,8 @@ export type AnchorError =
   | AccountNotProgramData
   | AccountNotAssociatedTokenAccount
   | AccountSysvarMismatch
+  | AccountReallocExceedsLimit
+  | AccountDuplicateReallocs
   | StateInvalidAddress
   | DeclaredProgramIdMismatch
   | Deprecated
@@ -597,6 +599,31 @@ export class AccountSysvarMismatch extends Error {
   }
 }
 
+export class AccountReallocExceedsLimit extends Error {
+  static readonly code = 3016
+  readonly code = 3016
+  readonly name = "AccountReallocExceedsLimit"
+  readonly msg =
+    "The account reallocation exceeds the MAX_PERMITTED_DATA_INCREASE limit"
+
+  constructor(readonly logs?: string[]) {
+    super(
+      "3016: The account reallocation exceeds the MAX_PERMITTED_DATA_INCREASE limit"
+    )
+  }
+}
+
+export class AccountDuplicateReallocs extends Error {
+  static readonly code = 3017
+  readonly code = 3017
+  readonly name = "AccountDuplicateReallocs"
+  readonly msg = "The account was duplicated for more than one reallocation"
+
+  constructor(readonly logs?: string[]) {
+    super("3017: The account was duplicated for more than one reallocation")
+  }
+}
+
 export class StateInvalidAddress extends Error {
   static readonly code = 4000
   readonly code = 4000
@@ -730,6 +757,10 @@ export function fromCode(code: number, logs?: string[]): AnchorError | null {
       return new AccountNotAssociatedTokenAccount(logs)
     case 3015:
       return new AccountSysvarMismatch(logs)
+    case 3016:
+      return new AccountReallocExceedsLimit(logs)
+    case 3017:
+      return new AccountDuplicateReallocs(logs)
     case 4000:
       return new StateInvalidAddress(logs)
     case 4100:

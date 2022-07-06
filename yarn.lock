@@ -624,13 +624,14 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@project-serum/anchor-cli@https://github.com/kklas/anchor-nightly/releases/download/anchor-cli-latest/anchor-cli-0.24.2-90bbc8b.tgz":
-  version "0.24.2"
-  resolved "https://github.com/kklas/anchor-nightly/releases/download/anchor-cli-latest/anchor-cli-0.24.2-90bbc8b.tgz#09bdac185b13ed2793ca211e9f40e844166213bb"
+"@project-serum/anchor-cli@https://github.com/kklas/anchor-nightly/releases/download/anchor-cli-latest/anchor-cli-0.25.0-7eb8ca8.tgz":
+  version "0.25.0"
+  resolved "https://github.com/kklas/anchor-nightly/releases/download/anchor-cli-latest/anchor-cli-0.25.0-7eb8ca8.tgz#62b7697003fe6f7b1c0e26f7374f2ac25029eb18"
 
-"@project-serum/anchor@https://github.com/kklas/anchor-nightly/releases/download/anchor-latest/anchor-0.24.2-90bbc8b.tgz":
-  version "0.24.2"
-  resolved "https://github.com/kklas/anchor-nightly/releases/download/anchor-latest/anchor-0.24.2-90bbc8b.tgz#2a5e262c6ca20fa77378c5ec8218e03dec95798c"
+"@project-serum/anchor@^0.25.0":
+  version "0.25.0"
+  resolved "https://registry.yarnpkg.com/@project-serum/anchor/-/anchor-0.25.0.tgz#88ee4843336005cf5a64c80636ce626f0996f503"
+  integrity sha512-E6A5Y/ijqpfMJ5psJvbw0kVTzLZFUcOFgs6eSM2M2iWE1lVRF18T6hWZVNl6zqZsoz98jgnNHtVGJMs+ds9A7A==
   dependencies:
     "@project-serum/borsh" "^0.2.5"
     "@solana/web3.js" "^1.36.0"
