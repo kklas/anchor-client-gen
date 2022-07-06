@@ -10,7 +10,7 @@ Latest:
 - Update CHANGELOG.md with the new version
 - Commit the changes to git
 - Publish the latest version `npm publish`
-- Publish the beta version `npm publish --tag beta`
+- Tag the beta with the new version `npm dist-tag add anchor-client-gen@vX.Y.Z beta`
 - Tag the commit on master after merging with `git tag <version>`
 
 Beta:
