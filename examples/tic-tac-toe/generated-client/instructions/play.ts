@@ -2,7 +2,7 @@ import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface PlayArgs {
   tile: types.TileFields
@@ -16,6 +16,7 @@ export interface PlayAccounts {
 export const layout = borsh.struct([types.Tile.layout("tile")])
 
 export function play(args: PlayArgs, accounts: PlayAccounts) {
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.game, isSigner: false, isWritable: true },
     { pubkey: accounts.player, isSigner: true, isWritable: false },
@@ -29,6 +30,6 @@ export function play(args: PlayArgs, accounts: PlayAccounts) {
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

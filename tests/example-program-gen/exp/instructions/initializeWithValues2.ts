@@ -2,7 +2,7 @@ import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface InitializeWithValues2Args {
   vecOfOption: Array<BN | null>
@@ -26,6 +26,7 @@ export function initializeWithValues2(
   args: InitializeWithValues2Args,
   accounts: InitializeWithValues2Accounts
 ) {
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.state, isSigner: true, isWritable: true },
     { pubkey: accounts.payer, isSigner: true, isWritable: true },
@@ -40,6 +41,6 @@ export function initializeWithValues2(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

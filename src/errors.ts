@@ -32,7 +32,7 @@ export function genIndex(
   const hasCustomErrors = idl.errors && idl.errors.length > 0
 
   src.addImportDeclaration({
-    namedImports: ["PROGRAM_ID"],
+    namedImports: ["PROGRAM_ID", "programIdOverride"],
     moduleSpecifier: "../programId",
   })
   src.addImportDeclaration({
@@ -142,8 +142,9 @@ if (firstMatch === null) {
   return null
 }
 
+const programId = programIdOverride && programIdOverride() || PROGRAM_ID
 const [programIdRaw, codeRaw] = firstMatch.slice(1)
-if (programIdRaw !== PROGRAM_ID.toString()) {
+if (programIdRaw !== programId.toString()) {
   return null
 }
 

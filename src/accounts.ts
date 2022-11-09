@@ -72,7 +72,7 @@ function genAccountFiles(
             `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
           ]
         : []),
-      `import { PROGRAM_ID } from "../programId"`,
+      `import { PROGRAM_ID, programIdOverride } from "../programId"`,
     ])
 
     const fields = acc.type.fields
@@ -181,13 +181,16 @@ function genAccountFiles(
       returnType: `Promise<${name} | null>`,
       statements: [
         (writer) => {
+          writer.writeLine(
+            "const programId = programIdOverride && programIdOverride() || PROGRAM_ID"
+          )
           writer.writeLine("const info = await c.getAccountInfo(address)")
           writer.blankLine()
           writer.write("if (info === null)")
           writer.inlineBlock(() => {
             writer.writeLine("return null")
           })
-          writer.write("if (!info.owner.equals(PROGRAM_ID))")
+          writer.write("if (!info.owner.equals(programId))")
           writer.inlineBlock(() => {
             writer.writeLine(
               `throw new Error("account doesn't belong to this program")`
@@ -218,6 +221,9 @@ function genAccountFiles(
       statements: [
         (writer) => {
           writer.writeLine(
+            "const programId = programIdOverride && programIdOverride() || PROGRAM_ID"
+          )
+          writer.writeLine(
             "const infos = await c.getMultipleAccountsInfo(addresses)"
           )
           writer.blankLine()
@@ -229,7 +235,7 @@ function genAccountFiles(
             })
             writer.write("")
 
-            writer.write("if (!info.owner.equals(PROGRAM_ID))")
+            writer.write("if (!info.owner.equals(programId))")
             writer.inlineBlock(() => {
               writer.writeLine(
                 `throw new Error("account doesn't belong to this program")`

@@ -1,7 +1,7 @@
 import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface IncrementAccounts {
   counter: PublicKey
@@ -9,12 +9,13 @@ export interface IncrementAccounts {
 }
 
 export function increment(accounts: IncrementAccounts) {
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.counter, isSigner: false, isWritable: true },
     { pubkey: accounts.authority, isSigner: true, isWritable: false },
   ]
   const identifier = Buffer.from([11, 18, 104, 9, 104, 174, 59, 33])
   const data = identifier
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

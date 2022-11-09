@@ -1,7 +1,7 @@
 import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface CreateArgs {
   authority: PublicKey
@@ -16,6 +16,7 @@ export interface CreateAccounts {
 export const layout = borsh.struct([borsh.publicKey("authority")])
 
 export function create(args: CreateArgs, accounts: CreateAccounts) {
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.counter, isSigner: true, isWritable: true },
     { pubkey: accounts.user, isSigner: true, isWritable: true },
@@ -30,6 +31,6 @@ export function create(args: CreateArgs, accounts: CreateAccounts) {
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

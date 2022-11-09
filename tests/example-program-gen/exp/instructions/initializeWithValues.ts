@@ -2,7 +2,7 @@ import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface InitializeWithValuesArgs {
   boolField: boolean
@@ -79,6 +79,7 @@ export function initializeWithValues(
   args: InitializeWithValuesArgs,
   accounts: InitializeWithValuesAccounts
 ) {
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.state, isSigner: true, isWritable: true },
     { pubkey: accounts.nested.clock, isSigner: false, isWritable: false },
@@ -129,6 +130,6 @@ export function initializeWithValues(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

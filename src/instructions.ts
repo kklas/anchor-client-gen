@@ -89,7 +89,7 @@ function genInstructionFiles(
             `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
           ]
         : []),
-      `import { PROGRAM_ID } from "../programId"`,
+      `import { PROGRAM_ID, programIdOverride } from "../programId"`,
     ])
 
     // args interface
@@ -183,6 +183,17 @@ function genInstructionFiles(
         type: accountsInterfaceName(ix.name),
       })
     }
+
+    // programId
+    ixFn.addVariableStatement({
+      declarationKind: VariableDeclarationKind.Const,
+      declarations: [
+        {
+          name: "programId",
+          initializer: "programIdOverride && programIdOverride() || PROGRAM_ID",
+        },
+      ],
+    })
 
     // keys
     ixFn.addVariableStatement({
@@ -288,8 +299,7 @@ function genInstructionFiles(
       declarations: [
         {
           name: "ix",
-          initializer:
-            "new TransactionInstruction({ keys, programId: PROGRAM_ID, data })",
+          initializer: "new TransactionInstruction({ keys, programId, data })",
         },
       ],
     })

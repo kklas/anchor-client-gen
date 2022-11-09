@@ -40,9 +40,20 @@ export function genProgramId(
     }
   }
 
+  let programIdOverrideValue = src
+    ?.getVariableDeclaration("programIdOverride")
+    ?.getInitializer()
+    ?.getText()
+
+  if (programIdOverrideValue === undefined) {
+    programIdOverrideValue = "undefined"
+  }
+
   const importStatements = src
     ?.getImportDeclarations()
     .map((impt) => impt.getText())
+
+  /* generate code */
 
   src = project.createSourceFile(outPath("programId.ts"), "", {
     overwrite: true,
@@ -102,6 +113,22 @@ export function genProgramId(
         name: "PROGRAM_ID",
         type: "PublicKey",
         initializer: programIdValue,
+      },
+    ],
+  })
+
+  src.addStatements([
+    "\n",
+    "// Use this only if you need to change the program ID dynamically during app runtime.",
+  ])
+  src.addVariableStatement({
+    isExported: true,
+    declarationKind: VariableDeclarationKind.Const,
+    declarations: [
+      {
+        name: "programIdOverride",
+        type: "(() => PublicKey) | undefined",
+        initializer: programIdOverrideValue,
       },
     ],
   })

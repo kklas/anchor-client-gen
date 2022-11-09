@@ -2,7 +2,7 @@ import { PublicKey, Connection } from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 
 export interface StateFields {
   /** A boolean field */
@@ -162,12 +162,13 @@ export class State {
   }
 
   static async fetch(c: Connection, address: PublicKey): Promise<State | null> {
+    const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
     const info = await c.getAccountInfo(address)
 
     if (info === null) {
       return null
     }
-    if (!info.owner.equals(PROGRAM_ID)) {
+    if (!info.owner.equals(programId)) {
       throw new Error("account doesn't belong to this program")
     }
 
@@ -178,13 +179,14 @@ export class State {
     c: Connection,
     addresses: PublicKey[]
   ): Promise<Array<State | null>> {
+    const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
     const infos = await c.getMultipleAccountsInfo(addresses)
 
     return infos.map((info) => {
       if (info === null) {
         return null
       }
-      if (!info.owner.equals(PROGRAM_ID)) {
+      if (!info.owner.equals(programId)) {
         throw new Error("account doesn't belong to this program")
       }
 

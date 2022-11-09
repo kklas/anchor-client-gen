@@ -1,4 +1,4 @@
-import { PROGRAM_ID } from "../programId"
+import { PROGRAM_ID, programIdOverride } from "../programId"
 import * as anchor from "./anchor"
 import * as custom from "./custom"
 
@@ -44,8 +44,9 @@ export function fromTxError(
     return null
   }
 
+  const programId = (programIdOverride && programIdOverride()) || PROGRAM_ID
   const [programIdRaw, codeRaw] = firstMatch.slice(1)
-  if (programIdRaw !== PROGRAM_ID.toString()) {
+  if (programIdRaw !== programId.toString()) {
     return null
   }
 

@@ -7,3 +7,6 @@ export const PROGRAM_ID_CLI = new PublicKey(
 
 // This constant will not get overwritten on subsequent code generations and it's safe to modify it's value.
 export const PROGRAM_ID: PublicKey = PROGRAM_ID_CLI
+
+// Use this only if you need to change the program ID dynamically during app runtime.
+export const programIdOverride: (() => PublicKey) | undefined = undefined
