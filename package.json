@@ -26,7 +26,7 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@project-serum/anchor-cli": "https://github.com/kklas/anchor-nightly/releases/download/anchor-cli-latest/anchor-cli-0.25.0-7a0a37e.tgz",
+    "@coral-xyz/anchor-cli": "0.27.0",
     "@types/bn.js": "^5.1.0",
     "@types/eslint": "^8.4.2",
     "@types/jest": "^27.5.1",
@@ -43,9 +43,9 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@project-serum/anchor": "https://github.com/kklas/anchor-nightly/releases/download/anchor-latest/anchor-0.25.0-7a0a37e.tgz",
-    "@project-serum/borsh": "^0.2.5",
-    "@solana/web3.js": "^1.64.0",
+    "@coral-xyz/anchor": "0.27.0",
+    "@coral-xyz/borsh": "^0.27.0",
+    "@solana/web3.js": "^1.77.3",
     "bn.js": "^5.1.2",
     "camelcase": "^6.3.0",
     "commander": "^9.2.0",

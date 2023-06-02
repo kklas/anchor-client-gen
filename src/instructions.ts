@@ -1,5 +1,5 @@
-import { Idl } from "@project-serum/anchor"
-import { IdlAccountItem } from "@project-serum/anchor/dist/cjs/idl"
+import { Idl } from "@coral-xyz/anchor"
+import { IdlAccountItem } from "@coral-xyz/anchor/dist/cjs/idl"
 import { CodeBlockWriter, Project, VariableDeclarationKind } from "ts-morph"
 import {
   fieldToEncodable,
@@ -83,7 +83,7 @@ function genInstructionFiles(
     src.addStatements([
       `import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-      `import * as borsh from "@project-serum/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [
             `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,

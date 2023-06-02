@@ -1,5 +1,5 @@
-import { Idl } from "@project-serum/anchor"
-import { IdlEnumVariant, IdlField } from "@project-serum/anchor/dist/cjs/idl"
+import { Idl } from "@coral-xyz/anchor"
+import { IdlEnumVariant, IdlField } from "@coral-xyz/anchor/dist/cjs/idl"
 import { CodeBlockWriter, Project, SourceFile, WriterFunction } from "ts-morph"
 import camelcase from "camelcase"
 import {
@@ -127,7 +127,7 @@ function genStruct(
     `import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-    `import * as borsh from "@project-serum/borsh"`,
+    `import * as borsh from "@coral-xyz/borsh"`,
   ])
 
   // fields interface
@@ -325,7 +325,7 @@ function genEnum(
     `import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-    `import * as borsh from "@project-serum/borsh"`,
+    `import * as borsh from "@coral-xyz/borsh"`,
   ])
 
   // variants

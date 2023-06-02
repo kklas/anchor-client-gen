@@ -1,4 +1,4 @@
-import { Idl } from "@project-serum/anchor"
+import { Idl } from "@coral-xyz/anchor"
 import { Project, VariableDeclarationKind } from "ts-morph"
 
 export function genProgramId(

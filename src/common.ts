@@ -1,5 +1,13 @@
-import { Idl } from "@project-serum/anchor"
-import { IdlField, IdlType } from "@project-serum/anchor/dist/cjs/idl"
+import { Idl } from "@coral-xyz/anchor"
+import {
+  IdlField,
+  IdlType,
+  IdlTypeArray,
+  IdlTypeCOption,
+  IdlTypeDefined,
+  IdlTypeOption,
+  IdlTypeVec,
+} from "@coral-xyz/anchor/dist/cjs/idl"
 import camelcase from "camelcase"
 import { sha256 } from "js-sha256"
 import { snakeCase } from "snake-case"
@@ -29,6 +37,17 @@ export function kindInterfaceName(typeName: string) {
 export function jsonInterfaceName(typeName: string) {
   return `${typeName}JSON`
 }
+export function isComplexType(
+  ty: IdlType
+): ty is
+  | IdlTypeDefined
+  | IdlTypeArray
+  | IdlTypeVec
+  | IdlTypeOption
+  | IdlTypeCOption
+  | IdlTypeDefined {
+  return typeof ty === "object" && ty !== null
+}
 
 export function tsTypeFromIdl(
   idl: Idl,
@@ -55,6 +74,9 @@ export function tsTypeFromIdl(
     case "u128":
     case "i128":
       return "BN"
+    case "u256":
+    case "i256":
+      return "BN"
     case "bytes":
       return "Uint8Array"
     case "string":
@@ -62,7 +84,7 @@ export function tsTypeFromIdl(
     case "publicKey":
       return "PublicKey"
     default:
-      if ("vec" in ty) {
+      if (isComplexType(ty) && "vec" in ty) {
         return `Array<${tsTypeFromIdl(
           idl,
           ty.vec,
@@ -70,7 +92,7 @@ export function tsTypeFromIdl(
           useFieldsInterfaceForStruct
         )}>`
       }
-      if ("option" in ty) {
+      if (isComplexType(ty) && "option" in ty) {
         return `${tsTypeFromIdl(
           idl,
           ty.option,
@@ -78,7 +100,7 @@ export function tsTypeFromIdl(
           useFieldsInterfaceForStruct
         )} | null`
       }
-      if ("coption" in ty) {
+      if (isComplexType(ty) && "coption" in ty) {
         return `${tsTypeFromIdl(
           idl,
           ty.coption,
@@ -86,7 +108,7 @@ export function tsTypeFromIdl(
           useFieldsInterfaceForStruct
         )} | null`
       }
-      if ("defined" in ty) {
+      if (isComplexType(ty) && "defined" in ty) {
         const filtered = idl.types?.filter((t) => t.name === ty.defined) ?? []
         if (filtered.length !== 1) {
           throw new Error(`Defined type not found: ${JSON.stringify(ty)}`)
@@ -105,7 +127,7 @@ export function tsTypeFromIdl(
           }
         }
       }
-      if ("array" in ty) {
+      if (isComplexType(ty) && "array" in ty) {
         return `Array<${tsTypeFromIdl(
           idl,
           ty.array[0],
@@ -159,6 +181,10 @@ export function layoutForType(
       return `borsh.u128(${q(property)})`
     case "i128":
       return `borsh.i128(${q(property)})`
+    case "u256":
+      return `borsh.u256(${q(property)})`
+    case "i256":
+      return `borsh.i256(${q(property)})`
     case "bytes":
       return `borsh.vecU8(${q(property)})`
     case "string":
@@ -166,19 +192,19 @@ export function layoutForType(
     case "publicKey":
       return `borsh.publicKey(${q(property)})`
     default:
-      if ("vec" in ty) {
+      if (isComplexType(ty) && "vec" in ty) {
         return `borsh.vec(${layoutForType(ty.vec)}, ${q(property)})`
       }
-      if ("option" in ty) {
+      if (isComplexType(ty) && "option" in ty) {
         return `borsh.option(${layoutForType(ty.option)}, ${q(property)})`
       }
-      if ("coption" in ty) {
+      if (isComplexType(ty) && "coption" in ty) {
         throw new Error("coption layout support not implemented") // TODO add support
       }
-      if ("defined" in ty) {
+      if (isComplexType(ty) && "defined" in ty) {
         return `${definedTypesPrefix}${ty.defined}.layout(${q(property)})`
       }
-      if ("array" in ty) {
+      if (isComplexType(ty) && "array" in ty) {
         const propTxt = (property && `, ${q(property)}`) || ""
 
         return `borsh.array(${layoutForType(ty.array[0])}, ${
@@ -224,6 +250,8 @@ export function fieldToEncodable(
     case "f64":
     case "u128":
     case "i128":
+    case "u256":
+    case "i256":
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
@@ -232,7 +260,7 @@ export function fieldToEncodable(
       return `Buffer.from(${v}.buffer, ${v}.byteOffset, ${v}.length)`
     }
     default:
-      if ("vec" in ty.type) {
+      if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldToEncodable(
           idl,
           {
@@ -248,7 +276,7 @@ export function fieldToEncodable(
         }
         return `${valPrefix}${ty.name}.map((item) => ${mapBody})`
       }
-      if ("option" in ty.type) {
+      if (isComplexType(ty.type) && "option" in ty.type) {
         const encodable = fieldToEncodable(
           idl,
           { name: ty.name, type: ty.type.option },
@@ -261,10 +289,10 @@ export function fieldToEncodable(
         }
         return `(${valPrefix}${ty.name} && ${encodable}) || null`
       }
-      if ("coption" in ty.type) {
+      if (isComplexType(ty.type) && "coption" in ty.type) {
         throw new Error("coption layout support not implemented") // TODO add support
       }
-      if ("defined" in ty.type) {
+      if (isComplexType(ty.type) && "defined" in ty.type) {
         const defined = ty.type.defined
         const filtered = idl.types?.filter((t) => t.name === defined) ?? []
         if (filtered.length !== 1) {
@@ -280,7 +308,7 @@ export function fieldToEncodable(
           }
         }
       }
-      if ("array" in ty.type) {
+      if (isComplexType(ty.type) && "array" in ty.type) {
         const mapBody = fieldToEncodable(
           idl,
           {
@@ -322,6 +350,8 @@ export function fieldFromDecoded(
     case "f64":
     case "u128":
     case "i128":
+    case "u256":
+    case "i256":
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
@@ -330,7 +360,7 @@ export function fieldFromDecoded(
       return `new Uint8Array(${v}.buffer, ${v}.byteOffset, ${v}.length)`
     }
     default:
-      if ("vec" in ty.type) {
+      if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldFromDecoded(
           idl,
           {
@@ -346,7 +376,7 @@ export function fieldFromDecoded(
         }
         return `${valPrefix}${ty.name}.map((item: any /* eslint-disable-line @typescript-eslint/no-explicit-any */) => ${mapBody})`
       }
-      if ("option" in ty.type) {
+      if (isComplexType(ty.type) && "option" in ty.type) {
         const decoded = fieldFromDecoded(
           idl,
           { name: ty.name, type: ty.type.option },
@@ -358,10 +388,10 @@ export function fieldFromDecoded(
         }
         return `(${valPrefix}${ty.name} && ${decoded}) || null`
       }
-      if ("coption" in ty.type) {
+      if (isComplexType(ty.type) && "coption" in ty.type) {
         throw new Error("coption layout support not implemented") // TODO add support
       }
-      if ("defined" in ty.type) {
+      if (isComplexType(ty.type) && "defined" in ty.type) {
         const defined = ty.type.defined
         const filtered = idl.types?.filter((t) => t.name === defined) ?? []
         if (filtered.length !== 1) {
@@ -378,7 +408,7 @@ export function fieldFromDecoded(
           }
         }
       }
-      if ("array" in ty.type) {
+      if (isComplexType(ty.type) && "array" in ty.type) {
         const mapBody = fieldFromDecoded(
           idl,
           {
@@ -419,12 +449,14 @@ export function structFieldInitializer(
     case "f64":
     case "u128":
     case "i128":
+    case "u256":
+    case "i256":
     case "bytes":
     case "string":
     case "publicKey":
       return `${prefix}${field.name}`
     default:
-      if ("defined" in field.type) {
+      if (isComplexType(field.type) && "defined" in field.type) {
         const defined = field.type.defined
         const filtered = idl.types?.filter((t) => t.name === defined) ?? []
         if (filtered.length !== 1) {
@@ -442,7 +474,7 @@ export function structFieldInitializer(
             return
         }
       }
-      if ("option" in field.type) {
+      if (isComplexType(field.type) && "option" in field.type) {
         const initializer = structFieldInitializer(
           idl,
           { name: field.name, type: field.type.option },
@@ -455,7 +487,7 @@ export function structFieldInitializer(
           return `(${prefix}${field.name} && ${initializer}) || null`
         }
       }
-      if ("coption" in field.type) {
+      if (isComplexType(field.type) && "coption" in field.type) {
         const initializer = structFieldInitializer(
           idl,
           { name: field.name, type: field.type.coption },
@@ -468,7 +500,7 @@ export function structFieldInitializer(
           return `(${prefix}${field.name} && ${initializer}) || null`
         }
       }
-      if ("array" in field.type) {
+      if (isComplexType(field.type) && "array" in field.type) {
         const mapBody = `${structFieldInitializer(
           idl,
           {
@@ -484,7 +516,7 @@ export function structFieldInitializer(
 
         return `${prefix}${field.name}.map((item) => ${mapBody})`
       }
-      if ("vec" in field.type) {
+      if (isComplexType(field.type) && "vec" in field.type) {
         const mapBody = `${structFieldInitializer(
           idl,
           {
@@ -522,12 +554,14 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
     case "i64":
     case "u128":
     case "i128":
+    case "u256":
+    case "i256":
     case "publicKey":
       return `${valPrefix}${ty.name}.toString()`
     case "bytes":
       return `Array.from(${valPrefix}${ty.name}.values())`
     default:
-      if ("vec" in ty.type) {
+      if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldToJSON(idl, {
           name: "item",
           type: ty.type.vec,
@@ -538,7 +572,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
         }
         return `${valPrefix}${ty.name}.map((item) => ${mapBody})`
       }
-      if ("array" in ty.type) {
+      if (isComplexType(ty.type) && "array" in ty.type) {
         const mapBody = fieldToJSON(idl, {
           name: "item",
           type: ty.type.array[0],
@@ -549,7 +583,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
         }
         return `${valPrefix}${ty.name}.map((item) => ${mapBody})`
       }
-      if ("option" in ty.type) {
+      if (isComplexType(ty.type) && "option" in ty.type) {
         const value = fieldToJSON(
           idl,
           { name: ty.name, type: ty.type.option },
@@ -561,7 +595,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
         }
         return `(${valPrefix}${ty.name} && ${value}) || null`
       }
-      if ("coption" in ty.type) {
+      if (isComplexType(ty.type) && "coption" in ty.type) {
         const value = fieldToJSON(
           idl,
           { name: ty.name, type: ty.type.coption },
@@ -573,7 +607,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
         }
         return `(${valPrefix}${ty.name} && ${value}) || null`
       }
-      if ("defined" in ty.type) {
+      if (isComplexType(ty.type) && "defined" in ty.type) {
         const defined = ty.type.defined
         const filtered = idl.types?.filter((t) => t.name === defined) ?? []
         if (filtered.length !== 1) {
@@ -617,28 +651,30 @@ export function idlTypeToJSONType(
     case "i64":
     case "u128":
     case "i128":
+    case "u256":
+    case "i256":
     case "publicKey":
       return "string"
     case "bytes":
       return "Array<number>"
     default:
-      if ("vec" in ty) {
+      if (isComplexType(ty) && "vec" in ty) {
         const inner = idlTypeToJSONType(ty.vec, definedTypesPrefix)
         return `Array<${inner}>`
       }
-      if ("array" in ty) {
+      if (isComplexType(ty) && "array" in ty) {
         const inner = idlTypeToJSONType(ty.array[0], definedTypesPrefix)
         return `Array<${inner}>`
       }
-      if ("option" in ty) {
+      if (isComplexType(ty) && "option" in ty) {
         const inner = idlTypeToJSONType(ty.option, definedTypesPrefix)
         return `${inner} | null`
       }
-      if ("coption" in ty) {
+      if (isComplexType(ty) && "coption" in ty) {
         const inner = idlTypeToJSONType(ty.coption, definedTypesPrefix)
         return `${inner} | null`
       }
-      if ("defined" in ty) {
+      if (isComplexType(ty) && "defined" in ty) {
         return `${definedTypesPrefix}${jsonInterfaceName(ty.defined)}`
       }
 
@@ -673,10 +709,12 @@ export function fieldFromJSON(
     case "u128":
     case "i128":
       return `new BN(${paramPrefix}${ty.name})`
+    case "u256":
+    case "i256":
     case "publicKey":
       return `new PublicKey(${paramPrefix}${ty.name})`
     default:
-      if ("vec" in ty.type) {
+      if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldFromJSON(
           {
             name: "item",
@@ -691,7 +729,7 @@ export function fieldFromJSON(
         }
         return `${paramPrefix}${ty.name}.map((item) => ${mapBody})`
       }
-      if ("array" in ty.type) {
+      if (isComplexType(ty.type) && "array" in ty.type) {
         const mapBody = fieldFromJSON(
           {
             name: "item",
@@ -706,7 +744,7 @@ export function fieldFromJSON(
         }
         return `${paramPrefix}${ty.name}.map((item) => ${mapBody})`
       }
-      if ("option" in ty.type) {
+      if (isComplexType(ty.type) && "option" in ty.type) {
         const inner = fieldFromJSON(
           { name: ty.name, type: ty.type.option },
           jsonParamName,
@@ -718,7 +756,7 @@ export function fieldFromJSON(
         }
         return `(${paramPrefix}${ty.name} && ${inner}) || null`
       }
-      if ("coption" in ty.type) {
+      if (isComplexType(ty.type) && "coption" in ty.type) {
         const inner = fieldFromJSON(
           { name: ty.name, type: ty.type.coption },
           jsonParamName,
@@ -730,7 +768,7 @@ export function fieldFromJSON(
         }
         return `(${paramPrefix}${ty.name} && ${inner}) || null`
       }
-      if ("defined" in ty.type) {
+      if (isComplexType(ty.type) && "defined" in ty.type) {
         return `${definedTypesPrefix}${ty.type.defined}.fromJSON(${paramPrefix}${ty.name})`
       }
 

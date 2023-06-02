@@ -1,4 +1,4 @@
-import { Idl } from "@project-serum/anchor"
+import { Idl } from "@coral-xyz/anchor"
 import {
   OptionalKind,
   Project,
@@ -8,7 +8,7 @@ import {
 import {
   LangErrorCode,
   LangErrorMessage,
-} from "@project-serum/anchor/dist/cjs/error"
+} from "@coral-xyz/anchor/dist/cjs/error"
 
 export function genErrors(
   project: Project,
