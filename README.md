@@ -71,16 +71,16 @@ The following packages are required for the generated client to work:
 
 - `@solana/web3.js`
 - `bn.js`
-- `@project-serum/borsh`
+- `@coral-xyz/borsh`
 
 Install them in your project with:
 
 ```sh
 // npm
-$ npm install @solana/web3.js bn.js @project-serum/borsh
+$ npm install @solana/web3.js bn.js @coral-xyz/borsh
 
 // yarn
-$ yarn add @solana/web3.js bn.js @project-serum/borsh
+$ yarn add @solana/web3.js bn.js @coral-xyz/borsh
 ```
 
 ### Instructions

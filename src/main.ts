@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { Idl } from "@project-serum/anchor"
+import { Idl } from "@coral-xyz/anchor"
 import * as fs from "fs"
 import * as path from "path"
 import { Project } from "ts-morph"

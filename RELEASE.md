@@ -2,7 +2,7 @@
 
 Latest:
 
-- Change `@project-serum/anchor` and `@project-serum/anchor-cli` versions in `package.json` to official npm packages and match the release version
+- Change `@coral-xyz/anchor` and `@coral-xyz/anchor-cli` versions in `package.json` to official npm packages and match the release version
 - Change the `anchor-lang` dependency version in `tests/example-program/programs/example-program/Cargo.toml` to match the release version
 - Bump the version outputted by `--version` flag in `src/main.ts`
 - Bump the package version in `package.json`
