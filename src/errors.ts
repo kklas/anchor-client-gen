@@ -1,14 +1,10 @@
-import { Idl } from "@coral-xyz/anchor"
+import { Idl, LangErrorCode, LangErrorMessage } from "@coral-xyz/anchor"
 import {
   OptionalKind,
   Project,
   PropertyDeclarationStructure,
   VariableDeclarationKind,
 } from "ts-morph"
-import {
-  LangErrorCode,
-  LangErrorMessage,
-} from "@coral-xyz/anchor/dist/cjs/error"
 
 export function genErrors(
   project: Project,
