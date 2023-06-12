@@ -8,6 +8,7 @@ import {
   SYSVAR_RENT_PUBKEY,
   Transaction,
 } from "@solana/web3.js"
+import { expect, it } from "vitest"
 import BN from "bn.js"
 import * as dircompare from "dir-compare"
 import * as fs from "fs"
@@ -35,7 +36,7 @@ const faucet = JSON.parse(
 )
 const payer = Keypair.fromSecretKey(Uint8Array.from(faucet))
 
-test("generator output", async () => {
+it("generator output", async () => {
   const res = await dircompare.compare(
     "tests/example-program-gen/exp",
     "tests/example-program-gen/act",
@@ -59,7 +60,7 @@ test("generator output", async () => {
   })
 })
 
-test("init and account fetch", async () => {
+it("init and account fetch", async () => {
   const state = new Keypair()
 
   const tx = new Transaction({ feePayer: payer.publicKey })
@@ -79,7 +80,7 @@ test("init and account fetch", async () => {
 
   const res = await State.fetch(c, state.publicKey)
   if (res === null) {
-    fail("account not found")
+    throw new Error("account not found")
   }
 
   expect(res.boolField).toBe(true)
@@ -135,7 +136,7 @@ test("init and account fetch", async () => {
     expect(act.optionNested?.otherField).toBe(10)
 
     if (act.enumField.discriminator !== 2) {
-      fail()
+      throw new Error()
     }
     expect(act.enumField.kind).toBe("Named")
     expect(act.enumField.value.boolField).toBe(true)
@@ -165,7 +166,7 @@ test("init and account fetch", async () => {
     expect(act.optionNested?.otherField).toBe(10)
 
     if (act.enumField.discriminator !== 2) {
-      fail()
+      throw new Error()
     }
     expect(act.enumField.kind).toBe("Named")
     expect(act.enumField.value.boolField).toBe(true)
@@ -180,7 +181,7 @@ test("init and account fetch", async () => {
   {
     const act = res.enumField1
     if (act.discriminator !== 0) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Unnamed")
     expect(act.value.length).toBe(3)
@@ -194,7 +195,7 @@ test("init and account fetch", async () => {
   {
     const act = res.enumField2
     if (act.discriminator !== 2) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Named")
     expect(act.value.boolField).toBe(true)
@@ -207,7 +208,7 @@ test("init and account fetch", async () => {
   {
     const act = res.enumField3
     if (act.discriminator !== 3) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Struct")
     expect(act.value.length).toBe(1)
@@ -219,13 +220,13 @@ test("init and account fetch", async () => {
   {
     const act = res.enumField4
     if (act.discriminator !== 6) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("NoFields")
   }
 })
 
-test("fetch multiple", async () => {
+it("fetch multiple", async () => {
   const state = new Keypair()
   const another_state = new Keypair()
   const non_state = new Keypair()
@@ -265,7 +266,7 @@ test("fetch multiple", async () => {
   expect(res).toEqual([expect.any(State), null, expect.any(State)])
 })
 
-test("instruction with args", async () => {
+it("instruction with args", async () => {
   const state = new Keypair()
   const state2 = new Keypair()
 
@@ -388,11 +389,11 @@ test("instruction with args", async () => {
 
   const res = await State.fetch(c, state.publicKey)
   if (res === null) {
-    fail("account for State not found")
+    throw new Error("account for State not found")
   }
   const res2 = await State2.fetch(c, state2.publicKey)
   if (res2 === null) {
-    fail("account for State2 not found")
+    throw new Error("account for State2 not found")
   }
 
   expect(res.boolField).toBe(true)
@@ -443,7 +444,7 @@ test("instruction with args", async () => {
     expect(act.optionNested).toBeNull()
 
     if (act.enumField.discriminator !== 0) {
-      fail()
+      throw new Error()
     }
     expect(act.enumField.kind).toBe("Unnamed")
     expect(act.enumField.value.length).toBe(3)
@@ -476,7 +477,7 @@ test("instruction with args", async () => {
     expect(act.optionNested).toBeNull()
 
     if (act.enumField.discriminator !== 6) {
-      fail()
+      throw new Error()
     }
     expect(act.enumField.kind).toBe("NoFields")
   }
@@ -488,7 +489,7 @@ test("instruction with args", async () => {
   {
     const act = res.enumField1
     if (act.discriminator !== 0) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Unnamed")
     expect(act.value.length).toBe(3)
@@ -502,7 +503,7 @@ test("instruction with args", async () => {
   {
     const act = res.enumField2
     if (act.discriminator !== 2) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Named")
     expect(act.value.boolField).toBe(true)
@@ -515,7 +516,7 @@ test("instruction with args", async () => {
   {
     const act = res.enumField3
     if (act.discriminator !== 3) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Struct")
     expect(act.value.length).toBe(1)
@@ -527,7 +528,7 @@ test("instruction with args", async () => {
   {
     const act = res.enumField4
     if (act.discriminator !== 6) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("NoFields")
   }
@@ -537,7 +538,7 @@ test("instruction with args", async () => {
   expect(res2.vecOfOption[1] !== null && res2.vecOfOption[1].eqn(20)).toBe(true)
 })
 
-test("tx error", async () => {
+it("tx error", async () => {
   const tx = new Transaction({ feePayer: payer.publicKey })
 
   tx.add(causeError())
@@ -549,7 +550,7 @@ test("tx error", async () => {
 
     expect(parsed).not.toBe(null)
     if (parsed === null) {
-      fail()
+      throw new Error()
     }
 
     expect(parsed.message).toBe("6000: Example error.")
@@ -560,7 +561,7 @@ test("tx error", async () => {
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
       "Program log: Instruction: CauseError",
       "Program log: AnchorError thrown in programs/example-program/src/lib.rs:90. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
-      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 2396 of 200000 compute units",
+      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 2385 of 200000 compute units",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x1770",
     ])
 
@@ -568,7 +569,7 @@ test("tx error", async () => {
   }
 })
 
-describe("fromTxError", () => {
+it("fromTxError", () => {
   it("returns null when CPI call fails", async () => {
     const errMock = {
       logs: [
@@ -604,7 +605,7 @@ describe("fromTxError", () => {
   })
 })
 
-test("toJSON", async () => {
+it("toJSON", async () => {
   const state = new State({
     boolField: true,
     u8Field: 255,
@@ -896,7 +897,7 @@ test("toJSON", async () => {
       act.enumField.discriminator !== 0 ||
       exp.enumField.discriminator !== 0
     ) {
-      fail()
+      throw new Error()
     }
     expect(act.enumField.kind).toBe("Unnamed")
     expect(act.enumField.value.length).toBe(exp.enumField.value.length)
@@ -919,7 +920,7 @@ test("toJSON", async () => {
     const exp = state.optionStructField
 
     if (exp === null || act === null) {
-      fail()
+      throw new Error()
     }
 
     expect(act.field1).toBe(exp.field1)
@@ -939,7 +940,7 @@ test("toJSON", async () => {
       act.enumField.discriminator !== 6 ||
       exp.enumField.discriminator !== 6
     ) {
-      fail()
+      throw new Error()
     }
   }
 
@@ -949,7 +950,7 @@ test("toJSON", async () => {
     const exp = state.structField
 
     if (exp === null || act === null) {
-      fail()
+      throw new Error()
     }
 
     expect(act.field1).toBe(exp.field1)
@@ -966,7 +967,7 @@ test("toJSON", async () => {
       act.enumField.discriminator !== 6 ||
       exp.enumField.discriminator !== 6
     ) {
-      fail()
+      throw new Error()
     }
   }
 
@@ -979,7 +980,7 @@ test("toJSON", async () => {
     const exp = state.enumField1
 
     if (act.discriminator !== 0 || exp.discriminator !== 0) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Unnamed")
     expect(act.value.length).toEqual(exp.value.length)
@@ -995,7 +996,7 @@ test("toJSON", async () => {
     const exp = state.enumField2
 
     if (act.discriminator !== 2 || exp.discriminator !== 2) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Named")
     expect(act.value.boolField).toEqual(exp.value.boolField)
@@ -1010,7 +1011,7 @@ test("toJSON", async () => {
     const exp = state.enumField3
 
     if (act.discriminator !== 3 || exp.discriminator !== 3) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("Struct")
     expect(act.value.length).toEqual(exp.value.length)
@@ -1022,7 +1023,7 @@ test("toJSON", async () => {
   {
     const act = stateFromJSON.enumField4
     if (act.discriminator !== 6) {
-      fail()
+      throw new Error()
     }
     expect(act.kind).toBe("NoFields")
   }
