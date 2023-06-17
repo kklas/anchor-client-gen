@@ -15,7 +15,11 @@ export interface CreateAccounts {
 
 export const layout = borsh.struct([borsh.publicKey("authority")])
 
-export function create(args: CreateArgs, accounts: CreateAccounts) {
+export function create(
+  args: CreateArgs,
+  accounts: CreateAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.counter, isSigner: true, isWritable: true },
     { pubkey: accounts.user, isSigner: true, isWritable: true },
@@ -30,6 +34,6 @@ export function create(args: CreateArgs, accounts: CreateAccounts) {
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

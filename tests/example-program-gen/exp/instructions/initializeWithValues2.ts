@@ -24,7 +24,8 @@ export const layout = borsh.struct([
  */
 export function initializeWithValues2(
   args: InitializeWithValues2Args,
-  accounts: InitializeWithValues2Accounts
+  accounts: InitializeWithValues2Accounts,
+  programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.state, isSigner: true, isWritable: true },
@@ -40,6 +41,6 @@ export function initializeWithValues2(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

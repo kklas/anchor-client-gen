@@ -8,13 +8,16 @@ export interface IncrementAccounts {
   authority: PublicKey
 }
 
-export function increment(accounts: IncrementAccounts) {
+export function increment(
+  accounts: IncrementAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.counter, isSigner: false, isWritable: true },
     { pubkey: accounts.authority, isSigner: true, isWritable: false },
   ]
   const identifier = Buffer.from([11, 18, 104, 9, 104, 174, 59, 33])
   const data = identifier
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

@@ -161,13 +161,17 @@ export class State {
     this.enumField4 = fields.enumField4
   }
 
-  static async fetch(c: Connection, address: PublicKey): Promise<State | null> {
+  static async fetch(
+    c: Connection,
+    address: PublicKey,
+    programId: PublicKey = PROGRAM_ID
+  ): Promise<State | null> {
     const info = await c.getAccountInfo(address)
 
     if (info === null) {
       return null
     }
-    if (!info.owner.equals(PROGRAM_ID)) {
+    if (!info.owner.equals(programId)) {
       throw new Error("account doesn't belong to this program")
     }
 
@@ -176,7 +180,8 @@ export class State {
 
   static async fetchMultiple(
     c: Connection,
-    addresses: PublicKey[]
+    addresses: PublicKey[],
+    programId: PublicKey = PROGRAM_ID
   ): Promise<Array<State | null>> {
     const infos = await c.getMultipleAccountsInfo(addresses)
 
@@ -184,7 +189,7 @@ export class State {
       if (info === null) {
         return null
       }
-      if (!info.owner.equals(PROGRAM_ID)) {
+      if (!info.owner.equals(programId)) {
         throw new Error("account doesn't belong to this program")
       }
 

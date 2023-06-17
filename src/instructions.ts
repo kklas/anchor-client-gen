@@ -183,6 +183,11 @@ function genInstructionFiles(
         type: accountsInterfaceName(ix.name),
       })
     }
+    ixFn.addParameter({
+        name: "programId",
+        type: "PublicKey",
+        initializer: "PROGRAM_ID"
+      });
 
     // keys
     ixFn.addVariableStatement({
@@ -289,7 +294,7 @@ function genInstructionFiles(
         {
           name: "ix",
           initializer:
-            "new TransactionInstruction({ keys, programId: PROGRAM_ID, data })",
+            "new TransactionInstruction({ keys, programId, data })",
         },
       ],
     })

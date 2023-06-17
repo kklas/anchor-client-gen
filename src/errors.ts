@@ -26,7 +26,9 @@ export function genIndex(
   })
 
   const hasCustomErrors = idl.errors && idl.errors.length > 0
-
+  src.addStatements([
+    `import { PublicKey } from "@solana/web3.js"`,
+  ]);
   src.addImportDeclaration({
     namedImports: ["PROGRAM_ID"],
     moduleSpecifier: "../programId",
@@ -112,6 +114,11 @@ export function genIndex(
         name: "err",
         type: "unknown",
       },
+      {
+        name: "programId",
+        type: "PublicKey",
+        initializer: "PROGRAM_ID"
+      }
     ],
     returnType: hasCustomErrors
       ? "custom.CustomError | anchor.AnchorError | null"
@@ -139,7 +146,7 @@ if (firstMatch === null) {
 }
 
 const [programIdRaw, codeRaw] = firstMatch.slice(1)
-if (programIdRaw !== PROGRAM_ID.toString()) {
+if (programIdRaw !== programId.toString()) {
   return null
 }
 

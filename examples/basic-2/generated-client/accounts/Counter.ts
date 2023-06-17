@@ -33,14 +33,15 @@ export class Counter {
 
   static async fetch(
     c: Connection,
-    address: PublicKey
+    address: PublicKey,
+    programId: PublicKey = PROGRAM_ID
   ): Promise<Counter | null> {
     const info = await c.getAccountInfo(address)
 
     if (info === null) {
       return null
     }
-    if (!info.owner.equals(PROGRAM_ID)) {
+    if (!info.owner.equals(programId)) {
       throw new Error("account doesn't belong to this program")
     }
 
@@ -49,7 +50,8 @@ export class Counter {
 
   static async fetchMultiple(
     c: Connection,
-    addresses: PublicKey[]
+    addresses: PublicKey[],
+    programId: PublicKey = PROGRAM_ID
   ): Promise<Array<Counter | null>> {
     const infos = await c.getMultipleAccountsInfo(addresses)
 
@@ -57,7 +59,7 @@ export class Counter {
       if (info === null) {
         return null
       }
-      if (!info.owner.equals(PROGRAM_ID)) {
+      if (!info.owner.equals(programId)) {
         throw new Error("account doesn't belong to this program")
       }
 

@@ -77,7 +77,8 @@ export const layout = borsh.struct([
 /** Initializes an account with specified values */
 export function initializeWithValues(
   args: InitializeWithValuesArgs,
-  accounts: InitializeWithValuesAccounts
+  accounts: InitializeWithValuesAccounts,
+  programId: PublicKey = PROGRAM_ID
 ) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.state, isSigner: true, isWritable: true },
@@ -129,6 +130,6 @@ export function initializeWithValues(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }
