@@ -26,9 +26,7 @@ export function genIndex(
   })
 
   const hasCustomErrors = idl.errors && idl.errors.length > 0
-  src.addStatements([
-    `import { PublicKey } from "@solana/web3.js"`,
-  ]);
+  src.addStatements([`import { PublicKey } from "@solana/web3.js"`])
   src.addImportDeclaration({
     namedImports: ["PROGRAM_ID"],
     moduleSpecifier: "../programId",
@@ -117,8 +115,8 @@ export function genIndex(
       {
         name: "programId",
         type: "PublicKey",
-        initializer: "PROGRAM_ID"
-      }
+        initializer: "PROGRAM_ID",
+      },
     ],
     returnType: hasCustomErrors
       ? "custom.CustomError | anchor.AnchorError | null"
