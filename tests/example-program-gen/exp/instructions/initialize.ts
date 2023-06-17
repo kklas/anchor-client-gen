@@ -16,7 +16,10 @@ export interface InitializeAccounts {
   systemProgram: PublicKey
 }
 
-export function initialize(accounts: InitializeAccounts) {
+export function initialize(
+  accounts: InitializeAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.state, isSigner: true, isWritable: true },
     { pubkey: accounts.nested.clock, isSigner: false, isWritable: false },
@@ -26,6 +29,6 @@ export function initialize(accounts: InitializeAccounts) {
   ]
   const identifier = Buffer.from([175, 175, 109, 31, 13, 152, 155, 237])
   const data = identifier
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

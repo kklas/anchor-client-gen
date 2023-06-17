@@ -177,6 +177,11 @@ function genAccountFiles(
           name: "address",
           type: "PublicKey",
         },
+        {
+          name: "programId",
+          type: "PublicKey",
+          initializer: "PROGRAM_ID"
+        }
       ],
       returnType: `Promise<${name} | null>`,
       statements: [
@@ -187,7 +192,7 @@ function genAccountFiles(
           writer.inlineBlock(() => {
             writer.writeLine("return null")
           })
-          writer.write("if (!info.owner.equals(PROGRAM_ID))")
+          writer.write("if (!info.owner.equals(programId))")
           writer.inlineBlock(() => {
             writer.writeLine(
               `throw new Error("account doesn't belong to this program")`
@@ -213,6 +218,11 @@ function genAccountFiles(
           name: "addresses",
           type: "PublicKey[]",
         },
+        {
+          name: "programId",
+          type: "PublicKey",
+          initializer: "PROGRAM_ID"
+        }
       ],
       returnType: `Promise<Array<${name} | null>>`,
       statements: [
@@ -229,7 +239,7 @@ function genAccountFiles(
             })
             writer.write("")
 
-            writer.write("if (!info.owner.equals(PROGRAM_ID))")
+            writer.write("if (!info.owner.equals(programId))")
             writer.inlineBlock(() => {
               writer.writeLine(
                 `throw new Error("account doesn't belong to this program")`

@@ -15,7 +15,11 @@ export interface PlayAccounts {
 
 export const layout = borsh.struct([types.Tile.layout("tile")])
 
-export function play(args: PlayArgs, accounts: PlayAccounts) {
+export function play(
+  args: PlayArgs,
+  accounts: PlayAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.game, isSigner: false, isWritable: true },
     { pubkey: accounts.player, isSigner: true, isWritable: false },
@@ -29,6 +33,6 @@ export function play(args: PlayArgs, accounts: PlayAccounts) {
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }

@@ -42,13 +42,17 @@ export class Game {
     this.state = fields.state
   }
 
-  static async fetch(c: Connection, address: PublicKey): Promise<Game | null> {
+  static async fetch(
+    c: Connection,
+    address: PublicKey,
+    programId: PublicKey = PROGRAM_ID
+  ): Promise<Game | null> {
     const info = await c.getAccountInfo(address)
 
     if (info === null) {
       return null
     }
-    if (!info.owner.equals(PROGRAM_ID)) {
+    if (!info.owner.equals(programId)) {
       throw new Error("account doesn't belong to this program")
     }
 
@@ -57,7 +61,8 @@ export class Game {
 
   static async fetchMultiple(
     c: Connection,
-    addresses: PublicKey[]
+    addresses: PublicKey[],
+    programId: PublicKey = PROGRAM_ID
   ): Promise<Array<Game | null>> {
     const infos = await c.getMultipleAccountsInfo(addresses)
 
@@ -65,7 +70,7 @@ export class Game {
       if (info === null) {
         return null
       }
-      if (!info.owner.equals(PROGRAM_ID)) {
+      if (!info.owner.equals(programId)) {
         throw new Error("account doesn't belong to this program")
       }
 

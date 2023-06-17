@@ -16,7 +16,11 @@ export interface SetupGameAccounts {
 
 export const layout = borsh.struct([borsh.publicKey("playerTwo")])
 
-export function setupGame(args: SetupGameArgs, accounts: SetupGameAccounts) {
+export function setupGame(
+  args: SetupGameArgs,
+  accounts: SetupGameAccounts,
+  programId: PublicKey = PROGRAM_ID
+) {
   const keys: Array<AccountMeta> = [
     { pubkey: accounts.game, isSigner: true, isWritable: true },
     { pubkey: accounts.playerOne, isSigner: true, isWritable: true },
@@ -31,6 +35,6 @@ export function setupGame(args: SetupGameArgs, accounts: SetupGameAccounts) {
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId: PROGRAM_ID, data })
+  const ix = new TransactionInstruction({ keys, programId, data })
   return ix
 }
