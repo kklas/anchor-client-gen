@@ -180,8 +180,8 @@ function genAccountFiles(
         {
           name: "programId",
           type: "PublicKey",
-          initializer: "PROGRAM_ID"
-        }
+          initializer: "PROGRAM_ID",
+        },
       ],
       returnType: `Promise<${name} | null>`,
       statements: [
@@ -221,8 +221,8 @@ function genAccountFiles(
         {
           name: "programId",
           type: "PublicKey",
-          initializer: "PROGRAM_ID"
-        }
+          initializer: "PROGRAM_ID",
+        },
       ],
       returnType: `Promise<Array<${name} | null>>`,
       statements: [

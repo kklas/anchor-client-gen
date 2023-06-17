@@ -184,10 +184,10 @@ function genInstructionFiles(
       })
     }
     ixFn.addParameter({
-        name: "programId",
-        type: "PublicKey",
-        initializer: "PROGRAM_ID"
-      });
+      name: "programId",
+      type: "PublicKey",
+      initializer: "PROGRAM_ID",
+    })
 
     // keys
     ixFn.addVariableStatement({
@@ -293,8 +293,7 @@ function genInstructionFiles(
       declarations: [
         {
           name: "ix",
-          initializer:
-            "new TransactionInstruction({ keys, programId, data })",
+          initializer: "new TransactionInstruction({ keys, programId, data })",
         },
       ],
     })
