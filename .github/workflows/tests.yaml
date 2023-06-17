@@ -51,9 +51,7 @@ jobs:
       - name: Install Node.js dependencies
         run: yarn --frozen-lockfile
       - run: cp -r tests/example-program-gen/{exp,act}
-      - name: Run linters
-        uses: wearerequired/lint-action@v1
-        with:
-          eslint: true
+      - name: Run eslint
+        run: yarn run lint
       - name: Run tsc check
         run: yarn run check
