@@ -89,6 +89,10 @@ pub mod example_program {
     pub fn cause_error(_ctx: Context<CauseError>) -> Result<()> {
         return Err(error!(ErrorCode::SomeError));
     }
+
+    pub fn optional(_ctx: Context<Optional>, _name: String) -> Result<()> {
+        Ok(())
+    }
 }
 
 /// Enum type
@@ -275,6 +279,23 @@ pub struct Initialize2<'info> {
 
 #[derive(Accounts)]
 pub struct CauseError {}
+
+#[derive(Accounts)]
+#[instruction(name:String)]
+pub struct Optional<'info> {
+    #[account(
+        init,
+        space = 8 + 1000, // TODO: use exact space required
+        seeds = [b"optional", name.as_bytes()],
+        bump,
+        payer = payer
+    )]
+    state: Option<Account<'info, State>>,
+
+    #[account(mut)]
+    payer: Signer<'info>,
+    system_program: Program<'info, System>,
+}
 
 #[error_code]
 pub enum ErrorCode {
