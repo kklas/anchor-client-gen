@@ -20,6 +20,7 @@ import {
   initialize,
   initializeWithValues,
   initializeWithValues2,
+  optional,
 } from "./example-program-gen/act/instructions"
 import { BarStruct, FooStruct } from "./example-program-gen/act/types"
 import {
@@ -29,6 +30,7 @@ import {
   Unnamed,
 } from "./example-program-gen/act/types/FooEnum"
 import * as path from "path"
+import { PROGRAM_ID } from "./example-program-gen/act/programId"
 
 const c = new Connection("http://127.0.0.1:8899", "processed")
 const faucet = JSON.parse(
@@ -536,6 +538,48 @@ it("instruction with args", async () => {
   // vecOfOption
   expect(res2.vecOfOption[0]).toBe(null)
   expect(res2.vecOfOption[1] !== null && res2.vecOfOption[1].eqn(20)).toBe(true)
+})
+
+it("optional with specified account", async () => {
+  const name = 'with-specified-account'
+  const [state] = PublicKey.findProgramAddressSync([
+    Buffer.from("optional"), Buffer.from(name)
+  ], PROGRAM_ID)
+
+  const tx = new Transaction({ feePayer: payer.publicKey })
+  tx.add(
+    optional({name},{
+      state,
+      payer: payer.publicKey,
+      systemProgram: SystemProgram.programId,
+    })
+  )
+
+  await sendAndConfirmTransaction(c, tx, [payer])
+
+  const res = await State.fetch(c, state)
+  expect(res).not.toBe(null)
+})
+
+it("optional without specifying account", async () => {
+  const name = 'without-specifying-account'
+  const [state] = PublicKey.findProgramAddressSync([
+    Buffer.from("optional"), Buffer.from(name)
+  ], PROGRAM_ID)
+
+  const tx = new Transaction({ feePayer: payer.publicKey })
+  tx.add(
+    optional({name}, {
+      state: null,
+      payer: payer.publicKey,
+      systemProgram: SystemProgram.programId,
+    })
+  )
+
+  await sendAndConfirmTransaction(c, tx, [payer])
+
+  const res = await State.fetch(c, state)
+  expect(res).toBe(null)
 })
 
 it("tx error", async () => {

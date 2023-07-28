@@ -113,6 +113,9 @@ function genInstructionFiles(
     ) {
       if (!("accounts" in accItem)) {
         writer.write("PublicKey")
+        if (accItem.isOptional) {
+          writer.write(" | null")
+        }
         return
       }
       writer.block(() => {
@@ -211,7 +214,7 @@ function genInstructionFiles(
                 writer.writeLine(
                   `{ pubkey: accounts.${[...nestedNames, item.name].join(
                     "."
-                  )}, isSigner: ${item.isSigner}, isWritable: ${item.isMut} },`
+                  )}${item.isOptional ? " ?? PROGRAM_ID" : ""}, isSigner: ${item.isSigner}, isWritable: ${item.isMut} },`
                 )
               })
             }

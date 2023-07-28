@@ -262,6 +262,33 @@
       "name": "causeError",
       "accounts": [],
       "args": []
+    },
+    {
+      "name": "optional",
+      "accounts": [
+        {
+          "name": "state",
+          "isMut": true,
+          "isSigner": false,
+          "isOptional": true
+        },
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
     }
   ],
   "accounts": [
