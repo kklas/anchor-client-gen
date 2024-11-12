@@ -127,8 +127,8 @@ export class Named {
   toEncodable() {
     return {
       Named: {
-        bool_field: this.value.boolField,
-        u8_field: this.value.u8Field,
+        boolField: this.value.boolField,
+        u8Field: this.value.u8Field,
         nested: types.BarStruct.toEncodable(this.value.nested),
       },
     }
@@ -285,8 +285,8 @@ export function fromDecoded(obj: any): types.FooEnumKind {
   if ("Named" in obj) {
     const val = obj["Named"]
     return new Named({
-      boolField: val["bool_field"],
-      u8Field: val["u8_field"],
+      boolField: val["boolField"],
+      u8Field: val["u8Field"],
       nested: types.BarStruct.fromDecoded(val["nested"]),
     })
   }
@@ -364,8 +364,8 @@ export function layout(property?: string) {
     borsh.struct([types.BarStruct.layout("_0")], "UnnamedSingle"),
     borsh.struct(
       [
-        borsh.bool("bool_field"),
-        borsh.u8("u8_field"),
+        borsh.bool("boolField"),
+        borsh.u8("u8Field"),
         types.BarStruct.layout("nested"),
       ],
       "Named"

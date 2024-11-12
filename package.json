@@ -27,7 +27,7 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "@coral-xyz/anchor-cli": "0.28.0",
+    "@coral-xyz/anchor-cli": "0.29.0",
     "@types/bn.js": "^5.1.1",
     "@types/eslint": "^8.40.1",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
@@ -44,9 +44,9 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "0.28.0",
-    "@coral-xyz/borsh": "^0.28.0",
-    "@solana/web3.js": "^1.77.3",
+    "@coral-xyz/anchor": "0.29.0",
+    "@coral-xyz/borsh": "^0.29.0",
+    "@solana/web3.js": "^2.0.0",
     "bn.js": "^5.2.1",
     "camelcase": "^7.0.1",
     "commander": "^10.0.1",
