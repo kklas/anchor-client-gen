@@ -1,6 +1,13 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import {
+  Address,
+  IAccountMeta,
+  IAccountSignerMeta,
+  IInstruction,
+  TransactionSigner,
+} from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
@@ -9,9 +16,9 @@ export interface InitializeWithValues2Args {
 }
 
 export interface InitializeWithValues2Accounts {
-  state: PublicKey
-  payer: PublicKey
-  systemProgram: PublicKey
+  state: TransactionSigner
+  payer: TransactionSigner
+  systemProgram: Address
 }
 
 export const layout = borsh.struct([
@@ -25,12 +32,12 @@ export const layout = borsh.struct([
 export function initializeWithValues2(
   args: InitializeWithValues2Args,
   accounts: InitializeWithValues2Accounts,
-  programId: PublicKey = PROGRAM_ID
+  programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<AccountMeta> = [
-    { pubkey: accounts.state, isSigner: true, isWritable: true },
-    { pubkey: accounts.payer, isSigner: true, isWritable: true },
-    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+  const keys: Array<IAccountMeta | IAccountSignerMeta> = [
+    { address: accounts.state.address, role: 3, signer: accounts.state },
+    { address: accounts.payer.address, role: 3, signer: accounts.payer },
+    { address: accounts.systemProgram, role: 0 },
   ]
   const identifier = Buffer.from([248, 190, 21, 97, 239, 148, 39, 181])
   const buffer = Buffer.alloc(1000)
@@ -41,6 +48,6 @@ export function initializeWithValues2(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
+  const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

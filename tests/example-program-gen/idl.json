@@ -490,6 +490,10 @@
             "type": {
               "defined": "FooEnum"
             }
+          },
+          {
+            "name": "pubkeyField",
+            "type": "publicKey"
           }
         ]
       }

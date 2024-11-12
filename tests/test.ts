@@ -1,12 +1,17 @@
 import {
-  Connection,
-  Keypair,
-  PublicKey,
-  sendAndConfirmTransaction,
-  SystemProgram,
-  SYSVAR_CLOCK_PUBKEY,
-  SYSVAR_RENT_PUBKEY,
-  Transaction,
+  createKeyPairSignerFromBytes,
+  generateKeyPairSigner,
+  createSolanaRpc,
+  pipe,
+  createTransactionMessage,
+  appendTransactionMessageInstructions,
+  setTransactionMessageFeePayerSigner,
+  appendTransactionMessageInstruction,
+  address,
+  signTransactionMessageWithSigners,
+  setTransactionMessageLifetimeUsingBlockhash,
+  sendAndConfirmTransactionFactory,
+  createSolanaRpcSubscriptions,
 } from "@solana/web3.js"
 import { expect, it } from "vitest"
 import BN from "bn.js"
@@ -29,12 +34,14 @@ import {
   Unnamed,
 } from "./example-program-gen/act/types/FooEnum"
 import * as path from "path"
+import { SYSVAR_CLOCK_ADDRESS, SYSVAR_RENT_ADDRESS } from "@solana/sysvars"
+import { SYSTEM_PROGRAM_ADDRESS } from "@solana-program/system"
 
-const c = new Connection("http://127.0.0.1:8899", "processed")
+const rpc = createSolanaRpc("http://127.0.0.1:8899")
+const rpcSubscriptions = createSolanaRpcSubscriptions("ws://127.0.0.1:8900")
 const faucet = JSON.parse(
   fs.readFileSync("tests/.test-ledger/faucet-keypair.json").toString()
 )
-const payer = Keypair.fromSecretKey(Uint8Array.from(faucet))
 
 it("generator output", async () => {
   const res = await dircompare.compare(
@@ -61,24 +68,49 @@ it("generator output", async () => {
 })
 
 it("init and account fetch", async () => {
-  const state = new Keypair()
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const state = await generateKeyPairSigner()
 
-  const tx = new Transaction({ feePayer: payer.publicKey })
-  tx.add(
-    initialize({
-      state: state.publicKey,
-      payer: payer.publicKey,
-      nested: {
-        clock: SYSVAR_CLOCK_PUBKEY,
-        rent: SYSVAR_RENT_PUBKEY,
-      },
-      systemProgram: SystemProgram.programId,
-    })
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) =>
+      appendTransactionMessageInstruction(
+        initialize({
+          state: state,
+          payer: payer,
+          nested: {
+            clock: SYSVAR_CLOCK_ADDRESS,
+            rent: SYSVAR_RENT_ADDRESS,
+          },
+          systemProgram: SYSTEM_PROGRAM_ADDRESS,
+        }),
+        tx
+      ),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        },
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
   )
 
-  await sendAndConfirmTransaction(c, tx, [state, payer])
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
+  await sendAndConfirmFn(tx, {
+    commitment: "confirmed",
+  })
 
-  const res = await State.fetch(c, state.publicKey)
+  const res = await State.fetch(rpc, state.address)
   if (res === null) {
     throw new Error("account not found")
   }
@@ -102,11 +134,9 @@ it("init and account fetch", async () => {
   ).toBe(true)
   expect(res.bytesField).toEqual(Uint8Array.from([1, 2, 255, 254]))
   expect(res.stringField).toBe("hello")
-  expect(
-    res.pubkeyField.equals(
-      new PublicKey("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7")
-    )
-  ).toBe(true)
+  expect(res.pubkeyField).toEqual(
+    address("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7")
+  )
 
   // vecField
   expect(res.vecField.length).toBe(5)
@@ -143,6 +173,10 @@ it("init and account fetch", async () => {
     expect(act.enumField.value.u8Field).toBe(15)
     expect(act.enumField.value.nested.someField).toBe(true)
     expect(act.enumField.value.nested.otherField).toBe(10)
+
+    expect(act.pubkeyField).toEqual(
+      address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So")
+    )
   }
 
   expect(res.optionField).toBe(null)
@@ -173,6 +207,10 @@ it("init and account fetch", async () => {
     expect(act.enumField.value.u8Field).toBe(15)
     expect(act.enumField.value.nested.someField).toBe(true)
     expect(act.enumField.value.nested.otherField).toBe(10)
+
+    expect(act.pubkeyField).toEqual(
+      address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So")
+    )
   }
 
   expect(res.arrayField).toStrictEqual([true, false, true])
@@ -227,171 +265,227 @@ it("init and account fetch", async () => {
 })
 
 it("fetch multiple", async () => {
-  const state = new Keypair()
-  const another_state = new Keypair()
-  const non_state = new Keypair()
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const state = await generateKeyPairSigner()
+  const another_state = await generateKeyPairSigner()
+  const non_state = await generateKeyPairSigner()
 
-  const tx = new Transaction({ feePayer: payer.publicKey })
-  tx.add(
-    initialize({
-      state: state.publicKey,
-      payer: payer.publicKey,
-      nested: {
-        clock: SYSVAR_CLOCK_PUBKEY,
-        rent: SYSVAR_RENT_PUBKEY,
-      },
-      systemProgram: SystemProgram.programId,
-    })
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) =>
+      appendTransactionMessageInstructions(
+        [
+          initialize({
+            state: state,
+            payer: payer,
+            nested: {
+              clock: SYSVAR_CLOCK_ADDRESS,
+              rent: SYSVAR_RENT_ADDRESS,
+            },
+            systemProgram: SYSTEM_PROGRAM_ADDRESS,
+          }),
+          initialize({
+            state: another_state,
+            payer: payer,
+            nested: {
+              clock: SYSVAR_CLOCK_ADDRESS,
+              rent: SYSVAR_RENT_ADDRESS,
+            },
+            systemProgram: SYSTEM_PROGRAM_ADDRESS,
+          }),
+        ],
+        tx
+      ),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        },
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
   )
-  tx.add(
-    initialize({
-      state: another_state.publicKey,
-      payer: payer.publicKey,
-      nested: {
-        clock: SYSVAR_CLOCK_PUBKEY,
-        rent: SYSVAR_RENT_PUBKEY,
-      },
-      systemProgram: SystemProgram.programId,
-    })
-  )
 
-  await sendAndConfirmTransaction(c, tx, [state, another_state, payer])
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
+  await sendAndConfirmFn(tx, {
+    commitment: "confirmed",
+  })
 
-  const res = await State.fetchMultiple(c, [
-    state.publicKey,
-    non_state.publicKey,
-    another_state.publicKey,
+  const res = await State.fetchMultiple(rpc, [
+    state.address,
+    non_state.address,
+    another_state.address,
   ])
 
   expect(res).toEqual([expect.any(State), null, expect.any(State)])
 })
 
 it("instruction with args", async () => {
-  const state = new Keypair()
-  const state2 = new Keypair()
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const state = await generateKeyPairSigner()
+  const state2 = await generateKeyPairSigner()
 
-  const tx = new Transaction({ feePayer: payer.publicKey })
-  tx.add(
-    initializeWithValues(
-      {
-        boolField: true,
-        u8Field: 253,
-        i8Field: -120,
-        u16Field: 61234,
-        i16Field: -31253,
-        u32Field: 1234567899,
-        i32Field: -123456789,
-        f32Field: 123458.5,
-        u64Field: new BN("9223372036854775810"),
-        i64Field: new BN("-4611686018427387912"),
-        f64Field: 1234567892.445,
-        u128Field: new BN("170141183460469231731687303715884105740"),
-        i128Field: new BN("-85070591730234615865843651857942052877"),
-        bytesField: Uint8Array.from([5, 10, 255]),
-        stringField: "string value",
-        pubkeyField: new PublicKey(
-          "GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"
-        ),
-        vecField: [new BN(1), new BN("123456789123456789")],
-        vecStructField: [
-          new FooStruct({
-            field1: 1,
-            field2: 2,
-            nested: new BarStruct({
-              someField: true,
-              otherField: 55,
-            }),
-            vecNested: [
-              new BarStruct({
-                someField: false,
-                otherField: 11,
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) =>
+      appendTransactionMessageInstructions(
+        [
+          initializeWithValues(
+            {
+              boolField: true,
+              u8Field: 253,
+              i8Field: -120,
+              u16Field: 61234,
+              i16Field: -31253,
+              u32Field: 1234567899,
+              i32Field: -123456789,
+              f32Field: 123458.5,
+              u64Field: new BN("9223372036854775810"),
+              i64Field: new BN("-4611686018427387912"),
+              f64Field: 1234567892.445,
+              u128Field: new BN("170141183460469231731687303715884105740"),
+              i128Field: new BN("-85070591730234615865843651857942052877"),
+              bytesField: Uint8Array.from([5, 10, 255]),
+              stringField: "string value",
+              pubkeyField: address(
+                "GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"
+              ),
+              vecField: [new BN(1), new BN("123456789123456789")],
+              vecStructField: [
+                new FooStruct({
+                  field1: 1,
+                  field2: 2,
+                  nested: new BarStruct({
+                    someField: true,
+                    otherField: 55,
+                  }),
+                  vecNested: [
+                    new BarStruct({
+                      someField: false,
+                      otherField: 11,
+                    }),
+                  ],
+                  optionNested: null,
+                  enumField: new Unnamed([
+                    true,
+                    22,
+                    new BarStruct({
+                      someField: true,
+                      otherField: 33,
+                    }),
+                  ]),
+                  pubkeyField: address(
+                    "EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"
+                  ),
+                }),
+              ],
+              optionField: true,
+              optionStructField: null,
+              structField: new FooStruct({
+                field1: 1,
+                field2: 2,
+                nested: new BarStruct({
+                  someField: true,
+                  otherField: 55,
+                }),
+                vecNested: [
+                  new BarStruct({
+                    someField: false,
+                    otherField: 11,
+                  }),
+                ],
+                optionNested: null,
+                enumField: new NoFields(),
+                pubkeyField: address(
+                  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
+                ),
               }),
-            ],
-            optionNested: null,
-            enumField: new Unnamed([
-              true,
-              22,
-              new BarStruct({
-                someField: true,
-                otherField: 33,
+              arrayField: [true, true, false],
+              enumField1: new Unnamed([
+                true,
+                15,
+                new BarStruct({
+                  someField: false,
+                  otherField: 200,
+                }),
+              ]),
+              enumField2: new Named({
+                boolField: true,
+                u8Field: 128,
+                nested: new BarStruct({
+                  someField: false,
+                  otherField: 1,
+                }),
               }),
-            ]),
-          }),
+              enumField3: new Struct([
+                new BarStruct({
+                  someField: true,
+                  otherField: 15,
+                }),
+              ]),
+              enumField4: new NoFields(),
+            },
+            {
+              state: state,
+              payer: payer,
+              nested: {
+                clock: SYSVAR_CLOCK_ADDRESS,
+                rent: SYSVAR_RENT_ADDRESS,
+              },
+              systemProgram: SYSTEM_PROGRAM_ADDRESS,
+            }
+          ),
+          initializeWithValues2(
+            {
+              vecOfOption: [null, new BN(20)],
+            },
+            {
+              state: state2,
+              payer: payer,
+              systemProgram: SYSTEM_PROGRAM_ADDRESS,
+            }
+          ),
         ],
-        optionField: true,
-        optionStructField: null,
-        structField: new FooStruct({
-          field1: 1,
-          field2: 2,
-          nested: new BarStruct({
-            someField: true,
-            otherField: 55,
-          }),
-          vecNested: [
-            new BarStruct({
-              someField: false,
-              otherField: 11,
-            }),
-          ],
-          optionNested: null,
-          enumField: new NoFields(),
-        }),
-        arrayField: [true, true, false],
-        enumField1: new Unnamed([
-          true,
-          15,
-          new BarStruct({
-            someField: false,
-            otherField: 200,
-          }),
-        ]),
-        enumField2: new Named({
-          boolField: true,
-          u8Field: 128,
-          nested: new BarStruct({
-            someField: false,
-            otherField: 1,
-          }),
-        }),
-        enumField3: new Struct([
-          new BarStruct({
-            someField: true,
-            otherField: 15,
-          }),
-        ]),
-        enumField4: new NoFields(),
-      },
-      {
-        state: state.publicKey,
-        payer: payer.publicKey,
-        nested: {
-          clock: SYSVAR_CLOCK_PUBKEY,
-          rent: SYSVAR_RENT_PUBKEY,
+        tx
+      ),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
         },
-        systemProgram: SystemProgram.programId,
-      }
-    )
-  )
-  tx.add(
-    initializeWithValues2(
-      {
-        vecOfOption: [null, new BN(20)],
-      },
-      {
-        state: state2.publicKey,
-        payer: payer.publicKey,
-        systemProgram: SystemProgram.programId,
-      }
-    )
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
   )
 
-  await sendAndConfirmTransaction(c, tx, [state, state2, payer])
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
+  await sendAndConfirmFn(tx, {
+    commitment: "confirmed",
+  })
 
-  const res = await State.fetch(c, state.publicKey)
+  const res = await State.fetch(rpc, state.address)
   if (res === null) {
     throw new Error("account for State not found")
   }
-  const res2 = await State2.fetch(c, state2.publicKey)
+  const res2 = await State2.fetch(rpc, state2.address)
   if (res2 === null) {
     throw new Error("account for State2 not found")
   }
@@ -415,11 +509,9 @@ it("instruction with args", async () => {
   ).toBe(true)
   expect(res.bytesField).toEqual(Uint8Array.from([5, 10, 255]))
   expect(res.stringField).toBe("string value")
-  expect(
-    res.pubkeyField.equals(
-      new PublicKey("GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s")
-    )
-  ).toBe(true)
+  expect(res.pubkeyField).toEqual(
+    address("GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s")
+  )
 
   // vecField
   expect(res.vecField.length).toBe(2)
@@ -452,6 +544,10 @@ it("instruction with args", async () => {
     expect(act.enumField.value[1]).toBe(22)
     expect(act.enumField.value[2].someField).toBe(true)
     expect(act.enumField.value[2].otherField).toBe(33)
+
+    expect(act.pubkeyField).toEqual(
+      address("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7")
+    )
   }
 
   // optionField
@@ -480,6 +576,10 @@ it("instruction with args", async () => {
       throw new Error()
     }
     expect(act.enumField.kind).toBe("NoFields")
+
+    expect(act.pubkeyField).toEqual(
+      address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So")
+    )
   }
 
   // arrayField
@@ -539,12 +639,36 @@ it("instruction with args", async () => {
 })
 
 it("tx error", async () => {
-  const tx = new Transaction({ feePayer: payer.publicKey })
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
 
-  tx.add(causeError())
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) => appendTransactionMessageInstruction(causeError(), tx),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        },
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
+  )
+
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
 
   try {
-    await sendAndConfirmTransaction(c, tx, [payer])
+    await sendAndConfirmFn(tx, {
+      commitment: "processed",
+    })
   } catch (e) {
     const parsed = fromTxError(e)
 
@@ -561,10 +685,59 @@ it("tx error", async () => {
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
       "Program log: Instruction: CauseError",
       "Program log: AnchorError thrown in programs/example-program/src/lib.rs:90. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
-      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 2385 of 200000 compute units",
+      "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 2293 of 200000 compute units",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x1770",
     ])
 
+    return
+  }
+})
+
+it("tx error skip preflight", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) => appendTransactionMessageInstruction(causeError(), tx),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        },
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
+  )
+
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
+
+  try {
+    await sendAndConfirmFn(tx, {
+      commitment: "processed",
+      skipPreflight: true,
+    })
+  } catch (e) {
+    const parsed = fromTxError(e)
+
+    expect(parsed).not.toBe(null)
+    if (parsed === null) {
+      throw new Error()
+    }
+
+    expect(parsed.message).toBe("6000: Example error.")
+    expect(parsed.code).toBe(6000)
+    expect(parsed.name).toBe("SomeError")
+    expect("msg" in parsed && parsed.msg).toBe("Example error.")
+    expect(parsed.logs).toBeUndefined()
     return
   }
 })
@@ -622,7 +795,7 @@ it("toJSON", async () => {
     i128Field: new BN("-85070591730234615865843651857942052897"),
     bytesField: Uint8Array.from([1, 255]),
     stringField: "a string",
-    pubkeyField: new PublicKey("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"),
+    pubkeyField: address("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"),
     vecField: [new BN("10"), new BN("1234567890123456")],
     vecStructField: [
       new FooStruct({
@@ -647,6 +820,7 @@ it("toJSON", async () => {
             otherField: 11,
           }),
         ]),
+        pubkeyField: address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"),
       }),
     ],
     optionField: null,
@@ -668,6 +842,7 @@ it("toJSON", async () => {
         otherField: 99,
       }),
       enumField: new NoFields(),
+      pubkeyField: address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"),
     }),
     structField: new FooStruct({
       field1: 11,
@@ -687,6 +862,7 @@ it("toJSON", async () => {
         otherField: 75,
       }),
       enumField: new NoFields(),
+      pubkeyField: address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"),
     }),
     arrayField: [true, false],
     enumField1: new Unnamed([
@@ -760,6 +936,7 @@ it("toJSON", async () => {
             },
           ],
         },
+        pubkeyField: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
       },
     ],
     optionField: null,
@@ -783,6 +960,7 @@ it("toJSON", async () => {
       enumField: {
         kind: "NoFields",
       },
+      pubkeyField: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
     },
     structField: {
       field1: 11,
@@ -804,6 +982,7 @@ it("toJSON", async () => {
       enumField: {
         kind: "NoFields",
       },
+      pubkeyField: "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So",
     },
     arrayField: [true, false],
     enumField1: {

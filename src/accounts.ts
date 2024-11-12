@@ -64,9 +64,10 @@ function genAccountFiles(
 
     // imports
     src.addStatements([
-      `import { PublicKey, Connection } from "@solana/web3.js"`,
+      `import { address, Address, fetchEncodedAccount, fetchEncodedAccounts, GetAccountInfoApi, GetMultipleAccountsApi, Rpc } from "@solana/web3.js"`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [
             `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
@@ -136,7 +137,7 @@ function genAccountFiles(
         isReadonly: true,
         name: "layout",
         initializer: (writer) => {
-          writer.write("borsh.struct([")
+          writer.write(`borsh.struct<${name}>([`)
 
           fields.forEach((field) => {
             writer.writeLine(layoutForType(field.type, field.name) + ",")
@@ -170,36 +171,38 @@ function genAccountFiles(
       name: "fetch",
       parameters: [
         {
-          name: "c",
-          type: "Connection",
+          name: "rpc",
+          type: "Rpc<GetAccountInfoApi>",
         },
         {
           name: "address",
-          type: "PublicKey",
+          type: "Address",
         },
         {
           name: "programId",
-          type: "PublicKey",
+          type: "Address",
           initializer: "PROGRAM_ID",
         },
       ],
       returnType: `Promise<${name} | null>`,
       statements: [
         (writer) => {
-          writer.writeLine("const info = await c.getAccountInfo(address)")
+          writer.writeLine(
+            "const info = await fetchEncodedAccount(rpc, address)"
+          )
           writer.blankLine()
-          writer.write("if (info === null)")
+          writer.write("if (!info.exists)")
           writer.inlineBlock(() => {
             writer.writeLine("return null")
           })
-          writer.write("if (!info.owner.equals(programId))")
+          writer.write("if (info.programAddress !== programId)")
           writer.inlineBlock(() => {
             writer.writeLine(
               `throw new Error("account doesn't belong to this program")`
             )
           })
           writer.blankLine()
-          writer.writeLine("return this.decode(info.data)")
+          writer.writeLine("return this.decode(Buffer.from(info.data))")
         },
       ],
     })
@@ -211,16 +214,16 @@ function genAccountFiles(
       name: "fetchMultiple",
       parameters: [
         {
-          name: "c",
-          type: "Connection",
+          name: "rpc",
+          type: "Rpc<GetMultipleAccountsApi>",
         },
         {
           name: "addresses",
-          type: "PublicKey[]",
+          type: "Address[]",
         },
         {
           name: "programId",
-          type: "PublicKey",
+          type: "Address",
           initializer: "PROGRAM_ID",
         },
       ],
@@ -228,25 +231,25 @@ function genAccountFiles(
       statements: [
         (writer) => {
           writer.writeLine(
-            "const infos = await c.getMultipleAccountsInfo(addresses)"
+            "const infos = await fetchEncodedAccounts(rpc, addresses)"
           )
           writer.blankLine()
           writer.write("return infos.map((info) => ")
           writer.inlineBlock(() => {
-            writer.write("if (info === null)")
+            writer.write("if (!info.exists)")
             writer.inlineBlock(() => {
               writer.writeLine("return null")
             })
             writer.write("")
 
-            writer.write("if (!info.owner.equals(programId))")
+            writer.write("if (info.programAddress !== programId)")
             writer.inlineBlock(() => {
               writer.writeLine(
                 `throw new Error("account doesn't belong to this program")`
               )
             })
             writer.blankLine()
-            writer.writeLine("return this.decode(info.data)")
+            writer.writeLine("return this.decode(Buffer.from(info.data))")
           })
           writer.write(")")
         },

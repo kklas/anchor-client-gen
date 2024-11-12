@@ -1,6 +1,15 @@
-import { PublicKey, Connection } from "@solana/web3.js"
+import {
+  address,
+  Address,
+  fetchEncodedAccount,
+  fetchEncodedAccounts,
+  GetAccountInfoApi,
+  GetMultipleAccountsApi,
+  Rpc,
+} from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
@@ -19,7 +28,7 @@ export class State2 {
     106, 97, 255, 161, 250, 205, 185, 192,
   ])
 
-  static readonly layout = borsh.struct([
+  static readonly layout = borsh.struct<State2>([
     borsh.vec(borsh.option(borsh.u64()), "vecOfOption"),
   ])
 
@@ -28,38 +37,38 @@ export class State2 {
   }
 
   static async fetch(
-    c: Connection,
-    address: PublicKey,
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetAccountInfoApi>,
+    address: Address,
+    programId: Address = PROGRAM_ID
   ): Promise<State2 | null> {
-    const info = await c.getAccountInfo(address)
+    const info = await fetchEncodedAccount(rpc, address)
 
-    if (info === null) {
+    if (!info.exists) {
       return null
     }
-    if (!info.owner.equals(programId)) {
+    if (info.programAddress !== programId) {
       throw new Error("account doesn't belong to this program")
     }
 
-    return this.decode(info.data)
+    return this.decode(Buffer.from(info.data))
   }
 
   static async fetchMultiple(
-    c: Connection,
-    addresses: PublicKey[],
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetMultipleAccountsApi>,
+    addresses: Address[],
+    programId: Address = PROGRAM_ID
   ): Promise<Array<State2 | null>> {
-    const infos = await c.getMultipleAccountsInfo(addresses)
+    const infos = await fetchEncodedAccounts(rpc, addresses)
 
     return infos.map((info) => {
-      if (info === null) {
+      if (!info.exists) {
         return null
       }
-      if (!info.owner.equals(programId)) {
+      if (info.programAddress !== programId) {
         throw new Error("account doesn't belong to this program")
       }
 
-      return this.decode(info.data)
+      return this.decode(Buffer.from(info.data))
     })
   }
 

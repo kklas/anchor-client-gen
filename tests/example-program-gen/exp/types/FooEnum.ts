@@ -1,7 +1,8 @@
-import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { address, Address } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh"
+import { borshAddress } from "../utils"
 
 export type UnnamedFields = [boolean, number, types.BarStructFields]
 export type UnnamedValue = [boolean, number, types.BarStruct]

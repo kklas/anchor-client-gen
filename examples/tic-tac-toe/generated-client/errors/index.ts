@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js"
+import { Address } from "@solana/web3.js"
 import { PROGRAM_ID } from "../programId"
 import * as anchor from "./anchor"
 import * as custom from "./custom"
@@ -23,19 +23,25 @@ const errorRe = /Program (\w+) failed: custom program error: (\w+)/
 
 export function fromTxError(
   err: unknown,
-  programId: PublicKey = PROGRAM_ID
+  programId: Address = PROGRAM_ID
 ): custom.CustomError | anchor.AnchorError | null {
   if (
     typeof err !== "object" ||
     err === null ||
-    !hasOwnProperty(err, "logs") ||
-    !Array.isArray(err.logs)
+    !hasOwnProperty(err, "context")
   ) {
     return null
   }
 
+  const context = err.context as { code?: number; logs?: string[] }
+  if (hasOwnProperty(context, "code") && context.code) {
+    return fromCode(context.code, context.logs)
+  }
+  if (!hasOwnProperty(context, "logs") || !context.logs) {
+    return null
+  }
   let firstMatch: RegExpExecArray | null = null
-  for (const logLine of err.logs) {
+  for (const logLine of context.logs) {
     firstMatch = errorRe.exec(logLine)
     if (firstMatch !== null) {
       break
@@ -58,5 +64,5 @@ export function fromTxError(
     return null
   }
 
-  return fromCode(errorCode, err.logs)
+  return fromCode(errorCode, context.logs)
 }

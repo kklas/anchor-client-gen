@@ -1,6 +1,15 @@
-import { PublicKey, Connection } from "@solana/web3.js"
+import {
+  address,
+  Address,
+  fetchEncodedAccount,
+  fetchEncodedAccounts,
+  GetAccountInfoApi,
+  GetMultipleAccountsApi,
+  Rpc,
+} from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
@@ -21,7 +30,7 @@ export interface StateFields {
   i128Field: BN
   bytesField: Uint8Array
   stringField: string
-  pubkeyField: PublicKey
+  pubkeyField: Address
   vecField: Array<BN>
   vecStructField: Array<types.FooStructFields>
   optionField: boolean | null
@@ -82,7 +91,7 @@ export class State {
   readonly i128Field: BN
   readonly bytesField: Uint8Array
   readonly stringField: string
-  readonly pubkeyField: PublicKey
+  readonly pubkeyField: Address
   readonly vecField: Array<BN>
   readonly vecStructField: Array<types.FooStruct>
   readonly optionField: boolean | null
@@ -98,7 +107,7 @@ export class State {
     216, 146, 107, 94, 104, 75, 182, 177,
   ])
 
-  static readonly layout = borsh.struct([
+  static readonly layout = borsh.struct<State>([
     borsh.bool("boolField"),
     borsh.u8("u8Field"),
     borsh.i8("i8Field"),
@@ -114,7 +123,7 @@ export class State {
     borsh.i128("i128Field"),
     borsh.vecU8("bytesField"),
     borsh.str("stringField"),
-    borsh.publicKey("pubkeyField"),
+    borshAddress("pubkeyField"),
     borsh.vec(borsh.u64(), "vecField"),
     borsh.vec(types.FooStruct.layout(), "vecStructField"),
     borsh.option(borsh.bool(), "optionField"),
@@ -162,38 +171,38 @@ export class State {
   }
 
   static async fetch(
-    c: Connection,
-    address: PublicKey,
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetAccountInfoApi>,
+    address: Address,
+    programId: Address = PROGRAM_ID
   ): Promise<State | null> {
-    const info = await c.getAccountInfo(address)
+    const info = await fetchEncodedAccount(rpc, address)
 
-    if (info === null) {
+    if (!info.exists) {
       return null
     }
-    if (!info.owner.equals(programId)) {
+    if (info.programAddress !== programId) {
       throw new Error("account doesn't belong to this program")
     }
 
-    return this.decode(info.data)
+    return this.decode(Buffer.from(info.data))
   }
 
   static async fetchMultiple(
-    c: Connection,
-    addresses: PublicKey[],
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetMultipleAccountsApi>,
+    addresses: Address[],
+    programId: Address = PROGRAM_ID
   ): Promise<Array<State | null>> {
-    const infos = await c.getMultipleAccountsInfo(addresses)
+    const infos = await fetchEncodedAccounts(rpc, addresses)
 
     return infos.map((info) => {
-      if (info === null) {
+      if (!info.exists) {
         return null
       }
-      if (!info.owner.equals(programId)) {
+      if (info.programAddress !== programId) {
         throw new Error("account doesn't belong to this program")
       }
 
-      return this.decode(info.data)
+      return this.decode(Buffer.from(info.data))
     })
   }
 
@@ -262,7 +271,7 @@ export class State {
       i128Field: this.i128Field.toString(),
       bytesField: Array.from(this.bytesField.values()),
       stringField: this.stringField,
-      pubkeyField: this.pubkeyField.toString(),
+      pubkeyField: this.pubkeyField,
       vecField: this.vecField.map((item) => item.toString()),
       vecStructField: this.vecStructField.map((item) => item.toJSON()),
       optionField: this.optionField,
@@ -294,7 +303,7 @@ export class State {
       i128Field: new BN(obj.i128Field),
       bytesField: Uint8Array.from(obj.bytesField),
       stringField: obj.stringField,
-      pubkeyField: new PublicKey(obj.pubkeyField),
+      pubkeyField: address(obj.pubkeyField),
       vecField: obj.vecField.map((item) => new BN(item)),
       vecStructField: obj.vecStructField.map((item) =>
         types.FooStruct.fromJSON(item)

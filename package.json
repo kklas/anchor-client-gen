@@ -1,7 +1,7 @@
 {
   "name": "anchor-client-gen",
   "description": "A tool for generating solana web3 clients from anchor IDLs.",
-  "version": "0.28.1",
+  "version": "1.29.5",
   "bin": "dist/main.js",
   "license": "MIT",
   "homepage": "https://github.com/kklas/anchor-client-gen",
@@ -46,8 +46,11 @@
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
     "@coral-xyz/borsh": "^0.29.0",
+    "@solana-program/system": "^0.6.2",
+    "@solana/sysvars": "^2.0.0",
     "@solana/web3.js": "^2.0.0",
     "bn.js": "^5.2.1",
+    "buffer-layout": "^1.2.2",
     "camelcase": "^7.0.1",
     "commander": "^10.0.1",
     "js-sha256": "^0.9.0",

@@ -1,7 +1,8 @@
-import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { address, Address } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh"
+import { borshAddress } from "../utils"
 
 export interface FooStructFields {
   field1: number
@@ -10,6 +11,7 @@ export interface FooStructFields {
   vecNested: Array<types.BarStructFields>
   optionNested: types.BarStructFields | null
   enumField: types.FooEnumKind
+  pubkeyField: Address
 }
 
 export interface FooStructJSON {
@@ -19,6 +21,7 @@ export interface FooStructJSON {
   vecNested: Array<types.BarStructJSON>
   optionNested: types.BarStructJSON | null
   enumField: types.FooEnumJSON
+  pubkeyField: string
 }
 
 export class FooStruct {
@@ -28,6 +31,7 @@ export class FooStruct {
   readonly vecNested: Array<types.BarStruct>
   readonly optionNested: types.BarStruct | null
   readonly enumField: types.FooEnumKind
+  readonly pubkeyField: Address
 
   constructor(fields: FooStructFields) {
     this.field1 = fields.field1
@@ -41,6 +45,7 @@ export class FooStruct {
         new types.BarStruct({ ...fields.optionNested })) ||
       null
     this.enumField = fields.enumField
+    this.pubkeyField = fields.pubkeyField
   }
 
   static layout(property?: string) {
@@ -52,6 +57,7 @@ export class FooStruct {
         borsh.vec(types.BarStruct.layout(), "vecNested"),
         borsh.option(types.BarStruct.layout(), "optionNested"),
         types.FooEnum.layout("enumField"),
+        borshAddress("pubkeyField"),
       ],
       property
     )
@@ -72,6 +78,7 @@ export class FooStruct {
         (obj.optionNested && types.BarStruct.fromDecoded(obj.optionNested)) ||
         null,
       enumField: types.FooEnum.fromDecoded(obj.enumField),
+      pubkeyField: obj.pubkeyField,
     })
   }
 
@@ -88,6 +95,7 @@ export class FooStruct {
           types.BarStruct.toEncodable(fields.optionNested)) ||
         null,
       enumField: fields.enumField.toEncodable(),
+      pubkeyField: fields.pubkeyField,
     }
   }
 
@@ -99,6 +107,7 @@ export class FooStruct {
       vecNested: this.vecNested.map((item) => item.toJSON()),
       optionNested: (this.optionNested && this.optionNested.toJSON()) || null,
       enumField: this.enumField.toJSON(),
+      pubkeyField: this.pubkeyField,
     }
   }
 
@@ -112,6 +121,7 @@ export class FooStruct {
         (obj.optionNested && types.BarStruct.fromJSON(obj.optionNested)) ||
         null,
       enumField: types.FooEnum.fromJSON(obj.enumField),
+      pubkeyField: address(obj.pubkeyField),
     })
   }
 

@@ -134,6 +134,7 @@ pub struct FooStruct {
     vec_nested: Vec<BarStruct>,
     option_nested: Option<BarStruct>,
     enum_field: FooEnum,
+    pubkey_field: Pubkey,
 }
 
 impl Default for FooStruct {
@@ -149,6 +150,7 @@ impl Default for FooStruct {
                 u8_field: 15,
                 nested: BarStruct::default(),
             },
+            pubkey_field: Pubkey::from_str("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So").unwrap(),
         };
     }
 }

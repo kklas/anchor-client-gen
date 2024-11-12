@@ -7,6 +7,7 @@ import {
   layoutForType,
   tsTypeFromIdl,
 } from "./common"
+import { AccountRole } from "@solana/web3.js"
 
 export function genInstructions(
   project: Project,
@@ -81,9 +82,10 @@ function genInstructionFiles(
 
     // imports
     src.addStatements([
-      `import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { Address, IAccountMeta, IAccountSignerMeta, IInstruction, TransactionSigner } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [
             `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
@@ -112,7 +114,11 @@ function genInstructionFiles(
       writer: CodeBlockWriter
     ) {
       if (!("accounts" in accItem)) {
-        writer.write("PublicKey")
+        if (accItem.isSigner) {
+          writer.write("TransactionSigner")
+        } else {
+          writer.write("Address")
+        }
         return
       }
       writer.block(() => {
@@ -184,20 +190,39 @@ function genInstructionFiles(
       })
     }
     ixFn.addParameter({
-      name: "programId",
-      type: "PublicKey",
+      name: "programAddress",
+      type: "Address",
       initializer: "PROGRAM_ID",
     })
 
-    // keys
+    // accounts
     ixFn.addVariableStatement({
       declarationKind: VariableDeclarationKind.Const,
       declarations: [
         {
           name: "keys",
-          type: "Array<AccountMeta>",
+          type: "Array<IAccountMeta | IAccountSignerMeta>",
           initializer: (writer) => {
             writer.write("[")
+
+            function getAccountRole({
+              isSigner,
+              isMut,
+            }: {
+              isSigner: boolean
+              isMut: boolean
+            }): AccountRole {
+              if (isSigner && isMut) {
+                return AccountRole.WRITABLE_SIGNER
+              }
+              if (isSigner && !isMut) {
+                return AccountRole.READONLY_SIGNER
+              }
+              if (!isSigner && isMut) {
+                return AccountRole.WRITABLE
+              }
+              return AccountRole.READONLY
+            }
 
             function recurseAccounts(
               accs: IdlAccountItem[],
@@ -208,10 +233,17 @@ function genInstructionFiles(
                   recurseAccounts(item.accounts, [...nestedNames, item.name])
                   return
                 }
+                const props = [...nestedNames, item.name]
+                const addressProps = item.isSigner
+                  ? [...props, "address"]
+                  : props
+
                 writer.writeLine(
-                  `{ pubkey: accounts.${[...nestedNames, item.name].join(
+                  `{ address: accounts.${addressProps.join(
                     "."
-                  )}, isSigner: ${item.isSigner}, isWritable: ${item.isMut} },`
+                  )}, role: ${getAccountRole(item)}${
+                    item.isSigner ? `, signer: accounts.${props}` : ""
+                  } },`
                 )
               })
             }
@@ -293,7 +325,8 @@ function genInstructionFiles(
       declarations: [
         {
           name: "ix",
-          initializer: "new TransactionInstruction({ keys, programId, data })",
+          type: "IInstruction",
+          initializer: "{ accounts: keys, programAddress, data }",
         },
       ],
     })

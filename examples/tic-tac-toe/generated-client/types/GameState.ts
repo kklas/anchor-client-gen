@@ -1,7 +1,8 @@
-import { PublicKey } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { address, Address } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh"
+import { borshAddress } from "../utils"
 
 export interface ActiveJSON {
   kind: "Active"
@@ -50,10 +51,10 @@ export class Tie {
 }
 
 export type WonFields = {
-  winner: PublicKey
+  winner: Address
 }
 export type WonValue = {
-  winner: PublicKey
+  winner: Address
 }
 
 export interface WonJSON {
@@ -80,7 +81,7 @@ export class Won {
     return {
       kind: "Won",
       value: {
-        winner: this.value.winner.toString(),
+        winner: this.value.winner,
       },
     }
   }
@@ -126,7 +127,7 @@ export function fromJSON(obj: types.GameStateJSON): types.GameStateKind {
     }
     case "Won": {
       return new Won({
-        winner: new PublicKey(obj.value.winner),
+        winner: address(obj.value.winner),
       })
     }
   }
@@ -136,7 +137,7 @@ export function layout(property?: string) {
   const ret = borsh.rustEnum([
     borsh.struct([], "Active"),
     borsh.struct([], "Tie"),
-    borsh.struct([borsh.publicKey("winner")], "Won"),
+    borsh.struct([borshAddress("winner")], "Won"),
   ])
   if (property !== undefined) {
     return ret.replicate(property)

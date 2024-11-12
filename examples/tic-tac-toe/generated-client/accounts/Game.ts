@@ -1,11 +1,20 @@
-import { PublicKey, Connection } from "@solana/web3.js"
+import {
+  address,
+  Address,
+  fetchEncodedAccount,
+  fetchEncodedAccounts,
+  GetAccountInfoApi,
+  GetMultipleAccountsApi,
+  Rpc,
+} from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
 export interface GameFields {
-  players: Array<PublicKey>
+  players: Array<Address>
   turn: number
   board: Array<Array<types.SignKind | null>>
   state: types.GameStateKind
@@ -19,7 +28,7 @@ export interface GameJSON {
 }
 
 export class Game {
-  readonly players: Array<PublicKey>
+  readonly players: Array<Address>
   readonly turn: number
   readonly board: Array<Array<types.SignKind | null>>
   readonly state: types.GameStateKind
@@ -28,8 +37,8 @@ export class Game {
     27, 90, 166, 125, 74, 100, 121, 18,
   ])
 
-  static readonly layout = borsh.struct([
-    borsh.array(borsh.publicKey(), 2, "players"),
+  static readonly layout = borsh.struct<Game>([
+    borsh.array(borshAddress(), 2, "players"),
     borsh.u8("turn"),
     borsh.array(borsh.array(borsh.option(types.Sign.layout()), 3), 3, "board"),
     types.GameState.layout("state"),
@@ -43,38 +52,38 @@ export class Game {
   }
 
   static async fetch(
-    c: Connection,
-    address: PublicKey,
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetAccountInfoApi>,
+    address: Address,
+    programId: Address = PROGRAM_ID
   ): Promise<Game | null> {
-    const info = await c.getAccountInfo(address)
+    const info = await fetchEncodedAccount(rpc, address)
 
-    if (info === null) {
+    if (!info.exists) {
       return null
     }
-    if (!info.owner.equals(programId)) {
+    if (info.programAddress !== programId) {
       throw new Error("account doesn't belong to this program")
     }
 
-    return this.decode(info.data)
+    return this.decode(Buffer.from(info.data))
   }
 
   static async fetchMultiple(
-    c: Connection,
-    addresses: PublicKey[],
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetMultipleAccountsApi>,
+    addresses: Address[],
+    programId: Address = PROGRAM_ID
   ): Promise<Array<Game | null>> {
-    const infos = await c.getMultipleAccountsInfo(addresses)
+    const infos = await fetchEncodedAccounts(rpc, addresses)
 
     return infos.map((info) => {
-      if (info === null) {
+      if (!info.exists) {
         return null
       }
-      if (!info.owner.equals(programId)) {
+      if (info.programAddress !== programId) {
         throw new Error("account doesn't belong to this program")
       }
 
-      return this.decode(info.data)
+      return this.decode(Buffer.from(info.data))
     })
   }
 
@@ -104,7 +113,7 @@ export class Game {
 
   toJSON(): GameJSON {
     return {
-      players: this.players.map((item) => item.toString()),
+      players: this.players,
       turn: this.turn,
       board: this.board.map((item) =>
         item.map((item) => (item && item.toJSON()) || null)
@@ -115,7 +124,7 @@ export class Game {
 
   static fromJSON(obj: GameJSON): Game {
     return new Game({
-      players: obj.players.map((item) => new PublicKey(item)),
+      players: obj.players.map((item) => address(item)),
       turn: obj.turn,
       board: obj.board.map((item) =>
         item.map((item) => (item && types.Sign.fromJSON(item)) || null)

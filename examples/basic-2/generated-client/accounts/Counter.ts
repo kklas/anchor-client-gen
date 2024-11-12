@@ -1,10 +1,19 @@
-import { PublicKey, Connection } from "@solana/web3.js"
+import {
+  address,
+  Address,
+  fetchEncodedAccount,
+  fetchEncodedAccounts,
+  GetAccountInfoApi,
+  GetMultipleAccountsApi,
+  Rpc,
+} from "@solana/web3.js"
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
 export interface CounterFields {
-  authority: PublicKey
+  authority: Address
   count: BN
 }
 
@@ -14,15 +23,15 @@ export interface CounterJSON {
 }
 
 export class Counter {
-  readonly authority: PublicKey
+  readonly authority: Address
   readonly count: BN
 
   static readonly discriminator = Buffer.from([
     255, 176, 4, 245, 188, 253, 124, 25,
   ])
 
-  static readonly layout = borsh.struct([
-    borsh.publicKey("authority"),
+  static readonly layout = borsh.struct<Counter>([
+    borshAddress("authority"),
     borsh.u64("count"),
   ])
 
@@ -32,38 +41,38 @@ export class Counter {
   }
 
   static async fetch(
-    c: Connection,
-    address: PublicKey,
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetAccountInfoApi>,
+    address: Address,
+    programId: Address = PROGRAM_ID
   ): Promise<Counter | null> {
-    const info = await c.getAccountInfo(address)
+    const info = await fetchEncodedAccount(rpc, address)
 
-    if (info === null) {
+    if (!info.exists) {
       return null
     }
-    if (!info.owner.equals(programId)) {
+    if (info.programAddress !== programId) {
       throw new Error("account doesn't belong to this program")
     }
 
-    return this.decode(info.data)
+    return this.decode(Buffer.from(info.data))
   }
 
   static async fetchMultiple(
-    c: Connection,
-    addresses: PublicKey[],
-    programId: PublicKey = PROGRAM_ID
+    rpc: Rpc<GetMultipleAccountsApi>,
+    addresses: Address[],
+    programId: Address = PROGRAM_ID
   ): Promise<Array<Counter | null>> {
-    const infos = await c.getMultipleAccountsInfo(addresses)
+    const infos = await fetchEncodedAccounts(rpc, addresses)
 
     return infos.map((info) => {
-      if (info === null) {
+      if (!info.exists) {
         return null
       }
-      if (!info.owner.equals(programId)) {
+      if (info.programAddress !== programId) {
         throw new Error("account doesn't belong to this program")
       }
 
-      return this.decode(info.data)
+      return this.decode(Buffer.from(info.data))
     })
   }
 
@@ -82,14 +91,14 @@ export class Counter {
 
   toJSON(): CounterJSON {
     return {
-      authority: this.authority.toString(),
+      authority: this.authority,
       count: this.count.toString(),
     }
   }
 
   static fromJSON(obj: CounterJSON): Counter {
     return new Counter({
-      authority: new PublicKey(obj.authority),
+      authority: address(obj.authority),
       count: new BN(obj.count),
     })
   }
