@@ -7,3 +7,4 @@ node_modules/
 **/*.rs.bk
 .test-ledger
 dist/
+.idea/

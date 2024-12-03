@@ -26,7 +26,7 @@ export function genIndex(
   })
 
   const hasCustomErrors = idl.errors && idl.errors.length > 0
-  src.addStatements([`import { PublicKey } from "@solana/web3.js"`])
+  src.addStatements([`import { Address } from "@solana/web3.js"`])
   src.addImportDeclaration({
     namedImports: ["PROGRAM_ID"],
     moduleSpecifier: "../programId",
@@ -114,7 +114,7 @@ export function genIndex(
       },
       {
         name: "programId",
-        type: "PublicKey",
+        type: "Address",
         initializer: "PROGRAM_ID",
       },
     ],
@@ -125,14 +125,20 @@ export function genIndex(
   fromTxErrorFn.setBodyText(`if (
   typeof err !== "object" ||
   err === null ||
-  !hasOwnProperty(err, "logs") ||
-  !Array.isArray(err.logs)
+  !hasOwnProperty(err, "context")
 ) {
   return null
 }
 
+const context = err.context as { code?: number; logs?: string[] }
+if (hasOwnProperty(context, "code") && context.code) {
+  return fromCode(context.code, context.logs)
+}
+if (!hasOwnProperty(context, "logs") || !context.logs) {
+  return null;
+}
 let firstMatch: RegExpExecArray | null = null
-for (const logLine of err.logs) {
+for (const logLine of context.logs) {
   firstMatch = errorRe.exec(logLine)
   if (firstMatch !== null) {
     break
@@ -155,7 +161,7 @@ try {
   return null
 }
 
-return fromCode(errorCode, err.logs)`)
+return fromCode(errorCode, context.logs)`)
 }
 
 export function genCustomErrors(

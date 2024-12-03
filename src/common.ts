@@ -82,7 +82,7 @@ export function tsTypeFromIdl(
     case "string":
       return "string"
     case "publicKey":
-      return "PublicKey"
+      return "Address"
     default:
       if (isComplexType(ty) && "vec" in ty) {
         return `Array<${tsTypeFromIdl(
@@ -190,7 +190,7 @@ export function layoutForType(
     case "string":
       return `borsh.str(${q(property)})`
     case "publicKey":
-      return `borsh.publicKey(${q(property)})`
+      return `borshAddress(${q(property)})`
     default:
       if (isComplexType(ty) && "vec" in ty) {
         return `borsh.vec(${layoutForType(ty.vec)}, ${q(property)})`
@@ -548,6 +548,7 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
     case "i32":
     case "f32":
     case "f64":
+    case "publicKey":
     case "string":
       return `${valPrefix}${ty.name}`
     case "u64":
@@ -556,7 +557,6 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
     case "i128":
     case "u256":
     case "i256":
-    case "publicKey":
       return `${valPrefix}${ty.name}.toString()`
     case "bytes":
       return `Array.from(${valPrefix}${ty.name}.values())`
@@ -712,7 +712,7 @@ export function fieldFromJSON(
     case "u256":
     case "i256":
     case "publicKey":
-      return `new PublicKey(${paramPrefix}${ty.name})`
+      return `address(${paramPrefix}${ty.name})`
     default:
       if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldFromJSON(

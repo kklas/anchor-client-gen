@@ -490,6 +490,10 @@
             "type": {
               "defined": "FooEnum"
             }
+          },
+          {
+            "name": "pubkeyField",
+            "type": "publicKey"
           }
         ]
       }
@@ -524,14 +528,14 @@
             "name": "Named",
             "fields": [
               {
-                "name": "bool_field",
+                "name": "boolField",
                 "docs": [
                   "A bool field inside a struct tuple kind"
                 ],
                 "type": "bool"
               },
               {
-                "name": "u8_field",
+                "name": "u8Field",
                 "type": "u8"
               },
               {

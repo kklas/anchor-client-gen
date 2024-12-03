@@ -26,7 +26,7 @@ export function genProgramId(
     ?.getText()
 
   const programIdDefaultValue =
-    "new PublicKey(/* edit this to return the correct program ID */)"
+    "address(/* edit this to return the correct program ID */)"
   if (programIdValue === programIdDefaultValue) {
     programIdValue = undefined // re-generate program id if it hasn't been manually modified
   }
@@ -50,7 +50,7 @@ export function genProgramId(
 
   if (importStatements === undefined || importStatements.length === 0) {
     src.addImportDeclaration({
-      namedImports: ["PublicKey"],
+      namedImports: ["address", "Address"],
       moduleSpecifier: "@solana/web3.js",
     })
   } else {
@@ -67,7 +67,7 @@ export function genProgramId(
       declarations: [
         {
           name: "PROGRAM_ID_IDL",
-          initializer: `new PublicKey("${idlProgramId}")`,
+          initializer: `address("${idlProgramId}")`,
         },
       ],
       isExported: true,
@@ -83,7 +83,7 @@ export function genProgramId(
       declarations: [
         {
           name: "PROGRAM_ID_CLI",
-          initializer: `new PublicKey("${cliProgramId}")`,
+          initializer: `address("${cliProgramId}")`,
         },
       ],
       isExported: true,
@@ -100,7 +100,7 @@ export function genProgramId(
     declarations: [
       {
         name: "PROGRAM_ID",
-        type: "PublicKey",
+        type: "Address",
         initializer: programIdValue,
       },
     ],

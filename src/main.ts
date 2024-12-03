@@ -9,6 +9,7 @@ import { genErrors } from "./errors"
 import { genInstructions } from "./instructions"
 import { genProgramId } from "./programId"
 import { genTypes } from "./types"
+import { genUtils } from "./utils"
 import { program } from "commander"
 import * as prettier from "prettier"
 
@@ -39,6 +40,8 @@ async function main() {
 
   const project = new Project()
 
+  console.log("generating utils...")
+  genUtils(project, outPath)
   console.log("generating programId.ts...")
   genProgramId(project, idl, programIdOpt, outPath)
   console.log("generating errors...")

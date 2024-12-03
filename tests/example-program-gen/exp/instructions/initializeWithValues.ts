@@ -1,6 +1,13 @@
-import { TransactionInstruction, PublicKey, AccountMeta } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
+import {
+  Address,
+  IAccountMeta,
+  IAccountSignerMeta,
+  IInstruction,
+  TransactionSigner,
+} from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
@@ -20,7 +27,7 @@ export interface InitializeWithValuesArgs {
   i128Field: BN
   bytesField: Uint8Array
   stringField: string
-  pubkeyField: PublicKey
+  pubkeyField: Address
   vecField: Array<BN>
   vecStructField: Array<types.FooStructFields>
   optionField: boolean | null
@@ -35,14 +42,14 @@ export interface InitializeWithValuesArgs {
 
 export interface InitializeWithValuesAccounts {
   /** State account */
-  state: PublicKey
+  state: TransactionSigner
   nested: {
     /** Sysvar clock */
-    clock: PublicKey
-    rent: PublicKey
+    clock: Address
+    rent: Address
   }
-  payer: PublicKey
-  systemProgram: PublicKey
+  payer: TransactionSigner
+  systemProgram: Address
 }
 
 export const layout = borsh.struct([
@@ -61,7 +68,7 @@ export const layout = borsh.struct([
   borsh.i128("i128Field"),
   borsh.vecU8("bytesField"),
   borsh.str("stringField"),
-  borsh.publicKey("pubkeyField"),
+  borshAddress("pubkeyField"),
   borsh.vec(borsh.u64(), "vecField"),
   borsh.vec(types.FooStruct.layout(), "vecStructField"),
   borsh.option(borsh.bool(), "optionField"),
@@ -78,14 +85,14 @@ export const layout = borsh.struct([
 export function initializeWithValues(
   args: InitializeWithValuesArgs,
   accounts: InitializeWithValuesAccounts,
-  programId: PublicKey = PROGRAM_ID
+  programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<AccountMeta> = [
-    { pubkey: accounts.state, isSigner: true, isWritable: true },
-    { pubkey: accounts.nested.clock, isSigner: false, isWritable: false },
-    { pubkey: accounts.nested.rent, isSigner: false, isWritable: false },
-    { pubkey: accounts.payer, isSigner: true, isWritable: true },
-    { pubkey: accounts.systemProgram, isSigner: false, isWritable: false },
+  const keys: Array<IAccountMeta | IAccountSignerMeta> = [
+    { address: accounts.state.address, role: 3, signer: accounts.state },
+    { address: accounts.nested.clock, role: 0 },
+    { address: accounts.nested.rent, role: 0 },
+    { address: accounts.payer.address, role: 3, signer: accounts.payer },
+    { address: accounts.systemProgram, role: 0 },
   ]
   const identifier = Buffer.from([220, 73, 8, 213, 178, 69, 181, 141])
   const buffer = Buffer.alloc(1000)
@@ -130,6 +137,6 @@ export function initializeWithValues(
     buffer
   )
   const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
-  const ix = new TransactionInstruction({ keys, programId, data })
+  const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

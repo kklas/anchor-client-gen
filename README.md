@@ -72,15 +72,28 @@ The following packages are required for the generated client to work:
 - `@solana/web3.js`
 - `bn.js`
 - `@coral-xyz/borsh`
+- `buffer-layout`
 
 Install them in your project with:
 
 ```sh
 // npm
-$ npm install @solana/web3.js bn.js @coral-xyz/borsh
+$ npm install @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
 
 // yarn
-$ yarn add @solana/web3.js bn.js @coral-xyz/borsh
+$ yarn add @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
+```
+
+For typescript, the `buffer-layout` types can be found in the `@coral-xyz/borsh` package.
+
+`tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "types": ["<existing types>", "../node_modules/@coral-xyz/anchor/types"]
+  }
+}
 ```
 
 ### Instructions
@@ -88,22 +101,43 @@ $ yarn add @solana/web3.js bn.js @coral-xyz/borsh
 ```ts
 import { someInstruction } from "./output/directory/instructions"
 
-// call an instruction
-const tx = new Transaction()
-const fooAccount = new Keypar()
+const fooAccount = generateKeyPairSigner()
 
+// call an instruction
 const ix = someInstruction({
   fooParam: "...",
   barParam: "...",
   ...
 }, {
-  fooAccount: fooAccount.publicKey, // signer
-  barAccount: new PublicKey("..."),
+  fooAccount: fooAccount, // signer
+  barAccount: address("..."),
   ...
 })
-tx.add(ix)
 
-sendAndConfirmTransaction(connection, tx, [payer, fooAccount])
+const blockhash = await rpc
+  .getLatestBlockhash({ commitment: "finalized" })
+  .send()
+
+const tx = await pipe(
+  createTransactionMessage({ version: 0 }),
+  (tx) => appendTransactionMessageInstruction(ix, tx),
+  (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+  (tx) =>
+    setTransactionMessageLifetimeUsingBlockhash(
+      {
+        blockhash: blockhash.value.blockhash,
+        lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+      },
+      tx
+    ),
+  (tx) => signTransactionMessageWithSigners(tx)
+)
+
+const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+  rpc,
+  rpcSubscriptions,
+})
+await sendAndConfirmFn(tx)
 ```
 
 ### Accounts
@@ -112,9 +146,9 @@ sendAndConfirmTransaction(connection, tx, [payer, fooAccount])
 import { FooAccount } from "./output/directory/accounts"
 
 // fetch an account
-const addr = new PublicKey("...")
+const addr = address("...")
 
-const acc = FooAccount.fetch(connection, addr)
+const acc = FooAccount.fetch(rpc, addr)
 if (acc === null) {
   // the fetch method returns null when the account is uninitialized
   console.log("account not found")
@@ -190,7 +224,7 @@ import { fromTxError } from "./output/directory/errors"
 import { SomeCustomError } from "./output/directory/errors/custom"
 
 try {
-  await sendAndConfirmTransaction(c, tx, [payer])
+  await sendAndConfirmFn(tx)
 } catch (e) {
   const parsed = fromTxError(e)
   if (parsed !== null && parsed instanceof SomeCustomError) {
