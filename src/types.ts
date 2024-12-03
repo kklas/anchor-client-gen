@@ -84,6 +84,8 @@ function genIndexFile(
             .join(" | "),
         })
         return
+      case "alias":
+        throw new Error("alias layout support not implemented")
       default:
         unreachable(ty.type)
     }
@@ -109,6 +111,8 @@ function genTypeFiles(
         genEnum(idl, src, ty.name, ty.type.variants)
         return
       }
+      case "alias":
+        throw new Error("alias layout support not implemented")
       default:
         unreachable(ty.type)
     }

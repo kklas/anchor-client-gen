@@ -9,7 +9,8 @@
         "sourceMap": true,
         "moduleResolution": "node",
         "noEmit": true,
-        "isolatedModules": true
+        "isolatedModules": true,
+        "skipLibCheck": true
     },
     "include": ["src", "tests", "examples"],
 }
