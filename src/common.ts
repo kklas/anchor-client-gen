@@ -40,7 +40,6 @@ export function jsonInterfaceName(typeName: string) {
 export function isComplexType(
   ty: IdlType
 ): ty is
-  | IdlTypeDefined
   | IdlTypeArray
   | IdlTypeVec
   | IdlTypeOption
@@ -124,6 +123,9 @@ export function tsTypeFromIdl(
           case "enum": {
             const name = kindInterfaceName(ty.defined)
             return `${definedTypesPrefix}${name}`
+          }
+          case "alias": {
+            throw new Error("alias layout support not implemented")
           }
         }
       }
@@ -306,6 +308,9 @@ export function fieldToEncodable(
           case "enum": {
             return `${valPrefix}${ty.name}.toEncodable()`
           }
+          case "alias": {
+            throw new Error("alias layout support not implemented")
+          }
         }
       }
       if (isComplexType(ty.type) && "array" in ty.type) {
@@ -402,6 +407,8 @@ export function fieldFromDecoded(
           case "struct":
           case "enum":
             return `${definedTypesPrefix}${ty.type.defined}.fromDecoded(${valPrefix}${ty.name})`
+          case "alias":
+            throw new Error("alias layout support not implemented")
           default: {
             unreachable(filtered[0].type)
             throw new Error("Unreachable.")
@@ -469,6 +476,8 @@ export function structFieldInitializer(
           case "enum":
             filtered[0].type.kind
             return `${prefix}${field.name}`
+          case "alias":
+            throw new Error("alias layout support not implemented")
           default:
             unreachable(filtered[0].type)
             return
@@ -618,6 +627,8 @@ export function fieldToJSON(idl: Idl, ty: IdlField, valPrefix = ""): string {
           case "struct":
           case "enum":
             return `${valPrefix}${ty.name}.toJSON()`
+          case "alias":
+            throw new Error("alias layout support not implemented")
           default: {
             unreachable(filtered[0].type)
             throw new Error("Unreachable.")

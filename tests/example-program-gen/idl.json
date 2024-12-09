@@ -451,54 +451,6 @@
       }
     },
     {
-      "name": "FooStruct",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "field1",
-            "type": "u8"
-          },
-          {
-            "name": "field2",
-            "type": "u16"
-          },
-          {
-            "name": "nested",
-            "type": {
-              "defined": "BarStruct"
-            }
-          },
-          {
-            "name": "vecNested",
-            "type": {
-              "vec": {
-                "defined": "BarStruct"
-              }
-            }
-          },
-          {
-            "name": "optionNested",
-            "type": {
-              "option": {
-                "defined": "BarStruct"
-              }
-            }
-          },
-          {
-            "name": "enumField",
-            "type": {
-              "defined": "FooEnum"
-            }
-          },
-          {
-            "name": "pubkeyField",
-            "type": "publicKey"
-          }
-        ]
-      }
-    },
-    {
       "name": "FooEnum",
       "docs": [
         "Enum type"
@@ -576,6 +528,54 @@
           },
           {
             "name": "NoFields"
+          }
+        ]
+      }
+    },
+    {
+      "name": "FooStruct",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "field1",
+            "type": "u8"
+          },
+          {
+            "name": "field2",
+            "type": "u16"
+          },
+          {
+            "name": "nested",
+            "type": {
+              "defined": "BarStruct"
+            }
+          },
+          {
+            "name": "vecNested",
+            "type": {
+              "vec": {
+                "defined": "BarStruct"
+              }
+            }
+          },
+          {
+            "name": "optionNested",
+            "type": {
+              "option": {
+                "defined": "BarStruct"
+              }
+            }
+          },
+          {
+            "name": "enumField",
+            "type": {
+              "defined": "FooEnum"
+            }
+          },
+          {
+            "name": "pubkeyField",
+            "type": "publicKey"
           }
         ]
       }
