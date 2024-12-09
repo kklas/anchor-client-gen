@@ -6,18 +6,25 @@ import {
   createTransactionMessage,
   appendTransactionMessageInstructions,
   setTransactionMessageFeePayerSigner,
-  appendTransactionMessageInstruction,
   address,
   signTransactionMessageWithSigners,
   setTransactionMessageLifetimeUsingBlockhash,
   sendAndConfirmTransactionFactory,
   createSolanaRpcSubscriptions,
+  some,
+  none,
+  IInstruction,
+  TransactionSigner,
 } from "@solana/web3.js"
 import { expect, it } from "vitest"
 import BN from "bn.js"
 import * as dircompare from "dir-compare"
 import * as fs from "fs"
-import { State, State2 } from "./example-program-gen/act/accounts"
+import {
+  OptionalState,
+  State,
+  State2,
+} from "./example-program-gen/act/accounts"
 import { fromTxError } from "./example-program-gen/act/errors"
 import { InvalidProgramId } from "./example-program-gen/act/errors/anchor"
 import {
@@ -25,6 +32,7 @@ import {
   initialize,
   initializeWithValues,
   initializeWithValues2,
+  optional,
 } from "./example-program-gen/act/instructions"
 import { BarStruct, FooStruct } from "./example-program-gen/act/types"
 import {
@@ -71,45 +79,17 @@ it("init and account fetch", async () => {
   const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
   const state = await generateKeyPairSigner()
 
-  const blockhash = await rpc
-    .getLatestBlockhash({ commitment: "finalized" })
-    .send()
-
-  const tx = await pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx) =>
-      appendTransactionMessageInstruction(
-        initialize({
-          state: state,
-          payer: payer,
-          nested: {
-            clock: SYSVAR_CLOCK_ADDRESS,
-            rent: SYSVAR_RENT_ADDRESS,
-          },
-          systemProgram: SYSTEM_PROGRAM_ADDRESS,
-        }),
-        tx
-      ),
-    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-        },
-        tx
-      ),
-    (tx) => signTransactionMessageWithSigners(tx)
-  )
-
-  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
-    rpc,
-    rpcSubscriptions,
-  })
-  await sendAndConfirmFn(tx, {
-    commitment: "confirmed",
-  })
-
+  await sendTx(payer, [
+    initialize({
+      state: state,
+      payer: payer,
+      nested: {
+        clock: SYSVAR_CLOCK_ADDRESS,
+        rent: SYSVAR_RENT_ADDRESS,
+      },
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
   const res = await State.fetch(rpc, state.address)
   if (res === null) {
     throw new Error("account not found")
@@ -270,55 +250,26 @@ it("fetch multiple", async () => {
   const another_state = await generateKeyPairSigner()
   const non_state = await generateKeyPairSigner()
 
-  const blockhash = await rpc
-    .getLatestBlockhash({ commitment: "finalized" })
-    .send()
-
-  const tx = await pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx) =>
-      appendTransactionMessageInstructions(
-        [
-          initialize({
-            state: state,
-            payer: payer,
-            nested: {
-              clock: SYSVAR_CLOCK_ADDRESS,
-              rent: SYSVAR_RENT_ADDRESS,
-            },
-            systemProgram: SYSTEM_PROGRAM_ADDRESS,
-          }),
-          initialize({
-            state: another_state,
-            payer: payer,
-            nested: {
-              clock: SYSVAR_CLOCK_ADDRESS,
-              rent: SYSVAR_RENT_ADDRESS,
-            },
-            systemProgram: SYSTEM_PROGRAM_ADDRESS,
-          }),
-        ],
-        tx
-      ),
-    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-        },
-        tx
-      ),
-    (tx) => signTransactionMessageWithSigners(tx)
-  )
-
-  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
-    rpc,
-    rpcSubscriptions,
-  })
-  await sendAndConfirmFn(tx, {
-    commitment: "confirmed",
-  })
+  await sendTx(payer, [
+    initialize({
+      state: state,
+      payer: payer,
+      nested: {
+        clock: SYSVAR_CLOCK_ADDRESS,
+        rent: SYSVAR_RENT_ADDRESS,
+      },
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+    initialize({
+      state: another_state,
+      payer: payer,
+      nested: {
+        clock: SYSVAR_CLOCK_ADDRESS,
+        rent: SYSVAR_RENT_ADDRESS,
+      },
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
 
   const res = await State.fetchMultiple(rpc, [
     state.address,
@@ -334,152 +285,119 @@ it("instruction with args", async () => {
   const state = await generateKeyPairSigner()
   const state2 = await generateKeyPairSigner()
 
-  const blockhash = await rpc
-    .getLatestBlockhash({ commitment: "finalized" })
-    .send()
-
-  const tx = await pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx) =>
-      appendTransactionMessageInstructions(
-        [
-          initializeWithValues(
-            {
-              boolField: true,
-              u8Field: 253,
-              i8Field: -120,
-              u16Field: 61234,
-              i16Field: -31253,
-              u32Field: 1234567899,
-              i32Field: -123456789,
-              f32Field: 123458.5,
-              u64Field: new BN("9223372036854775810"),
-              i64Field: new BN("-4611686018427387912"),
-              f64Field: 1234567892.445,
-              u128Field: new BN("170141183460469231731687303715884105740"),
-              i128Field: new BN("-85070591730234615865843651857942052877"),
-              bytesField: Uint8Array.from([5, 10, 255]),
-              stringField: "string value",
-              pubkeyField: address(
-                "GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"
-              ),
-              vecField: [new BN(1), new BN("123456789123456789")],
-              vecStructField: [
-                new FooStruct({
-                  field1: 1,
-                  field2: 2,
-                  nested: new BarStruct({
-                    someField: true,
-                    otherField: 55,
-                  }),
-                  vecNested: [
-                    new BarStruct({
-                      someField: false,
-                      otherField: 11,
-                    }),
-                  ],
-                  optionNested: null,
-                  enumField: new Unnamed([
-                    true,
-                    22,
-                    new BarStruct({
-                      someField: true,
-                      otherField: 33,
-                    }),
-                  ]),
-                  pubkeyField: address(
-                    "EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"
-                  ),
-                }),
-              ],
-              optionField: true,
-              optionStructField: null,
-              structField: new FooStruct({
-                field1: 1,
-                field2: 2,
-                nested: new BarStruct({
-                  someField: true,
-                  otherField: 55,
-                }),
-                vecNested: [
-                  new BarStruct({
-                    someField: false,
-                    otherField: 11,
-                  }),
-                ],
-                optionNested: null,
-                enumField: new NoFields(),
-                pubkeyField: address(
-                  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"
-                ),
+  await sendTx(payer, [
+    initializeWithValues(
+      {
+        boolField: true,
+        u8Field: 253,
+        i8Field: -120,
+        u16Field: 61234,
+        i16Field: -31253,
+        u32Field: 1234567899,
+        i32Field: -123456789,
+        f32Field: 123458.5,
+        u64Field: new BN("9223372036854775810"),
+        i64Field: new BN("-4611686018427387912"),
+        f64Field: 1234567892.445,
+        u128Field: new BN("170141183460469231731687303715884105740"),
+        i128Field: new BN("-85070591730234615865843651857942052877"),
+        bytesField: Uint8Array.from([5, 10, 255]),
+        stringField: "string value",
+        pubkeyField: address("GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"),
+        vecField: [new BN(1), new BN("123456789123456789")],
+        vecStructField: [
+          new FooStruct({
+            field1: 1,
+            field2: 2,
+            nested: new BarStruct({
+              someField: true,
+              otherField: 55,
+            }),
+            vecNested: [
+              new BarStruct({
+                someField: false,
+                otherField: 11,
               }),
-              arrayField: [true, true, false],
-              enumField1: new Unnamed([
-                true,
-                15,
-                new BarStruct({
-                  someField: false,
-                  otherField: 200,
-                }),
-              ]),
-              enumField2: new Named({
-                boolField: true,
-                u8Field: 128,
-                nested: new BarStruct({
-                  someField: false,
-                  otherField: 1,
-                }),
+            ],
+            optionNested: null,
+            enumField: new Unnamed([
+              true,
+              22,
+              new BarStruct({
+                someField: true,
+                otherField: 33,
               }),
-              enumField3: new Struct([
-                new BarStruct({
-                  someField: true,
-                  otherField: 15,
-                }),
-              ]),
-              enumField4: new NoFields(),
-            },
-            {
-              state: state,
-              payer: payer,
-              nested: {
-                clock: SYSVAR_CLOCK_ADDRESS,
-                rent: SYSVAR_RENT_ADDRESS,
-              },
-              systemProgram: SYSTEM_PROGRAM_ADDRESS,
-            }
-          ),
-          initializeWithValues2(
-            {
-              vecOfOption: [null, new BN(20)],
-            },
-            {
-              state: state2,
-              payer: payer,
-              systemProgram: SYSTEM_PROGRAM_ADDRESS,
-            }
-          ),
+            ]),
+            pubkeyField: address(
+              "EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"
+            ),
+          }),
         ],
-        tx
-      ),
-    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        optionField: true,
+        optionStructField: null,
+        structField: new FooStruct({
+          field1: 1,
+          field2: 2,
+          nested: new BarStruct({
+            someField: true,
+            otherField: 55,
+          }),
+          vecNested: [
+            new BarStruct({
+              someField: false,
+              otherField: 11,
+            }),
+          ],
+          optionNested: null,
+          enumField: new NoFields(),
+          pubkeyField: address("mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So"),
+        }),
+        arrayField: [true, true, false],
+        enumField1: new Unnamed([
+          true,
+          15,
+          new BarStruct({
+            someField: false,
+            otherField: 200,
+          }),
+        ]),
+        enumField2: new Named({
+          boolField: true,
+          u8Field: 128,
+          nested: new BarStruct({
+            someField: false,
+            otherField: 1,
+          }),
+        }),
+        enumField3: new Struct([
+          new BarStruct({
+            someField: true,
+            otherField: 15,
+          }),
+        ]),
+        enumField4: new NoFields(),
+      },
+      {
+        state: state,
+        payer: payer,
+        nested: {
+          clock: SYSVAR_CLOCK_ADDRESS,
+          rent: SYSVAR_RENT_ADDRESS,
         },
-        tx
-      ),
-    (tx) => signTransactionMessageWithSigners(tx)
-  )
-
-  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
-    rpc,
-    rpcSubscriptions,
-  })
-  await sendAndConfirmFn(tx, {
-    commitment: "confirmed",
-  })
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      }
+    ),
+    initializeWithValues2(
+      {
+        vecOfOption: [null, new BN(20)],
+      },
+      {
+        state: state2,
+        payer: payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      }
+    ),
+  ])
 
   const res = await State.fetch(rpc, state.address)
   if (res === null) {
@@ -638,37 +556,111 @@ it("instruction with args", async () => {
   expect(res2.vecOfOption[1] !== null && res2.vecOfOption[1].eqn(20)).toBe(true)
 })
 
+it("optional with some readonly signer", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const optionalState = await generateKeyPairSigner()
+  const signer = await generateKeyPairSigner()
+
+  await sendTx(payer, [
+    optional({
+      optionalState,
+      readonlySignerOption: some(signer),
+      mutableSignerOption: none(),
+      readonlyOption: none(),
+      mutableOption: none(),
+      payer,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
+
+  const state = await OptionalState.fetch(rpc, optionalState.address)
+  expect(state).not.toBeNull()
+  expect(state?.readonlySignerOption).true
+  expect(state?.mutableSignerOption).false
+  expect(state?.readonlyOption).false
+  expect(state?.mutableOption).false
+})
+
+it("optional with some mutable signer", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const optionalState = await generateKeyPairSigner()
+  const signer = await generateKeyPairSigner()
+
+  await sendTx(payer, [
+    optional({
+      optionalState,
+      readonlySignerOption: none(),
+      mutableSignerOption: some(signer),
+      readonlyOption: none(),
+      mutableOption: none(),
+      payer,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
+
+  const state = await OptionalState.fetch(rpc, optionalState.address)
+  expect(state).not.toBeNull()
+  expect(state?.readonlySignerOption).false
+  expect(state?.mutableSignerOption).true
+  expect(state?.readonlyOption).false
+  expect(state?.mutableOption).false
+})
+
+it("optional with some readonly account", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const optionalState = await generateKeyPairSigner()
+  const signer = await generateKeyPairSigner()
+
+  await sendTx(payer, [
+    optional({
+      optionalState,
+      readonlySignerOption: none(),
+      mutableSignerOption: none(),
+      readonlyOption: some(signer.address),
+      mutableOption: none(),
+      payer,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
+
+  const state = await OptionalState.fetch(rpc, optionalState.address)
+  expect(state).not.toBeNull()
+  expect(state?.readonlySignerOption).false
+  expect(state?.mutableSignerOption).false
+  expect(state?.readonlyOption).true
+  expect(state?.mutableOption).false
+})
+
+it("optional with some mutable account", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+  const optionalState = await generateKeyPairSigner()
+  const signer = await generateKeyPairSigner()
+
+  await sendTx(payer, [
+    optional({
+      optionalState,
+      readonlySignerOption: none(),
+      mutableSignerOption: none(),
+      readonlyOption: none(),
+      mutableOption: some(signer.address),
+      payer,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    }),
+  ])
+
+  const state = await OptionalState.fetch(rpc, optionalState.address)
+  expect(state).not.toBeNull()
+  expect(state?.readonlySignerOption).false
+  expect(state?.mutableSignerOption).false
+  expect(state?.readonlyOption).false
+  expect(state?.mutableOption).true
+})
+
 it("tx error", async () => {
   const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
 
-  const blockhash = await rpc
-    .getLatestBlockhash({ commitment: "finalized" })
-    .send()
-
-  const tx = await pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx) => appendTransactionMessageInstruction(causeError(), tx),
-    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-        },
-        tx
-      ),
-    (tx) => signTransactionMessageWithSigners(tx)
-  )
-
-  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
-    rpc,
-    rpcSubscriptions,
-  })
-
   try {
-    await sendAndConfirmFn(tx, {
-      commitment: "processed",
-    })
+    await sendTx(payer, [causeError()])
   } catch (e) {
     const parsed = fromTxError(e)
 
@@ -696,35 +688,8 @@ it("tx error", async () => {
 it("tx error skip preflight", async () => {
   const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
 
-  const blockhash = await rpc
-    .getLatestBlockhash({ commitment: "finalized" })
-    .send()
-
-  const tx = await pipe(
-    createTransactionMessage({ version: 0 }),
-    (tx) => appendTransactionMessageInstruction(causeError(), tx),
-    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-        },
-        tx
-      ),
-    (tx) => signTransactionMessageWithSigners(tx)
-  )
-
-  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
-    rpc,
-    rpcSubscriptions,
-  })
-
   try {
-    await sendAndConfirmFn(tx, {
-      commitment: "processed",
-      skipPreflight: true,
-    })
+    await sendTx(payer, [causeError()], { skipPreflight: true })
   } catch (e) {
     const parsed = fromTxError(e)
 
@@ -1207,3 +1172,42 @@ it("toJSON", async () => {
     expect(act.kind).toBe("NoFields")
   }
 })
+
+type SendAndConfirmTransactionFactoryFn = ReturnType<
+  typeof sendAndConfirmTransactionFactory
+>
+type SendConfig = Parameters<SendAndConfirmTransactionFactoryFn>[1]
+
+async function sendTx(
+  payer: TransactionSigner,
+  ixs: IInstruction[],
+  config: Partial<SendConfig> = {}
+) {
+  const blockhash = await rpc
+    .getLatestBlockhash({ commitment: "finalized" })
+    .send()
+
+  const tx = await pipe(
+    createTransactionMessage({ version: 0 }),
+    (tx) => appendTransactionMessageInstructions(ixs, tx),
+    (tx) => setTransactionMessageFeePayerSigner(payer, tx),
+    (tx) =>
+      setTransactionMessageLifetimeUsingBlockhash(
+        {
+          blockhash: blockhash.value.blockhash,
+          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
+        },
+        tx
+      ),
+    (tx) => signTransactionMessageWithSigners(tx)
+  )
+
+  const sendAndConfirmFn = sendAndConfirmTransactionFactory({
+    rpc,
+    rpcSubscriptions,
+  })
+  await sendAndConfirmFn(tx, {
+    commitment: "confirmed",
+    ...config,
+  })
+}

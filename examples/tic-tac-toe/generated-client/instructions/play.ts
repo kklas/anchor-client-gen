@@ -1,8 +1,10 @@
 import {
   Address,
+  isSome,
   IAccountMeta,
   IAccountSignerMeta,
   IInstruction,
+  Option,
   TransactionSigner,
 } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars

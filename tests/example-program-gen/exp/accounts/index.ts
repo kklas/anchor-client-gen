@@ -1,3 +1,5 @@
+export { OptionalState } from "./OptionalState"
+export type { OptionalStateFields, OptionalStateJSON } from "./OptionalState"
 export { State } from "./State"
 export type { StateFields, StateJSON } from "./State"
 export { State2 } from "./State2"
