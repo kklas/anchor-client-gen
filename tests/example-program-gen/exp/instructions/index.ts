@@ -11,3 +11,5 @@ export type {
   InitializeWithValues2Accounts,
 } from "./initializeWithValues2"
 export { causeError } from "./causeError"
+export { optional } from "./optional"
+export type { OptionalAccounts } from "./optional"

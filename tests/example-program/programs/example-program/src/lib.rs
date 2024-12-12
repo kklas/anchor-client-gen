@@ -89,6 +89,16 @@ pub mod example_program {
     pub fn cause_error(_ctx: Context<CauseError>) -> Result<()> {
         return Err(error!(ErrorCode::SomeError));
     }
+
+    pub fn optional(ctx: Context<Optional>) -> Result<()> {
+        ctx.accounts.optional_state.set_inner(OptionalState {
+            readonly_signer_option: ctx.accounts.readonly_signer_option.is_some(),
+            mutable_signer_option: ctx.accounts.mutable_signer_option.is_some(),
+            readonly_option: ctx.accounts.readonly_option.is_some(),
+            mutable_option: ctx.accounts.mutable_option.is_some(),
+        });
+        Ok(())
+    }
 }
 
 /// Enum type
@@ -237,6 +247,15 @@ impl Default for State2 {
     }
 }
 
+#[account]
+#[derive(Default)]
+pub struct OptionalState {
+    readonly_signer_option: bool,
+    mutable_signer_option: bool,
+    readonly_option: bool,
+    mutable_option: bool,
+}
+
 #[derive(Accounts)]
 pub struct NestedAccounts<'info> {
     /// Sysvar clock
@@ -277,6 +296,26 @@ pub struct Initialize2<'info> {
 
 #[derive(Accounts)]
 pub struct CauseError {}
+
+#[derive(Accounts)]
+pub struct Optional<'info> {
+    #[account(
+        init,
+        space = 8 + (1 + 1 + 1 + 1),
+        payer = payer,
+    )]
+    optional_state: Account<'info, OptionalState>,
+    readonly_signer_option: Option<Signer<'info>>,
+    #[account(mut)]
+    mutable_signer_option: Option<Signer<'info>>,
+    readonly_option: Option<AccountInfo<'info>>,
+    #[account(mut)]
+    mutable_option: Option<AccountInfo<'info>>,
+
+    #[account(mut)]
+    payer: Signer<'info>,
+    system_program: Program<'info, System>,
+}
 
 #[error_code]
 pub enum ErrorCode {

@@ -1,5 +1,5 @@
 import { Idl } from "@coral-xyz/anchor"
-import { IdlAccountItem } from "@coral-xyz/anchor/dist/cjs/idl"
+import { IdlAccount, IdlAccountItem } from "@coral-xyz/anchor/dist/cjs/idl"
 import { CodeBlockWriter, Project, VariableDeclarationKind } from "ts-morph"
 import {
   fieldToEncodable,
@@ -82,7 +82,7 @@ function genInstructionFiles(
 
     // imports
     src.addStatements([
-      `import { Address, IAccountMeta, IAccountSignerMeta, IInstruction, TransactionSigner } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import { Address, isSome, IAccountMeta, IAccountSignerMeta, IInstruction, Option, TransactionSigner } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
@@ -114,10 +114,16 @@ function genInstructionFiles(
       writer: CodeBlockWriter
     ) {
       if (!("accounts" in accItem)) {
+        if (accItem.isOptional) {
+          writer.write("Option<")
+        }
         if (accItem.isSigner) {
           writer.write("TransactionSigner")
         } else {
           writer.write("Address")
+        }
+        if (accItem.isOptional) {
+          writer.write(">")
         }
         return
       }
@@ -224,6 +230,32 @@ function genInstructionFiles(
               return AccountRole.READONLY
             }
 
+            function getAddressProps(
+              item: IdlAccount,
+              baseProps: string[]
+            ): string[] {
+              if (item.isOptional && item.isSigner) {
+                return [...baseProps, "value", "address"]
+              } else if (item.isOptional && !item.isSigner) {
+                return [...baseProps, "value"]
+              } else if (!item.isOptional && item.isSigner) {
+                return [...baseProps, "address"]
+              } else {
+                return baseProps
+              }
+            }
+
+            function getSignerProps(
+              item: IdlAccount,
+              baseProps: string[]
+            ): string[] {
+              if (item.isOptional) {
+                return [...baseProps, "value"]
+              } else {
+                return [...baseProps]
+              }
+            }
+
             function recurseAccounts(
               accs: IdlAccountItem[],
               nestedNames: string[]
@@ -233,18 +265,33 @@ function genInstructionFiles(
                   recurseAccounts(item.accounts, [...nestedNames, item.name])
                   return
                 }
-                const props = [...nestedNames, item.name]
-                const addressProps = item.isSigner
-                  ? [...props, "address"]
-                  : props
 
-                writer.writeLine(
-                  `{ address: accounts.${addressProps.join(
-                    "."
-                  )}, role: ${getAccountRole(item)}${
-                    item.isSigner ? `, signer: accounts.${props}` : ""
-                  } },`
-                )
+                const baseProps = [...nestedNames, item.name]
+                const addressProps = getAddressProps(item, baseProps)
+                const role = getAccountRole(item)
+
+                const meta = `{ address: accounts.${addressProps.join(
+                  "."
+                )}, role: ${role}${
+                  item.isSigner
+                    ? `, signer: accounts.${getSignerProps(
+                        item,
+                        baseProps
+                      ).join(".")}`
+                    : ""
+                } }`
+
+                if (item.isOptional) {
+                  writer.writeLine(
+                    `isSome(accounts.${baseProps.join(
+                      "."
+                    )}) ? ${meta} : { address: programAddress, role: ${
+                      AccountRole.READONLY
+                    } },`
+                  )
+                } else {
+                  writer.writeLine(`${meta},`)
+                }
               })
             }
 
