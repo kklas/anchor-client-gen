@@ -26,7 +26,7 @@ export function genIndex(
   })
 
   const hasCustomErrors = idl.errors && idl.errors.length > 0
-  src.addStatements([`import { Address } from "@solana/web3.js"`])
+  src.addStatements([`import { Address } from "@solana/kit"`])
   src.addImportDeclaration({
     namedImports: ["PROGRAM_ID"],
     moduleSpecifier: "../programId",

@@ -25,7 +25,7 @@ export function genBorshAddressLayout(
 
   src.addImportDeclaration({
     namedImports: ["Address", "getAddressCodec"],
-    moduleSpecifier: "@solana/web3.js",
+    moduleSpecifier: "@solana/kit",
   })
 
   src.addImportDeclaration({

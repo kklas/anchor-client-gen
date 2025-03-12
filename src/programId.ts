@@ -51,7 +51,7 @@ export function genProgramId(
   if (importStatements === undefined || importStatements.length === 0) {
     src.addImportDeclaration({
       namedImports: ["address", "Address"],
-      moduleSpecifier: "@solana/web3.js",
+      moduleSpecifier: "@solana/kit",
     })
   } else {
     src.addStatements(importStatements)

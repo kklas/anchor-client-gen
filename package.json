@@ -46,9 +46,9 @@
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
     "@coral-xyz/borsh": "^0.29.0",
-    "@solana-program/system": "^0.6.2",
-    "@solana/sysvars": "^2.0.0",
-    "@solana/web3.js": "^2.0.0",
+    "@solana-program/system": "^0.7.0",
+    "@solana/sysvars": "^2.1.0",
+    "@solana/kit": "^2.1.0",
     "bn.js": "^5.2.1",
     "buffer-layout": "^1.2.2",
     "camelcase": "^7.0.1",

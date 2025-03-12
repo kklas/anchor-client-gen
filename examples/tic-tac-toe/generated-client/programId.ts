@@ -1,4 +1,4 @@
-import { address, Address } from "@solana/web3.js"
+import { address, Address } from "@solana/kit"
 
 // Program ID passed with the cli --program-id flag when running the code generator. Do not edit, it will get overwritten.
 export const PROGRAM_ID_CLI = address(

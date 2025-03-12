@@ -128,7 +128,7 @@ function genStruct(
 ) {
   // imports
   src.addStatements([
-    `import { address, Address } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as borsh from "@coral-xyz/borsh"`,
@@ -327,7 +327,7 @@ function genEnum(
 ) {
   // imports
   src.addStatements([
-    `import { address, Address } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
     `import * as borsh from "@coral-xyz/borsh"`,
