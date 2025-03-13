@@ -15,7 +15,7 @@ import {
   none,
   IInstruction,
   TransactionSigner,
-} from "@solana/web3.js"
+} from "@solana/kit"
 import { expect, it } from "vitest"
 import BN from "bn.js"
 import * as dircompare from "dir-compare"

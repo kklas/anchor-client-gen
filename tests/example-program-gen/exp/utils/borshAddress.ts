@@ -1,4 +1,4 @@
-import { Address, getAddressCodec } from "@solana/web3.js"
+import { Address, getAddressCodec } from "@solana/kit"
 import { blob, Layout } from "buffer-layout"
 
 const addressCodec = getAddressCodec()

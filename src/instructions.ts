@@ -7,7 +7,7 @@ import {
   layoutForType,
   tsTypeFromIdl,
 } from "./common"
-import { AccountRole } from "@solana/web3.js"
+import { AccountRole } from "@solana/kit"
 
 export function genInstructions(
   project: Project,
@@ -82,7 +82,9 @@ function genInstructionFiles(
 
     // imports
     src.addStatements([
-      `import { Address, isSome, IAccountMeta, IAccountSignerMeta, IInstruction, Option, TransactionSigner } from "@solana/web3.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `/* eslint-disable @typescript-eslint/no-unused-vars */`,
+      `import { Address, isSome, IAccountMeta, IAccountSignerMeta, IInstruction, Option, TransactionSigner } from "@solana/kit"`,
+      `/* eslint-enable @typescript-eslint/no-unused-vars */`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,

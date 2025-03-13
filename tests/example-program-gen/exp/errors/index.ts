@@ -1,4 +1,4 @@
-import { Address } from "@solana/web3.js"
+import { Address } from "@solana/kit"
 import { PROGRAM_ID } from "../programId"
 import * as anchor from "./anchor"
 import * as custom from "./custom"
