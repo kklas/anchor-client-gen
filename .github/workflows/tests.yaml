@@ -8,7 +8,7 @@ on:
     branches:
       - master
 env:
-  SOLANA_CLI_VERSION: 1.17.18
+  SOLANA_CLI_VERSION: 1.18.15
   NODE_VERSION: 22
 
 jobs:
