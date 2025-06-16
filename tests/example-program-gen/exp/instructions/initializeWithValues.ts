@@ -89,6 +89,7 @@ export const layout = borsh.struct([
 export function initializeWithValues(
   args: InitializeWithValuesArgs,
   accounts: InitializeWithValuesAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
@@ -97,6 +98,7 @@ export function initializeWithValues(
     { address: accounts.nested.rent, role: 0 },
     { address: accounts.payer.address, role: 3, signer: accounts.payer },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([220, 73, 8, 213, 178, 69, 181, 141])
   const buffer = Buffer.alloc(1000)
