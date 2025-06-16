@@ -198,6 +198,11 @@ function genInstructionFiles(
       })
     }
     ixFn.addParameter({
+      name: "remainingAccounts",
+      type: "Array<IAccountMeta | IAccountSignerMeta>",
+      initializer: "[]",
+    })
+    ixFn.addParameter({
       name: "programAddress",
       type: "Address",
       initializer: "PROGRAM_ID",
@@ -297,7 +302,12 @@ function genInstructionFiles(
               })
             }
 
+            function getRemainingAccounts() {
+              writer.writeLine("...remainingAccounts,")
+            }
+
             recurseAccounts(ix.accounts, [])
+            getRemainingAccounts()
 
             writer.write("]")
           },

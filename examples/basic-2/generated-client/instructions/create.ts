@@ -29,12 +29,14 @@ export const layout = borsh.struct([borshAddress("authority")])
 export function create(
   args: CreateArgs,
   accounts: CreateAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
     { address: accounts.counter.address, role: 3, signer: accounts.counter },
     { address: accounts.user.address, role: 3, signer: accounts.user },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([24, 30, 200, 40, 5, 28, 7, 119])
   const buffer = Buffer.alloc(1000)

@@ -29,11 +29,13 @@ export const layout = borsh.struct([types.Tile.layout("tile")])
 export function play(
   args: PlayArgs,
   accounts: PlayAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
     { address: accounts.game, role: 1 },
     { address: accounts.player.address, role: 2, signer: accounts.player },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([213, 157, 193, 142, 228, 56, 248, 150])
   const buffer = Buffer.alloc(1000)
