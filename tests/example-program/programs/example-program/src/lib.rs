@@ -340,6 +340,6 @@ pub enum ErrorCode {
     #[msg("Another error.")]
     OtherError,
     ErrorWithoutMsg,
-    #[msg("Remaining accounts mismatch")]
+    #[msg("Remaining accounts mismatch.")]
     RemainingAccountsMismatch,
 }
