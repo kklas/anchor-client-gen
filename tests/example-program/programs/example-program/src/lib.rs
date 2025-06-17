@@ -99,6 +99,15 @@ pub mod example_program {
         });
         Ok(())
     }
+
+    pub fn remaining(ctx: Context<Remaining>, expected_remaining_accounts: u32) -> Result<()> {
+        let provided_remaining_accounts = ctx.remaining_accounts.len();
+        if provided_remaining_accounts != expected_remaining_accounts as usize {
+            Err(error!(ErrorCode::RemainingAccountsMismatch))
+        } else {
+            Ok(())
+        }
+    }
 }
 
 /// Enum type
@@ -317,6 +326,13 @@ pub struct Optional<'info> {
     system_program: Program<'info, System>,
 }
 
+#[derive(Accounts)]
+pub struct Remaining<'info> {
+    #[account(mut)]
+    payer: Signer<'info>,
+    system_program: Program<'info, System>,
+}
+
 #[error_code]
 pub enum ErrorCode {
     #[msg("Example error.")]
@@ -324,4 +340,6 @@ pub enum ErrorCode {
     #[msg("Another error.")]
     OtherError,
     ErrorWithoutMsg,
+    #[msg("Remaining accounts mismatch")]
+    RemainingAccountsMismatch,
 }
