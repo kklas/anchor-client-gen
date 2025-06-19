@@ -307,6 +307,27 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "remaining",
+      "accounts": [
+        {
+          "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "expectedRemainingAccounts",
+          "type": "u32"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -664,6 +685,11 @@
     {
       "code": 6002,
       "name": "ErrorWithoutMsg"
+    },
+    {
+      "code": 6003,
+      "name": "RemainingAccountsMismatch",
+      "msg": "Remaining accounts mismatch."
     }
   ]
 }

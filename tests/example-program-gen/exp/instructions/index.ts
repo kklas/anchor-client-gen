@@ -13,3 +13,5 @@ export type {
 export { causeError } from "./causeError"
 export { optional } from "./optional"
 export type { OptionalAccounts } from "./optional"
+export { remaining } from "./remaining"
+export type { RemainingArgs, RemainingAccounts } from "./remaining"
