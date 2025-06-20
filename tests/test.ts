@@ -15,6 +15,9 @@ import {
   none,
   IInstruction,
   TransactionSigner,
+  generateKeyPair,
+  AccountRole,
+  getAddressFromPublicKey,
 } from "@solana/kit"
 import { expect, it } from "vitest"
 import BN from "bn.js"
@@ -33,6 +36,7 @@ import {
   initializeWithValues,
   initializeWithValues2,
   optional,
+  remaining,
 } from "./example-program-gen/act/instructions"
 import { BarStruct, FooStruct } from "./example-program-gen/act/types"
 import {
@@ -1170,6 +1174,59 @@ it("toJSON", async () => {
       throw new Error()
     }
     expect(act.kind).toBe("NoFields")
+  }
+})
+
+it("remaining accounts should match", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+
+  const remainingKeypair1 = await generateKeyPair()
+  const remainingKeypair2 = await generateKeyPair()
+
+  const remainingAddress1 = await getAddressFromPublicKey(remainingKeypair1.publicKey)
+  const remainingAddress2 =  await getAddressFromPublicKey(remainingKeypair2.publicKey)
+
+  await sendTx(payer, [remaining(
+    {
+      expectedRemainingAccounts: 2,
+    },
+    {
+      payer,
+      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+    },
+    [
+      { address: remainingAddress1, role: AccountRole.READONLY },
+      { address: remainingAddress2, role: AccountRole.READONLY },
+    ],
+  )])
+})
+
+it("remaining accounts should throw", async () => {
+  const payer = await createKeyPairSignerFromBytes(Uint8Array.from(faucet))
+
+  try {
+    await sendTx(payer, [remaining(
+      {
+        expectedRemainingAccounts: 2,
+      },
+      {
+        payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      },
+    )])
+  } catch (e) {
+      const parsed = fromTxError(e)
+
+      expect(parsed).not.toBe(null)
+      if (parsed === null) {
+        throw new Error()
+      }
+
+      expect(parsed.message).toBe("6003: Remaining accounts mismatch.")
+      expect(parsed.code).toBe(6003)
+      expect(parsed.name).toBe("RemainingAccountsMismatch")
+      expect("msg" in parsed && parsed.msg).toBe("Remaining accounts mismatch.")
+      return
   }
 })
 
