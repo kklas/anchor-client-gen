@@ -29,6 +29,7 @@ export interface InitializeAccounts {
 
 export function initialize(
   accounts: InitializeAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
@@ -37,6 +38,7 @@ export function initialize(
     { address: accounts.nested.rent, role: 0 },
     { address: accounts.payer.address, role: 3, signer: accounts.payer },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([175, 175, 109, 31, 13, 152, 155, 237])
   const data = identifier

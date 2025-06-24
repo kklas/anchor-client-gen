@@ -36,12 +36,14 @@ export const layout = borsh.struct([
 export function initializeWithValues2(
   args: InitializeWithValues2Args,
   accounts: InitializeWithValues2Accounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
     { address: accounts.state.address, role: 3, signer: accounts.state },
     { address: accounts.payer.address, role: 3, signer: accounts.payer },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([248, 190, 21, 97, 239, 148, 39, 181])
   const buffer = Buffer.alloc(1000)

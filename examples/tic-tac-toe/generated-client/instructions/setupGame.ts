@@ -30,6 +30,7 @@ export const layout = borsh.struct([borshAddress("playerTwo")])
 export function setupGame(
   args: SetupGameArgs,
   accounts: SetupGameAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
@@ -40,6 +41,7 @@ export function setupGame(
       signer: accounts.playerOne,
     },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([180, 218, 128, 75, 58, 222, 35, 82])
   const buffer = Buffer.alloc(1000)

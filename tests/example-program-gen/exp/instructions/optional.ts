@@ -27,6 +27,7 @@ export interface OptionalAccounts {
 
 export function optional(
   accounts: OptionalAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
@@ -57,6 +58,7 @@ export function optional(
       : { address: programAddress, role: 0 },
     { address: accounts.payer.address, role: 3, signer: accounts.payer },
     { address: accounts.systemProgram, role: 0 },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([199, 182, 147, 252, 17, 246, 54, 225])
   const data = identifier

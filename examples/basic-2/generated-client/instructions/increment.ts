@@ -21,6 +21,7 @@ export interface IncrementAccounts {
 
 export function increment(
   accounts: IncrementAccounts,
+  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [
@@ -30,6 +31,7 @@ export function increment(
       role: 2,
       signer: accounts.authority,
     },
+    ...remainingAccounts,
   ]
   const identifier = Buffer.from([11, 18, 104, 9, 104, 174, 59, 33])
   const data = identifier
