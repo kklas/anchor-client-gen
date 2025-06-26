@@ -25,7 +25,7 @@ export interface SetupGameAccounts {
   systemProgram: Address
 }
 
-export const layout = borsh.struct([borshAddress("playerTwo")])
+export const layout = borsh.struct<SetupGameArgs>([borshAddress("playerTwo")])
 
 export function setupGame(
   args: SetupGameArgs,

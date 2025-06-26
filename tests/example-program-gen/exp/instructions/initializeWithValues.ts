@@ -56,7 +56,7 @@ export interface InitializeWithValuesAccounts {
   systemProgram: Address
 }
 
-export const layout = borsh.struct([
+export const layout = borsh.struct<InitializeWithValuesArgs>([
   borsh.bool("boolField"),
   borsh.u8("u8Field"),
   borsh.i8("i8Field"),
