@@ -200,7 +200,9 @@ function genAccountFiles(
           writer.write("if (info.programAddress !== programId)")
           writer.inlineBlock(() => {
             writer.writeLine(
-              `throw new Error("account doesn't belong to this program")`
+              `throw new Error(\`${fieldsInterfaceName(
+                name
+              )} account \${address} belongs to wrong program \${info.programAddress}, expected \${programId}\`)`
             )
           })
           writer.blankLine()
@@ -247,7 +249,9 @@ function genAccountFiles(
             writer.write("if (info.programAddress !== programId)")
             writer.inlineBlock(() => {
               writer.writeLine(
-                `throw new Error("account doesn't belong to this program")`
+                `throw new Error(\`${fieldsInterfaceName(
+                  name
+                )} account \${info.address} belongs to wrong program \${info.programAddress}, expected \${programId}\`)`
               )
             })
             writer.blankLine()
