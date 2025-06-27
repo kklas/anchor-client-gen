@@ -24,7 +24,9 @@ export interface RemainingAccounts {
   systemProgram: Address
 }
 
-export const layout = borsh.struct([borsh.u32("expectedRemainingAccounts")])
+export const layout = borsh.struct<RemainingArgs>([
+  borsh.u32("expectedRemainingAccounts"),
+])
 
 export function remaining(
   args: RemainingArgs,
