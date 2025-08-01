@@ -2,9 +2,9 @@
 import {
   Address,
   isSome,
-  IAccountMeta,
-  IAccountSignerMeta,
-  IInstruction,
+  AccountMeta,
+  AccountSignerMeta,
+  Instruction,
   Option,
   TransactionSigner,
 } from "@solana/kit"
@@ -32,10 +32,10 @@ export const layout = borsh.struct<SetupGameArgs>([borshAddress("playerTwo")])
 export function setupGame(
   args: SetupGameArgs,
   accounts: SetupGameAccounts,
-  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
+  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<IAccountMeta | IAccountSignerMeta> = [
+  const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.game.address, role: 3, signer: accounts.game },
     {
       address: accounts.playerOne.address,
@@ -53,6 +53,6 @@ export function setupGame(
     buffer
   )
   const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
-  const ix: IInstruction = { accounts: keys, programAddress, data }
+  const ix: Instruction = { accounts: keys, programAddress, data }
   return ix
 }

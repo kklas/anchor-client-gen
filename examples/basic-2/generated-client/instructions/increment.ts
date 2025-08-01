@@ -2,9 +2,9 @@
 import {
   Address,
   isSome,
-  IAccountMeta,
-  IAccountSignerMeta,
-  IInstruction,
+  AccountMeta,
+  AccountSignerMeta,
+  Instruction,
   Option,
   TransactionSigner,
 } from "@solana/kit"
@@ -23,10 +23,10 @@ export interface IncrementAccounts {
 
 export function increment(
   accounts: IncrementAccounts,
-  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
+  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<IAccountMeta | IAccountSignerMeta> = [
+  const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.counter, role: 1 },
     {
       address: accounts.authority.address,
@@ -36,6 +36,6 @@ export function increment(
     ...remainingAccounts,
   ]
   const data = DISCRIMINATOR
-  const ix: IInstruction = { accounts: keys, programAddress, data }
+  const ix: Instruction = { accounts: keys, programAddress, data }
   return ix
 }
