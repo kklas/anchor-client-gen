@@ -15,6 +15,8 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([180, 218, 128, 75, 58, 222, 35, 82])
+
 export interface SetupGameArgs {
   playerTwo: Address
 }
@@ -43,7 +45,6 @@ export function setupGame(
     { address: accounts.systemProgram, role: 0 },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([180, 218, 128, 75, 58, 222, 35, 82])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
@@ -51,7 +52,7 @@ export function setupGame(
     },
     buffer
   )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

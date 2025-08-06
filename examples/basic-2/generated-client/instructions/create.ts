@@ -14,6 +14,8 @@ import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-esl
 import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([24, 30, 200, 40, 5, 28, 7, 119])
+
 export interface CreateArgs {
   authority: Address
 }
@@ -38,7 +40,6 @@ export function create(
     { address: accounts.systemProgram, role: 0 },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([24, 30, 200, 40, 5, 28, 7, 119])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
@@ -46,7 +47,7 @@ export function create(
     },
     buffer
   )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

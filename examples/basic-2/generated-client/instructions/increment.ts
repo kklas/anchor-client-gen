@@ -14,6 +14,8 @@ import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-esl
 import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([11, 18, 104, 9, 104, 174, 59, 33])
+
 export interface IncrementAccounts {
   counter: Address
   authority: TransactionSigner
@@ -33,8 +35,7 @@ export function increment(
     },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([11, 18, 104, 9, 104, 174, 59, 33])
-  const data = identifier
+  const data = DISCRIMINATOR
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

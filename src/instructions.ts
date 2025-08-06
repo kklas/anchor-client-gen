@@ -96,6 +96,18 @@ function genInstructionFiles(
       `import { PROGRAM_ID } from "../programId"`,
     ])
 
+    // ix discriminator
+    src.addVariableStatement({
+      isExported: true,
+      declarationKind: VariableDeclarationKind.Const,
+      declarations: [
+        {
+          name: "DISCRIMINATOR",
+          initializer: `Buffer.from([${genIxIdentifier(ix.name).toString()}])`,
+        },
+      ],
+    })
+
     // args interface
     if (ix.args.length > 0) {
       src.addInterface({
@@ -315,17 +327,6 @@ function genInstructionFiles(
       ],
     })
 
-    // identifier
-    ixFn.addVariableStatement({
-      declarationKind: VariableDeclarationKind.Const,
-      declarations: [
-        {
-          name: "identifier",
-          initializer: `Buffer.from([${genIxIdentifier(ix.name).toString()}])`,
-        },
-      ],
-    })
-
     // encode
     if (ix.args.length > 0) {
       ixFn.addVariableStatement({
@@ -362,7 +363,7 @@ function genInstructionFiles(
           {
             name: "data",
             initializer:
-              "Buffer.concat([identifier, buffer]).slice(0, 8 + len)",
+              "Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)",
           },
         ],
       })
@@ -372,7 +373,7 @@ function genInstructionFiles(
         declarations: [
           {
             name: "data",
-            initializer: "identifier",
+            initializer: "DISCRIMINATOR",
           },
         ],
       })
