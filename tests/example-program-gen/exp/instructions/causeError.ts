@@ -15,13 +15,14 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([67, 104, 37, 17, 2, 155, 68, 17])
+
 export function causeError(
   remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
   const keys: Array<IAccountMeta | IAccountSignerMeta> = [...remainingAccounts]
-  const identifier = Buffer.from([67, 104, 37, 17, 2, 155, 68, 17])
-  const data = identifier
+  const data = DISCRIMINATOR
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

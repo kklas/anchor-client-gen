@@ -15,6 +15,8 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([242, 61, 121, 163, 200, 48, 28, 21])
+
 export interface RemainingArgs {
   expectedRemainingAccounts: number
 }
@@ -39,7 +41,6 @@ export function remaining(
     { address: accounts.systemProgram, role: 0 },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([242, 61, 121, 163, 200, 48, 28, 21])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
@@ -47,7 +48,7 @@ export function remaining(
     },
     buffer
   )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

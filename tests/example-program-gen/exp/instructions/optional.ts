@@ -15,6 +15,8 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([199, 182, 147, 252, 17, 246, 54, 225])
+
 export interface OptionalAccounts {
   optionalState: TransactionSigner
   readonlySignerOption: Option<TransactionSigner>
@@ -60,8 +62,7 @@ export function optional(
     { address: accounts.systemProgram, role: 0 },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([199, 182, 147, 252, 17, 246, 54, 225])
-  const data = identifier
+  const data = DISCRIMINATOR
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

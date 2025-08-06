@@ -15,6 +15,10 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([
+  213, 157, 193, 142, 228, 56, 248, 150,
+])
+
 export interface PlayArgs {
   tile: types.TileFields
 }
@@ -37,7 +41,6 @@ export function play(
     { address: accounts.player.address, role: 2, signer: accounts.player },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([213, 157, 193, 142, 228, 56, 248, 150])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
@@ -45,7 +48,7 @@ export function play(
     },
     buffer
   )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }

@@ -15,6 +15,8 @@ import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslin
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
+export const DISCRIMINATOR = Buffer.from([220, 73, 8, 213, 178, 69, 181, 141])
+
 export interface InitializeWithValuesArgs {
   boolField: boolean
   u8Field: number
@@ -100,7 +102,6 @@ export function initializeWithValues(
     { address: accounts.systemProgram, role: 0 },
     ...remainingAccounts,
   ]
-  const identifier = Buffer.from([220, 73, 8, 213, 178, 69, 181, 141])
   const buffer = Buffer.alloc(1000)
   const len = layout.encode(
     {
@@ -142,7 +143,7 @@ export function initializeWithValues(
     },
     buffer
   )
-  const data = Buffer.concat([identifier, buffer]).slice(0, 8 + len)
+  const data = Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)
   const ix: IInstruction = { accounts: keys, programAddress, data }
   return ix
 }
