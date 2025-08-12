@@ -2,9 +2,9 @@
 import {
   Address,
   isSome,
-  IAccountMeta,
-  IAccountSignerMeta,
-  IInstruction,
+  AccountMeta,
+  AccountSignerMeta,
+  Instruction,
   Option,
   TransactionSigner,
 } from "@solana/kit"
@@ -29,10 +29,10 @@ export interface OptionalAccounts {
 
 export function optional(
   accounts: OptionalAccounts,
-  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
+  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<IAccountMeta | IAccountSignerMeta> = [
+  const keys: Array<AccountMeta | AccountSignerMeta> = [
     {
       address: accounts.optionalState.address,
       role: 3,
@@ -63,6 +63,6 @@ export function optional(
     ...remainingAccounts,
   ]
   const data = DISCRIMINATOR
-  const ix: IInstruction = { accounts: keys, programAddress, data }
+  const ix: Instruction = { accounts: keys, programAddress, data }
   return ix
 }

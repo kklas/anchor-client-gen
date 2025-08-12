@@ -83,7 +83,7 @@ function genInstructionFiles(
     // imports
     src.addStatements([
       `/* eslint-disable @typescript-eslint/no-unused-vars */`,
-      `import { Address, isSome, IAccountMeta, IAccountSignerMeta, IInstruction, Option, TransactionSigner } from "@solana/kit"`,
+      `import { Address, isSome, AccountMeta, AccountSignerMeta, Instruction, Option, TransactionSigner } from "@solana/kit"`,
       `/* eslint-enable @typescript-eslint/no-unused-vars */`,
       `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
@@ -211,7 +211,7 @@ function genInstructionFiles(
     }
     ixFn.addParameter({
       name: "remainingAccounts",
-      type: "Array<IAccountMeta | IAccountSignerMeta>",
+      type: "Array<AccountMeta | AccountSignerMeta>",
       initializer: "[]",
     })
     ixFn.addParameter({
@@ -226,7 +226,7 @@ function genInstructionFiles(
       declarations: [
         {
           name: "keys",
-          type: "Array<IAccountMeta | IAccountSignerMeta>",
+          type: "Array<AccountMeta | AccountSignerMeta>",
           initializer: (writer) => {
             writer.write("[")
 
@@ -385,7 +385,7 @@ function genInstructionFiles(
       declarations: [
         {
           name: "ix",
-          type: "IInstruction",
+          type: "Instruction",
           initializer: "{ accounts: keys, programAddress, data }",
         },
       ],

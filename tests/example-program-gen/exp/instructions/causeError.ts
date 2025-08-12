@@ -2,9 +2,9 @@
 import {
   Address,
   isSome,
-  IAccountMeta,
-  IAccountSignerMeta,
-  IInstruction,
+  AccountMeta,
+  AccountSignerMeta,
+  Instruction,
   Option,
   TransactionSigner,
 } from "@solana/kit"
@@ -18,11 +18,11 @@ import { PROGRAM_ID } from "../programId"
 export const DISCRIMINATOR = Buffer.from([67, 104, 37, 17, 2, 155, 68, 17])
 
 export function causeError(
-  remainingAccounts: Array<IAccountMeta | IAccountSignerMeta> = [],
+  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
   programAddress: Address = PROGRAM_ID
 ) {
-  const keys: Array<IAccountMeta | IAccountSignerMeta> = [...remainingAccounts]
+  const keys: Array<AccountMeta | AccountSignerMeta> = [...remainingAccounts]
   const data = DISCRIMINATOR
-  const ix: IInstruction = { accounts: keys, programAddress, data }
+  const ix: Instruction = { accounts: keys, programAddress, data }
   return ix
 }
