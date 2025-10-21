@@ -13,11 +13,13 @@ import {
   createSolanaRpcSubscriptions,
   some,
   none,
-  IInstruction,
+  Instruction,
   TransactionSigner,
   generateKeyPair,
   AccountRole,
   getAddressFromPublicKey,
+  assertIsSendableTransaction,
+  assertIsTransactionWithBlockhashLifetime,
 } from "@solana/kit"
 import { expect, it } from "vitest"
 import BN from "bn.js"
@@ -1245,10 +1247,10 @@ type SendConfig = Parameters<SendAndConfirmTransactionFactoryFn>[1]
 
 async function sendTx(
   payer: TransactionSigner,
-  ixs: IInstruction[],
+  ixs: Instruction[],
   config: Partial<SendConfig> = {}
 ) {
-  const blockhash = await rpc
+  const { value: blockhash } = await rpc
     .getLatestBlockhash({ commitment: "finalized" })
     .send()
 
@@ -1256,16 +1258,12 @@ async function sendTx(
     createTransactionMessage({ version: 0 }),
     (tx) => appendTransactionMessageInstructions(ixs, tx),
     (tx) => setTransactionMessageFeePayerSigner(payer, tx),
-    (tx) =>
-      setTransactionMessageLifetimeUsingBlockhash(
-        {
-          blockhash: blockhash.value.blockhash,
-          lastValidBlockHeight: blockhash.value.lastValidBlockHeight,
-        },
-        tx
-      ),
+    (tx) => setTransactionMessageLifetimeUsingBlockhash(blockhash, tx),
     (tx) => signTransactionMessageWithSigners(tx)
   )
+
+  assertIsSendableTransaction(tx)
+  assertIsTransactionWithBlockhashLifetime(tx)
 
   const sendAndConfirmFn = sendAndConfirmTransactionFactory({
     rpc,
