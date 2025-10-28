@@ -30,11 +30,19 @@ export interface InitializeAccounts {
   systemProgram: Address
 }
 
-export function initialize(
-  accounts: InitializeAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface InitializeProps {
+  accounts: InitializeAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function initialize({
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: InitializeProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.state.address, role: 3, signer: accounts.state },
     { address: accounts.nested.clock, role: 0 },

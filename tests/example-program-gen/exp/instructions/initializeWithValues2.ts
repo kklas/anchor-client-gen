@@ -36,12 +36,25 @@ export const layout = borsh.struct([
  * a separate instruction due to initialize_with_values having too many arguments
  * https://github.com/solana-labs/solana/issues/23978
  */
-export function initializeWithValues2(
-  args: InitializeWithValues2Args,
-  accounts: InitializeWithValues2Accounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface InitializeWithValues2Props {
+  args: InitializeWithValues2Args
+  accounts: InitializeWithValues2Accounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+/**
+ * a separate instruction due to initialize_with_values having too many arguments
+ * https://github.com/solana-labs/solana/issues/23978
+ */
+export function initializeWithValues2({
+  args,
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: InitializeWithValues2Props) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.state.address, role: 3, signer: accounts.state },
     { address: accounts.payer.address, role: 3, signer: accounts.payer },

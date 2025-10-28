@@ -16,10 +16,17 @@ import { PROGRAM_ID } from "../programId"
 
 export const DISCRIMINATOR = new Uint8Array([67, 104, 37, 17, 2, 155, 68, 17])
 
-export function causeError(
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface CauseErrorProps {
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function causeError({
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: CauseErrorProps = {}) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [...remainingAccounts]
   const data = DISCRIMINATOR
   const ix: Instruction = { accounts: keys, programAddress, data }

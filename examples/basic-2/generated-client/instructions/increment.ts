@@ -20,11 +20,19 @@ export interface IncrementAccounts {
   authority: TransactionSigner
 }
 
-export function increment(
-  accounts: IncrementAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface IncrementProps {
+  accounts: IncrementAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function increment({
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: IncrementProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.counter, role: 1 },
     {

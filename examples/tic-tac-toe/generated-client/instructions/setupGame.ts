@@ -30,12 +30,21 @@ export interface SetupGameAccounts {
 
 export const layout = borsh.struct([borshAddress("playerTwo")])
 
-export function setupGame(
-  args: SetupGameArgs,
-  accounts: SetupGameAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface SetupGameProps {
+  args: SetupGameArgs
+  accounts: SetupGameAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function setupGame({
+  args,
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: SetupGameProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.game.address, role: 3, signer: accounts.game },
     {

@@ -34,6 +34,10 @@ function accountsInterfaceName(ixName: string) {
   return `${capitalize(ixName)}Accounts`
 }
 
+function propsInterfaceName(ixName: string): string {
+  return `${capitalize(ixName)}Props`
+}
+
 function genIndexFile(
   project: Project,
   idl: Idl,
@@ -193,32 +197,56 @@ function genInstructionFiles(
     }
 
     // instruction
+    const propsIf = src.addInterface({
+      isExported: true,
+      name: propsInterfaceName(ix.name),
+      docs: ix.docs && [ix.docs.join("\n")],
+    })
+
+    const destructureArgs: string[] = []
+    if (ix.args.length > 0) {
+      propsIf.addProperty({
+        name: "args",
+        type: argsInterfaceName(ix.name),
+      })
+      destructureArgs.push("args")
+    }
+    if (ix.accounts.length > 0) {
+      propsIf.addProperty({
+        name: "accounts",
+        type: accountsInterfaceName(ix.name),
+      })
+      destructureArgs.push("accounts")
+    }
+    propsIf.addProperty({
+      name: "remainingAccounts?",
+      type: "Array<AccountMeta | AccountSignerMeta>",
+      docs: ["@default []"],
+    })
+    destructureArgs.push("remainingAccounts = []")
+    propsIf.addProperty({
+      name: "programAddress?",
+      type: "Address",
+      docs: ["@default PROGRAM_ID"],
+    })
+    destructureArgs.push("programAddress = PROGRAM_ID")
+
     const ixFn = src.addFunction({
       isExported: true,
       name: ix.name,
       docs: ix.docs && [ix.docs.join("\n")],
     })
-    if (ix.args.length > 0) {
-      ixFn.addParameter({
-        name: "args",
-        type: argsInterfaceName(ix.name),
-      })
-    }
-    if (ix.accounts.length > 0) {
-      ixFn.addParameter({
-        name: "accounts",
-        type: accountsInterfaceName(ix.name),
-      })
-    }
+
+    const hasRequiredProps = ix.args.length > 0 || ix.accounts.length > 0
     ixFn.addParameter({
-      name: "remainingAccounts",
-      type: "Array<AccountMeta | AccountSignerMeta>",
-      initializer: "[]",
-    })
-    ixFn.addParameter({
-      name: "programAddress",
-      type: "Address",
-      initializer: "PROGRAM_ID",
+      name: `{ ${destructureArgs.join(", ")} }`,
+      type: propsInterfaceName(ix.name),
+      initializer: (w) => {
+        if (hasRequiredProps) {
+          return
+        }
+        w.write("{}")
+      },
     })
 
     // accounts
