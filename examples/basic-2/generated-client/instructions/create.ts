@@ -26,7 +26,7 @@ export interface CreateAccounts {
   systemProgram: Address
 }
 
-export const layout = borsh.struct<CreateArgs>([borshAddress("authority")])
+export const layout = borsh.struct([borshAddress("authority")])
 
 export function create(
   args: CreateArgs,
