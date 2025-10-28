@@ -27,7 +27,7 @@ export interface InitializeWithValues2Accounts {
   systemProgram: Address
 }
 
-export const layout = borsh.struct<InitializeWithValues2Args>([
+export const layout = borsh.struct([
   borsh.vec(borsh.option(borsh.u64()), "vecOfOption"),
 ])
 

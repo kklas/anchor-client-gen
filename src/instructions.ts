@@ -178,7 +178,7 @@ function genInstructionFiles(
           {
             name: "layout",
             initializer: (writer) => {
-              writer.write(`borsh.struct<${argsInterfaceName(ix.name)}>([`)
+              writer.write("borsh.struct([")
 
               ix.args.forEach((arg) => {
                 writer.writeLine(layoutForType(arg.type, arg.name) + ",")

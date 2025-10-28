@@ -28,7 +28,7 @@ export interface PlayAccounts {
   player: TransactionSigner
 }
 
-export const layout = borsh.struct<PlayArgs>([types.Tile.layout("tile")])
+export const layout = borsh.struct([types.Tile.layout("tile")])
 
 export function play(
   args: PlayArgs,
