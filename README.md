@@ -133,6 +133,9 @@ const tx = await pipe(
   (tx) => signTransactionMessageWithSigners(tx)
 )
 
+assertIsSendableTransaction(tx)
+assertIsTransactionWithBlockhashLifetime(tx)
+
 const sendAndConfirmFn = sendAndConfirmTransactionFactory({
   rpc,
   rpcSubscriptions,

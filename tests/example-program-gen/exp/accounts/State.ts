@@ -43,6 +43,7 @@ export interface StateFields {
   enumField2: types.FooEnumKind
   enumField3: types.FooEnumKind
   enumField4: types.FooEnumKind
+  cStyleEnumField: types.CStyleEnumKind
 }
 
 export interface StateJSON {
@@ -73,6 +74,7 @@ export interface StateJSON {
   enumField2: types.FooEnumJSON
   enumField3: types.FooEnumJSON
   enumField4: types.FooEnumJSON
+  cStyleEnumField: types.CStyleEnumJSON
 }
 
 /** An account containing various fields */
@@ -104,6 +106,7 @@ export class State {
   readonly enumField2: types.FooEnumKind
   readonly enumField3: types.FooEnumKind
   readonly enumField4: types.FooEnumKind
+  readonly cStyleEnumField: types.CStyleEnumKind
 
   static readonly discriminator = Buffer.from([
     216, 146, 107, 94, 104, 75, 182, 177,
@@ -136,6 +139,7 @@ export class State {
     types.FooEnum.layout("enumField2"),
     types.FooEnum.layout("enumField3"),
     types.FooEnum.layout("enumField4"),
+    types.CStyleEnum.layout("cStyleEnumField"),
   ])
 
   constructor(fields: StateFields) {
@@ -170,6 +174,7 @@ export class State {
     this.enumField2 = fields.enumField2
     this.enumField3 = fields.enumField3
     this.enumField4 = fields.enumField4
+    this.cStyleEnumField = fields.cStyleEnumField
   }
 
   static async fetch(
@@ -257,6 +262,7 @@ export class State {
       enumField2: types.FooEnum.fromDecoded(dec.enumField2),
       enumField3: types.FooEnum.fromDecoded(dec.enumField3),
       enumField4: types.FooEnum.fromDecoded(dec.enumField4),
+      cStyleEnumField: types.CStyleEnum.fromDecoded(dec.cStyleEnumField),
     })
   }
 
@@ -289,6 +295,7 @@ export class State {
       enumField2: this.enumField2.toJSON(),
       enumField3: this.enumField3.toJSON(),
       enumField4: this.enumField4.toJSON(),
+      cStyleEnumField: this.cStyleEnumField.toJSON(),
     }
   }
 
@@ -325,6 +332,7 @@ export class State {
       enumField2: types.FooEnum.fromJSON(obj.enumField2),
       enumField3: types.FooEnum.fromJSON(obj.enumField3),
       enumField4: types.FooEnum.fromJSON(obj.enumField4),
+      cStyleEnumField: types.CStyleEnum.fromJSON(obj.cStyleEnumField),
     })
   }
 }

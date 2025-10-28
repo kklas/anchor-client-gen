@@ -7,6 +7,7 @@ import { borshAddress } from "../utils"
 export interface FooStructFields {
   field1: number
   field2: number
+  field3: BN
   nested: types.BarStructFields
   vecNested: Array<types.BarStructFields>
   optionNested: types.BarStructFields | null
@@ -17,6 +18,7 @@ export interface FooStructFields {
 export interface FooStructJSON {
   field1: number
   field2: number
+  field3: string
   nested: types.BarStructJSON
   vecNested: Array<types.BarStructJSON>
   optionNested: types.BarStructJSON | null
@@ -27,6 +29,7 @@ export interface FooStructJSON {
 export class FooStruct {
   readonly field1: number
   readonly field2: number
+  readonly field3: BN
   readonly nested: types.BarStruct
   readonly vecNested: Array<types.BarStruct>
   readonly optionNested: types.BarStruct | null
@@ -36,6 +39,7 @@ export class FooStruct {
   constructor(fields: FooStructFields) {
     this.field1 = fields.field1
     this.field2 = fields.field2
+    this.field3 = fields.field3
     this.nested = new types.BarStruct({ ...fields.nested })
     this.vecNested = fields.vecNested.map(
       (item) => new types.BarStruct({ ...item })
@@ -53,6 +57,7 @@ export class FooStruct {
       [
         borsh.u8("field1"),
         borsh.u16("field2"),
+        borsh.u64("field3"),
         types.BarStruct.layout("nested"),
         borsh.vec(types.BarStruct.layout(), "vecNested"),
         borsh.option(types.BarStruct.layout(), "optionNested"),
@@ -68,6 +73,7 @@ export class FooStruct {
     return new FooStruct({
       field1: obj.field1,
       field2: obj.field2,
+      field3: obj.field3,
       nested: types.BarStruct.fromDecoded(obj.nested),
       vecNested: obj.vecNested.map(
         (
@@ -86,6 +92,7 @@ export class FooStruct {
     return {
       field1: fields.field1,
       field2: fields.field2,
+      field3: fields.field3,
       nested: types.BarStruct.toEncodable(fields.nested),
       vecNested: fields.vecNested.map((item) =>
         types.BarStruct.toEncodable(item)
@@ -103,6 +110,7 @@ export class FooStruct {
     return {
       field1: this.field1,
       field2: this.field2,
+      field3: this.field3.toString(),
       nested: this.nested.toJSON(),
       vecNested: this.vecNested.map((item) => item.toJSON()),
       optionNested: (this.optionNested && this.optionNested.toJSON()) || null,
@@ -115,6 +123,7 @@ export class FooStruct {
     return new FooStruct({
       field1: obj.field1,
       field2: obj.field2,
+      field3: new BN(obj.field3),
       nested: types.BarStruct.fromJSON(obj.nested),
       vecNested: obj.vecNested.map((item) => types.BarStruct.fromJSON(item)),
       optionNested:

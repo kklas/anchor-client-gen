@@ -47,6 +47,7 @@ import {
   Struct,
   Unnamed,
 } from "./example-program-gen/act/types/FooEnum"
+import { Second, Third } from "./example-program-gen/act/types/CStyleEnum"
 import * as path from "path"
 import { SYSVAR_CLOCK_ADDRESS, SYSVAR_RENT_ADDRESS } from "@solana/sysvars"
 import { SYSTEM_PROGRAM_ADDRESS } from "@solana-program/system"
@@ -315,6 +316,7 @@ it("instruction with args", async () => {
           new FooStruct({
             field1: 1,
             field2: 2,
+            field3: new BN(333),
             nested: new BarStruct({
               someField: true,
               otherField: 55,
@@ -344,6 +346,7 @@ it("instruction with args", async () => {
         structField: new FooStruct({
           field1: 1,
           field2: 2,
+          field3: new BN(444),
           nested: new BarStruct({
             someField: true,
             otherField: 55,
@@ -382,6 +385,7 @@ it("instruction with args", async () => {
           }),
         ]),
         enumField4: new NoFields(),
+        cStyleEnumField: new Second(),
       },
       {
         state: state,
@@ -682,7 +686,7 @@ it("tx error", async () => {
     expect(parsed.logs).toStrictEqual([
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 invoke [1]",
       "Program log: Instruction: CauseError",
-      "Program log: AnchorError thrown in programs/example-program/src/lib.rs:90. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
+      "Program log: AnchorError thrown in programs/example-program/src/lib.rs:92. Error Code: SomeError. Error Number: 6000. Error Message: Example error..",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 consumed 2043 of 200000 compute units",
       "Program 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8 failed: custom program error: 0x1770",
     ])
@@ -776,6 +780,7 @@ it("toJSON", async () => {
       new FooStruct({
         field1: 5,
         field2: 6,
+        field3: new BN(555),
         nested: new BarStruct({
           someField: true,
           otherField: 15,
@@ -802,6 +807,7 @@ it("toJSON", async () => {
     optionStructField: new FooStruct({
       field1: 8,
       field2: 9,
+      field3: new BN(666),
       nested: new BarStruct({
         someField: true,
         otherField: 17,
@@ -822,6 +828,7 @@ it("toJSON", async () => {
     structField: new FooStruct({
       field1: 11,
       field2: 12,
+      field3: new BN(777),
       nested: new BarStruct({
         someField: false,
         otherField: 177,
@@ -863,6 +870,7 @@ it("toJSON", async () => {
       }),
     ]),
     enumField4: new NoFields(),
+    cStyleEnumField: new Third(),
   })
 
   const stateJSON = state.toJSON()
@@ -889,6 +897,7 @@ it("toJSON", async () => {
       {
         field1: 5,
         field2: 6,
+        field3: "555",
         nested: {
           someField: true,
           otherField: 15,
@@ -918,6 +927,7 @@ it("toJSON", async () => {
     optionStructField: {
       field1: 8,
       field2: 9,
+      field3: "666",
       nested: {
         someField: true,
         otherField: 17,
@@ -940,6 +950,7 @@ it("toJSON", async () => {
     structField: {
       field1: 11,
       field2: 12,
+      field3: "777",
       nested: {
         someField: false,
         otherField: 177,
@@ -993,6 +1004,9 @@ it("toJSON", async () => {
     },
     enumField4: {
       kind: "NoFields",
+    },
+    cStyleEnumField: {
+      kind: "Third",
     },
   })
 
