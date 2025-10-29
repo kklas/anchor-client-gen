@@ -221,6 +221,12 @@
           "type": {
             "defined": "FooEnum"
           }
+        },
+        {
+          "name": "cStyleEnumField",
+          "type": {
+            "defined": "CStyleEnum"
+          }
         }
       ]
     },
@@ -496,6 +502,12 @@
             "type": {
               "defined": "FooEnum"
             }
+          },
+          {
+            "name": "cStyleEnumField",
+            "type": {
+              "defined": "CStyleEnum"
+            }
           }
         ]
       }
@@ -536,6 +548,26 @@
           {
             "name": "otherField",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CStyleEnum",
+      "docs": [
+        "C-style enum type"
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "First"
+          },
+          {
+            "name": "Second"
+          },
+          {
+            "name": "Third"
           }
         ]
       }
@@ -634,6 +666,10 @@
           {
             "name": "field2",
             "type": "u16"
+          },
+          {
+            "name": "field3",
+            "type": "u64"
           },
           {
             "name": "nested",

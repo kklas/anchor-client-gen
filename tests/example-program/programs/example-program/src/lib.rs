@@ -43,6 +43,7 @@ pub mod example_program {
         enum_field_2: FooEnum,
         enum_field_3: FooEnum,
         enum_field_4: FooEnum,
+        c_style_enum_field: CStyleEnum,
     ) -> Result<()> {
         ctx.accounts.state.set_inner(State {
             bool_field,
@@ -71,6 +72,7 @@ pub mod example_program {
             enum_field_2,
             enum_field_3,
             enum_field_4,
+            c_style_enum_field,
         });
 
         Ok(())
@@ -128,6 +130,14 @@ pub enum FooEnum {
     NoFields,
 }
 
+/// C-style enum type
+#[derive(AnchorSerialize, AnchorDeserialize, Clone)]
+pub enum CStyleEnum {
+    First = 0,
+    Second = 1,
+    Third = 2,
+}
+
 /// Bar struct type
 #[derive(AnchorSerialize, AnchorDeserialize, Clone)]
 pub struct BarStruct {
@@ -149,6 +159,7 @@ impl Default for BarStruct {
 pub struct FooStruct {
     field1: u8,
     field2: u16,
+    field3: u64,
     nested: BarStruct,
     vec_nested: Vec<BarStruct>,
     option_nested: Option<BarStruct>,
@@ -161,6 +172,7 @@ impl Default for FooStruct {
         return FooStruct {
             field1: 123,
             field2: 999,
+            field3: 123456789,
             nested: BarStruct::default(),
             vec_nested: vec![BarStruct::default()],
             option_nested: Some(BarStruct::default()),
@@ -204,6 +216,7 @@ pub struct State {
     enum_field_2: FooEnum,
     enum_field_3: FooEnum,
     enum_field_4: FooEnum,
+    c_style_enum_field: CStyleEnum,
 }
 
 impl Default for State {
@@ -240,6 +253,7 @@ impl Default for State {
             },
             enum_field_3: FooEnum::Struct(BarStruct::default()),
             enum_field_4: FooEnum::NoFields,
+            c_style_enum_field: CStyleEnum::First,
         };
     }
 }

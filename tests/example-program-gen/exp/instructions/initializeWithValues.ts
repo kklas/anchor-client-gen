@@ -44,6 +44,7 @@ export interface InitializeWithValuesArgs {
   enumField2: types.FooEnumKind
   enumField3: types.FooEnumKind
   enumField4: types.FooEnumKind
+  cStyleEnumField: types.CStyleEnumKind
 }
 
 export interface InitializeWithValuesAccounts {
@@ -85,6 +86,7 @@ export const layout = borsh.struct([
   types.FooEnum.layout("enumField2"),
   types.FooEnum.layout("enumField3"),
   types.FooEnum.layout("enumField4"),
+  types.CStyleEnum.layout("cStyleEnumField"),
 ])
 
 /** Initializes an account with specified values */
@@ -140,6 +142,7 @@ export function initializeWithValues(
       enumField2: args.enumField2.toEncodable(),
       enumField3: args.enumField3.toEncodable(),
       enumField4: args.enumField4.toEncodable(),
+      cStyleEnumField: args.cStyleEnumField.toEncodable(),
     },
     buffer
   )
