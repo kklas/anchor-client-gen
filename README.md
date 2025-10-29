@@ -60,6 +60,9 @@ This will generate code to `output/directory`:
 │   ├── anchor.ts
 │   ├── custom.ts
 │   └── index.ts
+├── utils
+│   ├── borshAddress.ts
+│   └── index.ts
 └── programId.ts
 ```
 
@@ -69,7 +72,7 @@ For more examples of the generated code, check out the [examples](https://github
 
 The following packages are required for the generated client to work:
 
-- `@solana/web3.js`
+- `@solana/kit`
 - `bn.js`
 - `@coral-xyz/borsh`
 - `buffer-layout`
@@ -78,10 +81,10 @@ Install them in your project with:
 
 ```sh
 // npm
-$ npm install @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
+$ npm install @solana/kit bn.js @coral-xyz/borsh buffer-layout
 
 // yarn
-$ yarn add @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
+$ yarn add @solana/kit bn.js @coral-xyz/borsh buffer-layout
 ```
 
 For typescript, the `buffer-layout` types can be found in the `@coral-xyz/borsh` package.
@@ -105,13 +108,16 @@ const fooAccount = generateKeyPairSigner()
 
 // call an instruction
 const ix = someInstruction({
-  fooParam: "...",
-  barParam: "...",
-  ...
-}, {
-  fooAccount: fooAccount, // signer
-  barAccount: address("..."),
-  ...
+  args: {
+    fooParam: "...",
+    barParam: "...",
+    ...
+  },
+  accounts: {
+    fooAccount: fooAccount, // signer
+    barAccount: address("..."),
+    ...
+  }
 })
 
 const blockhash = await rpc
@@ -199,24 +205,30 @@ console.log(tupleEnum.toJSON(), structEnum.toJSON(), discEnum.toJSON())
 ```ts
 // types are used as arguments in instruction calls (where needed):
 const ix = someInstruction({
-  someStructField: barStruct,
-  someEnumField: tupleEnum,
-  ...
-}, {
-  // accounts
-  ...
+  args: {
+    someStructField: barStruct,
+    someEnumField: tupleEnum,
+    ...
+  },
+  accounts: {
+    // accounts
+    ...
+  }
 })
 
 // in case of struct fields, it's also possible to pass them as objects:
-const ix = someInstrution({
-  someStructField: {
-    someField: "...",
-    otherField: "...",
+const ix2 = someInstrution({
+  args: {
+    someStructField: {
+      someField: "...",
+      otherField: "...",
+    },
+    ...,
   },
-  ...,
-}, {
-  // accounts
-  ...
+  accounts: {
+    // accounts
+    ...
+  }
 })
 ```
 

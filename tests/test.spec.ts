@@ -88,13 +88,15 @@ it("init and account fetch", async () => {
 
   await sendTx(payer, [
     initialize({
-      state: state,
-      payer: payer,
-      nested: {
-        clock: SYSVAR_CLOCK_ADDRESS,
-        rent: SYSVAR_RENT_ADDRESS,
+      accounts: {
+        state: state,
+        payer: payer,
+        nested: {
+          clock: SYSVAR_CLOCK_ADDRESS,
+          rent: SYSVAR_RENT_ADDRESS,
+        },
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
       },
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }),
   ])
   const res = await State.fetch(rpc, state.address)
@@ -259,22 +261,26 @@ it("fetch multiple", async () => {
 
   await sendTx(payer, [
     initialize({
-      state: state,
-      payer: payer,
-      nested: {
-        clock: SYSVAR_CLOCK_ADDRESS,
-        rent: SYSVAR_RENT_ADDRESS,
+      accounts: {
+        state: state,
+        payer: payer,
+        nested: {
+          clock: SYSVAR_CLOCK_ADDRESS,
+          rent: SYSVAR_RENT_ADDRESS,
+        },
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
       },
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }),
     initialize({
-      state: another_state,
-      payer: payer,
-      nested: {
-        clock: SYSVAR_CLOCK_ADDRESS,
-        rent: SYSVAR_RENT_ADDRESS,
+      accounts: {
+        state: another_state,
+        payer: payer,
+        nested: {
+          clock: SYSVAR_CLOCK_ADDRESS,
+          rent: SYSVAR_RENT_ADDRESS,
+        },
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
       },
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
     }),
   ])
 
@@ -293,8 +299,8 @@ it("instruction with args", async () => {
   const state2 = await generateKeyPairSigner()
 
   await sendTx(payer, [
-    initializeWithValues(
-      {
+    initializeWithValues({
+      args: {
         boolField: true,
         u8Field: 253,
         i8Field: -120,
@@ -387,7 +393,7 @@ it("instruction with args", async () => {
         enumField4: new NoFields(),
         cStyleEnumField: new Second(),
       },
-      {
+      accounts: {
         state: state,
         payer: payer,
         nested: {
@@ -395,18 +401,18 @@ it("instruction with args", async () => {
           rent: SYSVAR_RENT_ADDRESS,
         },
         systemProgram: SYSTEM_PROGRAM_ADDRESS,
-      }
-    ),
-    initializeWithValues2(
-      {
+      },
+    }),
+    initializeWithValues2({
+      args: {
         vecOfOption: [null, new BN(20)],
       },
-      {
+      accounts: {
         state: state2,
         payer: payer,
         systemProgram: SYSTEM_PROGRAM_ADDRESS,
-      }
-    ),
+      },
+    }),
   ])
 
   const res = await State.fetch(rpc, state.address)
@@ -573,13 +579,15 @@ it("optional with some readonly signer", async () => {
 
   await sendTx(payer, [
     optional({
-      optionalState,
-      readonlySignerOption: some(signer),
-      mutableSignerOption: none(),
-      readonlyOption: none(),
-      mutableOption: none(),
-      payer,
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      accounts: {
+        optionalState,
+        readonlySignerOption: some(signer),
+        mutableSignerOption: none(),
+        readonlyOption: none(),
+        mutableOption: none(),
+        payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      },
     }),
   ])
 
@@ -598,13 +606,15 @@ it("optional with some mutable signer", async () => {
 
   await sendTx(payer, [
     optional({
-      optionalState,
-      readonlySignerOption: none(),
-      mutableSignerOption: some(signer),
-      readonlyOption: none(),
-      mutableOption: none(),
-      payer,
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      accounts: {
+        optionalState,
+        readonlySignerOption: none(),
+        mutableSignerOption: some(signer),
+        readonlyOption: none(),
+        mutableOption: none(),
+        payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      },
     }),
   ])
 
@@ -623,13 +633,15 @@ it("optional with some readonly account", async () => {
 
   await sendTx(payer, [
     optional({
-      optionalState,
-      readonlySignerOption: none(),
-      mutableSignerOption: none(),
-      readonlyOption: some(signer.address),
-      mutableOption: none(),
-      payer,
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      accounts: {
+        optionalState,
+        readonlySignerOption: none(),
+        mutableSignerOption: none(),
+        readonlyOption: some(signer.address),
+        mutableOption: none(),
+        payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      },
     }),
   ])
 
@@ -648,13 +660,15 @@ it("optional with some mutable account", async () => {
 
   await sendTx(payer, [
     optional({
-      optionalState,
-      readonlySignerOption: none(),
-      mutableSignerOption: none(),
-      readonlyOption: none(),
-      mutableOption: some(signer.address),
-      payer,
-      systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      accounts: {
+        optionalState,
+        readonlySignerOption: none(),
+        mutableSignerOption: none(),
+        readonlyOption: none(),
+        mutableOption: some(signer.address),
+        payer,
+        systemProgram: SYSTEM_PROGRAM_ADDRESS,
+      },
     }),
   ])
 
@@ -1211,19 +1225,19 @@ it("remaining accounts should match", async () => {
   )
 
   await sendTx(payer, [
-    remaining(
-      {
+    remaining({
+      args: {
         expectedRemainingAccounts: 2,
       },
-      {
+      accounts: {
         payer,
         systemProgram: SYSTEM_PROGRAM_ADDRESS,
       },
-      [
+      remainingAccounts: [
         { address: remainingAddress1, role: AccountRole.READONLY },
         { address: remainingAddress2, role: AccountRole.READONLY },
-      ]
-    ),
+      ],
+    }),
   ])
 })
 
@@ -1232,15 +1246,15 @@ it("remaining accounts should throw", async () => {
 
   try {
     await sendTx(payer, [
-      remaining(
-        {
+      remaining({
+        args: {
           expectedRemainingAccounts: 2,
         },
-        {
+        accounts: {
           payer,
           systemProgram: SYSTEM_PROGRAM_ADDRESS,
-        }
-      ),
+        },
+      }),
     ])
   } catch (e) {
     const parsed = fromTxError(e)
