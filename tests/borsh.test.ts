@@ -3,7 +3,7 @@ import * as borsh from "../src/borsh"
 
 function roundtrip<T>(layout: borsh.Layout<T>, value: T): T {
   const buf = new Uint8Array(1024)
-  const written = layout.encode(value, buf)
+  layout.encode(value, buf)
   return layout.decode(buf, 0)
 }
 
@@ -178,9 +178,7 @@ describe("borsh", () => {
 
     it("roundtrip", () => {
       expect(roundtrip(layout, 0n)).toBe(0n)
-      expect(roundtrip(layout, 9223372036854775807n)).toBe(
-        9223372036854775807n
-      )
+      expect(roundtrip(layout, 9223372036854775807n)).toBe(9223372036854775807n)
       expect(roundtrip(layout, -9223372036854775808n)).toBe(
         -9223372036854775808n
       )
@@ -310,9 +308,7 @@ describe("borsh", () => {
     it("binary", () => {
       // "hi" = length 2 (u32 LE) + bytes
       const bytes = encode(layout, "hi")
-      expect(bytes).toEqual(
-        new Uint8Array([2, 0, 0, 0, 0x68, 0x69])
-      )
+      expect(bytes).toEqual(new Uint8Array([2, 0, 0, 0, 0x68, 0x69]))
     })
 
     it("getSpan", () => {
@@ -362,9 +358,7 @@ describe("borsh", () => {
     it("binary", () => {
       const bytes = encode(layout, [1])
       // length=1 (u32 LE) + value=1 (u32 LE)
-      expect(bytes).toEqual(
-        new Uint8Array([1, 0, 0, 0, 1, 0, 0, 0])
-      )
+      expect(bytes).toEqual(new Uint8Array([1, 0, 0, 0, 1, 0, 0, 0]))
     })
 
     it("getSpan", () => {
@@ -395,9 +389,7 @@ describe("borsh", () => {
     })
 
     it("binary some", () => {
-      expect(encode(layout, 1)).toEqual(
-        new Uint8Array([1, 1, 0, 0, 0])
-      )
+      expect(encode(layout, 1)).toEqual(new Uint8Array([1, 1, 0, 0, 0]))
     })
 
     it("getSpan none", () => {
@@ -501,9 +493,9 @@ describe("borsh", () => {
     })
 
     it("roundtrip variant 2", () => {
-      expect(
-        roundtrip(layout, { Error: { msg: "fail", code: 1 } })
-      ).toEqual({ Error: { msg: "fail", code: 1 } })
+      expect(roundtrip(layout, { Error: { msg: "fail", code: 1 } })).toEqual({
+        Error: { msg: "fail", code: 1 },
+      })
     })
 
     it("binary discriminator", () => {
