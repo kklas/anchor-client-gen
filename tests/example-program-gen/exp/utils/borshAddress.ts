@@ -1,13 +1,13 @@
 import { Address, getAddressCodec } from "@solana/kit"
-import { blob, Layout } from "buffer-layout"
+import { blob, Layout } from "../borsh"
 
 const addressCodec = getAddressCodec()
 
 export function borshAddress(property?: string): Layout<Address> {
   return new WrappedLayout(
     blob(32),
-    (b: Buffer) => addressCodec.decode(b),
-    (addr: Address) => Buffer.from(addressCodec.encode(addr)),
+    (b: Uint8Array) => addressCodec.decode(b),
+    (addr: Address) => new Uint8Array(addressCodec.encode(addr)),
     property
   )
 }
@@ -29,15 +29,15 @@ class WrappedLayout<T, U> extends Layout<U> {
     this.encoder = encoder
   }
 
-  decode(b: Buffer, offset?: number): U {
+  decode(b: Uint8Array, offset?: number): U {
     return this.decoder(this.layout.decode(b, offset))
   }
 
-  encode(src: U, b: Buffer, offset?: number): number {
+  encode(src: U, b: Uint8Array, offset?: number): number {
     return this.layout.encode(this.encoder(src), b, offset)
   }
 
-  getSpan(b: Buffer, offset?: number): number {
+  getSpan(b: Uint8Array, offset?: number): number {
     return this.layout.getSpan(b, offset)
   }
 }

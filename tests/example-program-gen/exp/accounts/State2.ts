@@ -9,14 +9,13 @@ import {
   Rpc,
 } from "@solana/kit"
 /* eslint-enable @typescript-eslint/no-unused-vars */
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "../borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
 export interface State2Fields {
-  vecOfOption: Array<BN | null>
+  vecOfOption: Array<bigint | null>
 }
 
 export interface State2JSON {
@@ -24,9 +23,9 @@ export interface State2JSON {
 }
 
 export class State2 {
-  readonly vecOfOption: Array<BN | null>
+  readonly vecOfOption: Array<bigint | null>
 
-  static readonly discriminator = Buffer.from([
+  static readonly discriminator = new Uint8Array([
     106, 97, 255, 161, 250, 205, 185, 192,
   ])
 
@@ -54,7 +53,7 @@ export class State2 {
       )
     }
 
-    return this.decode(Buffer.from(info.data))
+    return this.decode(new Uint8Array(info.data))
   }
 
   static async fetchMultiple(
@@ -74,16 +73,19 @@ export class State2 {
         )
       }
 
-      return this.decode(Buffer.from(info.data))
+      return this.decode(new Uint8Array(info.data))
     })
   }
 
-  static decode(data: Buffer): State2 {
-    if (!data.slice(0, 8).equals(State2.discriminator)) {
+  static decode(data: Uint8Array): State2 {
+    if (
+      data.length < 8 ||
+      !data.slice(0, 8).every((b, i) => b === State2.discriminator[i])
+    ) {
       throw new Error("invalid account discriminator")
     }
 
-    const dec = State2.layout.decode(data.slice(8))
+    const dec = State2.layout.decode(data.subarray(8))
 
     return new State2({
       vecOfOption: dec.vecOfOption,
@@ -101,7 +103,7 @@ export class State2 {
   static fromJSON(obj: State2JSON): State2 {
     return new State2({
       vecOfOption: obj.vecOfOption.map(
-        (item) => (item && new BN(item)) || null
+        (item) => (item && BigInt(item)) || null
       ),
     })
   }

@@ -9,7 +9,7 @@
   "scripts": {
     "watch": "tsc --project tsconfig.build.json --watch",
     "build": "yarn build:cli && yarn build:test-fixture && yarn generate-examples",
-    "build:cli": "rimraf ./dist && tsup src/main.ts --format esm",
+    "build:cli": "rimraf ./dist && tsup src/main.ts --format esm && cp src/borsh.ts dist/",
     "build:test-fixture": "yarn build:example-program && yarn build:test-fixture:copy-idl && yarn build:test-fixture:generate-exp",
     "build:test-fixture:copy-idl": "cp tests/example-program/target/idl/example_program.json tests/example-program-gen/idl.json",
     "build:test-fixture:generate-exp": "rimraf tests/example-program-gen/exp && node ./dist/main.js tests/example-program-gen/idl.json tests/example-program-gen/exp --program-id 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8",
@@ -28,7 +28,6 @@
   },
   "devDependencies": {
     "@coral-xyz/anchor-cli": "0.29.0",
-    "@types/bn.js": "^5.1.1",
     "@types/eslint": "^8.40.1",
     "@typescript-eslint/eslint-plugin": "^5.59.9",
     "@typescript-eslint/parser": "^5.59.9",
@@ -41,16 +40,13 @@
     "ts-jest": "^29.1.0",
     "tsup": "^6.7.0",
     "typescript": "^5.7.3",
+    "@solana-program/system": "^0.9.0",
+    "@solana/sysvars": "^5.0.0",
     "vitest": "^3.2.4"
   },
   "dependencies": {
     "@coral-xyz/anchor": "0.29.0",
-    "@coral-xyz/borsh": "^0.29.0",
-    "@solana-program/system": "^0.9.0",
-    "@solana/sysvars": "^5.0.0",
     "@solana/kit": "^5.0.0",
-    "bn.js": "^5.2.2",
-    "buffer-layout": "^1.2.2",
     "camelcase": "^8.0.0",
     "commander": "^10.0.1",
     "js-sha256": "^0.11.1",

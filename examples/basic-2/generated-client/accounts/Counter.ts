@@ -9,14 +9,13 @@ import {
   Rpc,
 } from "@solana/kit"
 /* eslint-enable @typescript-eslint/no-unused-vars */
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "../borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
 
 export interface CounterFields {
   authority: Address
-  count: BN
+  count: bigint
 }
 
 export interface CounterJSON {
@@ -26,9 +25,9 @@ export interface CounterJSON {
 
 export class Counter {
   readonly authority: Address
-  readonly count: BN
+  readonly count: bigint
 
-  static readonly discriminator = Buffer.from([
+  static readonly discriminator = new Uint8Array([
     255, 176, 4, 245, 188, 253, 124, 25,
   ])
 
@@ -58,7 +57,7 @@ export class Counter {
       )
     }
 
-    return this.decode(Buffer.from(info.data))
+    return this.decode(new Uint8Array(info.data))
   }
 
   static async fetchMultiple(
@@ -78,16 +77,19 @@ export class Counter {
         )
       }
 
-      return this.decode(Buffer.from(info.data))
+      return this.decode(new Uint8Array(info.data))
     })
   }
 
-  static decode(data: Buffer): Counter {
-    if (!data.slice(0, 8).equals(Counter.discriminator)) {
+  static decode(data: Uint8Array): Counter {
+    if (
+      data.length < 8 ||
+      !data.slice(0, 8).every((b, i) => b === Counter.discriminator[i])
+    ) {
       throw new Error("invalid account discriminator")
     }
 
-    const dec = Counter.layout.decode(data.slice(8))
+    const dec = Counter.layout.decode(data.subarray(8))
 
     return new Counter({
       authority: dec.authority,
@@ -105,7 +107,7 @@ export class Counter {
   static fromJSON(obj: CounterJSON): Counter {
     return new Counter({
       authority: address(obj.authority),
-      count: new BN(obj.count),
+      count: BigInt(obj.count),
     })
   }
 }

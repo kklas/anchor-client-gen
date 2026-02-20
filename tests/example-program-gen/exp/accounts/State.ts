@@ -9,8 +9,7 @@ import {
   Rpc,
 } from "@solana/kit"
 /* eslint-enable @typescript-eslint/no-unused-vars */
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
+import * as borsh from "../borsh" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
 import { PROGRAM_ID } from "../programId"
@@ -25,15 +24,15 @@ export interface StateFields {
   u32Field: number
   i32Field: number
   f32Field: number
-  u64Field: BN
-  i64Field: BN
+  u64Field: bigint
+  i64Field: bigint
   f64Field: number
-  u128Field: BN
-  i128Field: BN
+  u128Field: bigint
+  i128Field: bigint
   bytesField: Uint8Array
   stringField: string
   pubkeyField: Address
-  vecField: Array<BN>
+  vecField: Array<bigint>
   vecStructField: Array<types.FooStructFields>
   optionField: boolean | null
   optionStructField: types.FooStructFields | null
@@ -88,15 +87,15 @@ export class State {
   readonly u32Field: number
   readonly i32Field: number
   readonly f32Field: number
-  readonly u64Field: BN
-  readonly i64Field: BN
+  readonly u64Field: bigint
+  readonly i64Field: bigint
   readonly f64Field: number
-  readonly u128Field: BN
-  readonly i128Field: BN
+  readonly u128Field: bigint
+  readonly i128Field: bigint
   readonly bytesField: Uint8Array
   readonly stringField: string
   readonly pubkeyField: Address
-  readonly vecField: Array<BN>
+  readonly vecField: Array<bigint>
   readonly vecStructField: Array<types.FooStruct>
   readonly optionField: boolean | null
   readonly optionStructField: types.FooStruct | null
@@ -108,7 +107,7 @@ export class State {
   readonly enumField4: types.FooEnumKind
   readonly cStyleEnumField: types.CStyleEnumKind
 
-  static readonly discriminator = Buffer.from([
+  static readonly discriminator = new Uint8Array([
     216, 146, 107, 94, 104, 75, 182, 177,
   ])
 
@@ -193,7 +192,7 @@ export class State {
       )
     }
 
-    return this.decode(Buffer.from(info.data))
+    return this.decode(new Uint8Array(info.data))
   }
 
   static async fetchMultiple(
@@ -213,16 +212,19 @@ export class State {
         )
       }
 
-      return this.decode(Buffer.from(info.data))
+      return this.decode(new Uint8Array(info.data))
     })
   }
 
-  static decode(data: Buffer): State {
-    if (!data.slice(0, 8).equals(State.discriminator)) {
+  static decode(data: Uint8Array): State {
+    if (
+      data.length < 8 ||
+      !data.slice(0, 8).every((b, i) => b === State.discriminator[i])
+    ) {
       throw new Error("invalid account discriminator")
     }
 
-    const dec = State.layout.decode(data.slice(8))
+    const dec = State.layout.decode(data.subarray(8))
 
     return new State({
       boolField: dec.boolField,
@@ -238,11 +240,7 @@ export class State {
       f64Field: dec.f64Field,
       u128Field: dec.u128Field,
       i128Field: dec.i128Field,
-      bytesField: new Uint8Array(
-        dec.bytesField.buffer,
-        dec.bytesField.byteOffset,
-        dec.bytesField.length
-      ),
+      bytesField: dec.bytesField,
       stringField: dec.stringField,
       pubkeyField: dec.pubkeyField,
       vecField: dec.vecField,
@@ -309,15 +307,15 @@ export class State {
       u32Field: obj.u32Field,
       i32Field: obj.i32Field,
       f32Field: obj.f32Field,
-      u64Field: new BN(obj.u64Field),
-      i64Field: new BN(obj.i64Field),
+      u64Field: BigInt(obj.u64Field),
+      i64Field: BigInt(obj.i64Field),
       f64Field: obj.f64Field,
-      u128Field: new BN(obj.u128Field),
-      i128Field: new BN(obj.i128Field),
+      u128Field: BigInt(obj.u128Field),
+      i128Field: BigInt(obj.i128Field),
       bytesField: Uint8Array.from(obj.bytesField),
       stringField: obj.stringField,
       pubkeyField: address(obj.pubkeyField),
-      vecField: obj.vecField.map((item) => new BN(item)),
+      vecField: obj.vecField.map((item) => BigInt(item)),
       vecStructField: obj.vecStructField.map((item) =>
         types.FooStruct.fromJSON(item)
       ),

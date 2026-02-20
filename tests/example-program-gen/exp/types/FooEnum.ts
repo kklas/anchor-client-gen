@@ -1,7 +1,6 @@
 import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh"
+import * as borsh from "../borsh"
 import { borshAddress } from "../utils"
 
 export type UnnamedFields = [boolean, number, types.BarStructFields]

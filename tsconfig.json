@@ -4,7 +4,7 @@
         "strictPropertyInitialization": true,
         "esModuleInterop": true,
         "module": "CommonJS",
-        "target": "ES6",
+        "target": "ES2020",
         "outDir": "dist",
         "sourceMap": true,
         "moduleResolution": "node",

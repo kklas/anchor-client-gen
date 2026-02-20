@@ -67,8 +67,7 @@ function genAccountFiles(
       `/* eslint-disable @typescript-eslint/no-unused-vars */`,
       `import { address, Address, fetchEncodedAccount, fetchEncodedAccounts, GetAccountInfoApi, GetMultipleAccountsApi, Rpc } from "@solana/kit"`,
       `/* eslint-enable @typescript-eslint/no-unused-vars */`,
-      `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-      `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "../borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [
@@ -128,7 +127,9 @@ function genAccountFiles(
         isStatic: true,
         isReadonly: true,
         name: "discriminator",
-        initializer: `Buffer.from([${genAccDiscriminator(name).toString()}])`,
+        initializer: `new Uint8Array([${genAccDiscriminator(
+          name
+        ).toString()}])`,
       })
       .prependWhitespace("\n")
 
@@ -206,7 +207,7 @@ function genAccountFiles(
             )
           })
           writer.blankLine()
-          writer.writeLine("return this.decode(Buffer.from(info.data))")
+          writer.writeLine("return this.decode(new Uint8Array(info.data))")
         },
       ],
     })
@@ -255,7 +256,7 @@ function genAccountFiles(
               )
             })
             writer.blankLine()
-            writer.writeLine("return this.decode(Buffer.from(info.data))")
+            writer.writeLine("return this.decode(new Uint8Array(info.data))")
           })
           writer.write(")")
         },
@@ -269,18 +270,22 @@ function genAccountFiles(
       parameters: [
         {
           name: "data",
-          type: "Buffer",
+          type: "Uint8Array",
         },
       ],
       returnType: name,
       statements: [
         (writer) => {
-          writer.write(`if (!data.slice(0, 8).equals(${name}.discriminator))`)
+          writer.write(
+            `if (data.length < 8 || !data.slice(0, 8).every((b, i) => b === ${name}.discriminator[i]))`
+          )
           writer.inlineBlock(() => {
             writer.writeLine(`throw new Error("invalid account discriminator")`)
           })
           writer.blankLine()
-          writer.writeLine(`const dec = ${name}.layout.decode(data.slice(8))`)
+          writer.writeLine(
+            `const dec = ${name}.layout.decode(data.subarray(8))`
+          )
 
           writer.blankLine()
           writer.write(`return new ${name}({`)
