@@ -277,7 +277,7 @@ function genAccountFiles(
       statements: [
         (writer) => {
           writer.write(
-            `if (data.length < 8 || !data.slice(0, 8).every((b, i) => b === ${name}.discriminator[i]))`
+            `if (data.length < 8 || !data.subarray(0, 8).every((b, i) => b === ${name}.discriminator[i]))`
           )
           writer.inlineBlock(() => {
             writer.writeLine(`throw new Error("invalid account discriminator")`)

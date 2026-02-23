@@ -47,12 +47,21 @@ class ReplicatedLayout<T> extends Layout<T> {
 
 // --- Fixed integer layouts ---
 
+function validateInt(src: number, min: number, max: number, label: string) {
+  if (!Number.isInteger(src) || src < min || src > max) {
+    throw new Error(
+      `Value ${src} is not a valid ${label} (expected integer in ${min}..${max})`
+    )
+  }
+}
+
 class UInt8Layout extends Layout<number> {
   constructor(property?: string) {
     super(1, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    b[offset] = src & 0xff
+    validateInt(src, 0, 0xff, "u8")
+    b[offset] = src
     return 1
   }
   decode(b: Uint8Array, offset = 0): number {
@@ -65,11 +74,12 @@ class Int8Layout extends Layout<number> {
     super(1, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setInt8(offset, src)
+    validateInt(src, -128, 127, "i8")
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setInt8(offset, src)
     return 1
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getInt8(offset)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getInt8(offset)
   }
 }
 
@@ -78,11 +88,19 @@ class UInt16Layout extends Layout<number> {
     super(2, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setUint16(offset, src, true)
+    validateInt(src, 0, 0xffff, "u16")
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setUint16(
+      offset,
+      src,
+      true
+    )
     return 2
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getUint16(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getUint16(
+      offset,
+      true
+    )
   }
 }
 
@@ -91,11 +109,19 @@ class Int16Layout extends Layout<number> {
     super(2, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setInt16(offset, src, true)
+    validateInt(src, -32768, 32767, "i16")
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setInt16(
+      offset,
+      src,
+      true
+    )
     return 2
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getInt16(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getInt16(
+      offset,
+      true
+    )
   }
 }
 
@@ -104,11 +130,19 @@ class UInt32Layout extends Layout<number> {
     super(4, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setUint32(offset, src, true)
+    validateInt(src, 0, 0xffffffff, "u32")
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setUint32(
+      offset,
+      src,
+      true
+    )
     return 4
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getUint32(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getUint32(
+      offset,
+      true
+    )
   }
 }
 
@@ -117,11 +151,19 @@ class Int32Layout extends Layout<number> {
     super(4, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setInt32(offset, src, true)
+    validateInt(src, -2147483648, 2147483647, "i32")
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setInt32(
+      offset,
+      src,
+      true
+    )
     return 4
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getInt32(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getInt32(
+      offset,
+      true
+    )
   }
 }
 
@@ -130,11 +172,18 @@ class Float32Layout extends Layout<number> {
     super(4, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setFloat32(offset, src, true)
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setFloat32(
+      offset,
+      src,
+      true
+    )
     return 4
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getFloat32(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getFloat32(
+      offset,
+      true
+    )
   }
 }
 
@@ -143,11 +192,18 @@ class Float64Layout extends Layout<number> {
     super(8, property)
   }
   encode(src: number, b: Uint8Array, offset = 0): number {
-    new DataView(b.buffer, b.byteOffset).setFloat64(offset, src, true)
+    new DataView(b.buffer, b.byteOffset, b.byteLength).setFloat64(
+      offset,
+      src,
+      true
+    )
     return 8
   }
   decode(b: Uint8Array, offset = 0): number {
-    return new DataView(b.buffer, b.byteOffset).getFloat64(offset, true)
+    return new DataView(b.buffer, b.byteOffset, b.byteLength).getFloat64(
+      offset,
+      true
+    )
   }
 }
 
@@ -336,7 +392,7 @@ class VecLayout<T> extends Layout<T[]> {
   }
 
   encode(src: T[], b: Uint8Array, offset = 0): number {
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     dv.setUint32(offset, src.length, true)
     let pos = offset + 4
     for (const item of src) {
@@ -346,7 +402,7 @@ class VecLayout<T> extends Layout<T[]> {
   }
 
   decode(b: Uint8Array, offset = 0): T[] {
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     const result: T[] = []
     let pos = offset + 4
@@ -359,7 +415,7 @@ class VecLayout<T> extends Layout<T[]> {
 
   getSpan(b?: Uint8Array, offset = 0): number {
     if (!b) return -1
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     let pos = offset + 4
     for (let i = 0; i < len; i++) {
@@ -377,21 +433,21 @@ class VecU8Layout extends Layout<Uint8Array> {
   }
 
   encode(src: Uint8Array, b: Uint8Array, offset = 0): number {
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     dv.setUint32(offset, src.length, true)
     b.set(src, offset + 4)
     return 4 + src.length
   }
 
   decode(b: Uint8Array, offset = 0): Uint8Array {
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return b.slice(offset + 4, offset + 4 + len)
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
     if (!b) return -1
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return 4 + len
   }
@@ -409,21 +465,21 @@ class StrLayout extends Layout<string> {
 
   encode(src: string, b: Uint8Array, offset = 0): number {
     const encoded = textEncoder.encode(src)
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     dv.setUint32(offset, encoded.length, true)
     b.set(encoded, offset + 4)
     return 4 + encoded.length
   }
 
   decode(b: Uint8Array, offset = 0): string {
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return textDecoder.decode(b.subarray(offset + 4, offset + 4 + len))
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
     if (!b) return -1
-    const dv = new DataView(b.buffer, b.byteOffset)
+    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return 4 + len
   }

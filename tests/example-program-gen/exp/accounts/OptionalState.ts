@@ -95,7 +95,7 @@ export class OptionalState {
   static decode(data: Uint8Array): OptionalState {
     if (
       data.length < 8 ||
-      !data.slice(0, 8).every((b, i) => b === OptionalState.discriminator[i])
+      !data.subarray(0, 8).every((b, i) => b === OptionalState.discriminator[i])
     ) {
       throw new Error("invalid account discriminator")
     }

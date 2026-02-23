@@ -219,7 +219,7 @@ export class State {
   static decode(data: Uint8Array): State {
     if (
       data.length < 8 ||
-      !data.slice(0, 8).every((b, i) => b === State.discriminator[i])
+      !data.subarray(0, 8).every((b, i) => b === State.discriminator[i])
     ) {
       throw new Error("invalid account discriminator")
     }

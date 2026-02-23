@@ -95,7 +95,7 @@ export class Game {
   static decode(data: Uint8Array): Game {
     if (
       data.length < 8 ||
-      !data.slice(0, 8).every((b, i) => b === Game.discriminator[i])
+      !data.subarray(0, 8).every((b, i) => b === Game.discriminator[i])
     ) {
       throw new Error("invalid account discriminator")
     }

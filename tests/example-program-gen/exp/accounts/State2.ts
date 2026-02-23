@@ -80,7 +80,7 @@ export class State2 {
   static decode(data: Uint8Array): State2 {
     if (
       data.length < 8 ||
-      !data.slice(0, 8).every((b, i) => b === State2.discriminator[i])
+      !data.subarray(0, 8).every((b, i) => b === State2.discriminator[i])
     ) {
       throw new Error("invalid account discriminator")
     }

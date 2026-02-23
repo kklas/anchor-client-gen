@@ -84,7 +84,7 @@ export class Counter {
   static decode(data: Uint8Array): Counter {
     if (
       data.length < 8 ||
-      !data.slice(0, 8).every((b, i) => b === Counter.discriminator[i])
+      !data.subarray(0, 8).every((b, i) => b === Counter.discriminator[i])
     ) {
       throw new Error("invalid account discriminator")
     }
