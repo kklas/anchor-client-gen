@@ -67,7 +67,7 @@ function genAccountFiles(
       `/* eslint-disable @typescript-eslint/no-unused-vars */`,
       `import { address, Address, fetchEncodedAccount, fetchEncodedAccounts, GetAccountInfoApi, GetMultipleAccountsApi, Rpc } from "@solana/kit"`,
       `/* eslint-enable @typescript-eslint/no-unused-vars */`,
-      `import * as borsh from "../borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "../utils/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [

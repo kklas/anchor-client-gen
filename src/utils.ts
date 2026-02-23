@@ -30,7 +30,7 @@ export function genBorshAddressLayout(
 
   src.addImportDeclaration({
     namedImports: ["blob", "Layout"],
-    moduleSpecifier: "../borsh",
+    moduleSpecifier: "./borsh",
   })
 
   src.addVariableStatement({

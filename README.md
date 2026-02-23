@@ -48,7 +48,6 @@ This will generate code to `output/directory`:
 ├── accounts
 │   ├── FooAccount.ts
 │   └── index.ts
-├── borsh.ts
 ├── errors
 │   ├── anchor.ts
 │   ├── custom.ts
@@ -62,6 +61,7 @@ This will generate code to `output/directory`:
 │   ├── BazEnum.ts
 │   └── index.ts
 ├── utils
+│   ├── borsh.ts
 │   ├── borshAddress.ts
 │   └── index.ts
 └── programId.ts
@@ -71,7 +71,7 @@ For more examples of the generated code, check out the [examples](https://github
 
 ## Using the generated client
 
-The generated client includes a self-contained Borsh serialization module (`borsh.ts`) with no external serialization dependencies. The only required runtime dependency is:
+The generated client includes a self-contained Borsh serialization module (`utils/borsh.ts`) with no external serialization dependencies. The only required runtime dependency is:
 
 - `@solana/kit`
 

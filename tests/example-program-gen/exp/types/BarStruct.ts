@@ -1,6 +1,6 @@
 import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars
 import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "../borsh"
+import * as borsh from "../utils/borsh"
 import { borshAddress } from "../utils"
 
 export interface BarStructFields {

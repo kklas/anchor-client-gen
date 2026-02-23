@@ -8,7 +8,7 @@ export function genBorsh(project: Project, outPath: (path: string) => string) {
   const scriptDir = path.dirname(path.resolve(process.argv[1]))
   const borshSrc = fs.readFileSync(path.resolve(scriptDir, "borsh.ts"), "utf-8")
 
-  project.createSourceFile(outPath("borsh.ts"), borshSrc, {
+  project.createSourceFile(outPath("utils/borsh.ts"), borshSrc, {
     overwrite: true,
   })
 }
