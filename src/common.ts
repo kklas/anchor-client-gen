@@ -67,15 +67,15 @@ export function tsTypeFromIdl(
       return "number"
     case "u64":
     case "i64":
-      return "BN"
+      return "bigint"
     case "f64":
       return "number"
     case "u128":
     case "i128":
-      return "BN"
+      return "bigint"
     case "u256":
     case "i256":
-      return "BN"
+      return "bigint"
     case "bytes":
       return "Uint8Array"
     case "string":
@@ -257,10 +257,8 @@ export function fieldToEncodable(
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
-    case "bytes": {
-      const v = `${valPrefix}${ty.name}`
-      return `Buffer.from(${v}.buffer, ${v}.byteOffset, ${v}.length)`
-    }
+    case "bytes":
+      return `${valPrefix}${ty.name}`
     default:
       if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldToEncodable(
@@ -360,10 +358,8 @@ export function fieldFromDecoded(
     case "string":
     case "publicKey":
       return `${valPrefix}${ty.name}`
-    case "bytes": {
-      const v = `${valPrefix}${ty.name}`
-      return `new Uint8Array(${v}.buffer, ${v}.byteOffset, ${v}.length)`
-    }
+    case "bytes":
+      return `${valPrefix}${ty.name}`
     default:
       if (isComplexType(ty.type) && "vec" in ty.type) {
         const mapBody = fieldFromDecoded(
@@ -719,9 +715,9 @@ export function fieldFromJSON(
     case "i64":
     case "u128":
     case "i128":
-      return `new BN(${paramPrefix}${ty.name})`
     case "u256":
     case "i256":
+      return `BigInt(${paramPrefix}${ty.name})`
     case "publicKey":
       return `address(${paramPrefix}${ty.name})`
     default:

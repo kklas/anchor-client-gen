@@ -22,7 +22,6 @@ import {
   assertIsTransactionWithBlockhashLifetime,
 } from "@solana/kit"
 import { describe, expect, it } from "vitest"
-import BN from "bn.js"
 import * as dircompare from "dir-compare"
 import * as fs from "fs"
 import {
@@ -110,15 +109,11 @@ it("init and account fetch", async () => {
   expect(res.u32Field).toBe(1234567891)
   expect(res.i32Field).toBe(-1234567891)
   expect(res.f32Field).toBe(123456.5)
-  expect(res.u64Field.eq(new BN("9223372036854775817"))).toBe(true)
-  expect(res.i64Field.eq(new BN("-4611686018427387914"))).toBe(true)
+  expect(res.u64Field).toBe(9223372036854775817n)
+  expect(res.i64Field).toBe(-4611686018427387914n)
   expect(res.f64Field).toBe(1234567891.345)
-  expect(
-    res.u128Field.eq(new BN("170141183460469231731687303715884105737"))
-  ).toBe(true)
-  expect(
-    res.i128Field.eq(new BN("-85070591730234615865843651857942052874"))
-  ).toBe(true)
+  expect(res.u128Field).toBe(170141183460469231731687303715884105737n)
+  expect(res.i128Field).toBe(-85070591730234615865843651857942052874n)
   expect(res.bytesField).toEqual(Uint8Array.from([1, 2, 255, 254]))
   expect(res.stringField).toBe("hello")
   expect(res.pubkeyField).toEqual(
@@ -127,11 +122,11 @@ it("init and account fetch", async () => {
 
   // vecField
   expect(res.vecField.length).toBe(5)
-  expect(res.vecField[0].eq(new BN("1")))
-  expect(res.vecField[1].eq(new BN("2")))
-  expect(res.vecField[2].eq(new BN("100")))
-  expect(res.vecField[3].eq(new BN("1000")))
-  expect(res.vecField[4].eq(new BN("18446744073709551615")))
+  expect(res.vecField[0]).toBe(1n)
+  expect(res.vecField[1]).toBe(2n)
+  expect(res.vecField[2]).toBe(100n)
+  expect(res.vecField[3]).toBe(1000n)
+  expect(res.vecField[4]).toBe(18446744073709551615n)
 
   // vecStructField
   expect(res.vecStructField.length).toBe(1)
@@ -303,20 +298,20 @@ it("instruction with args", async () => {
         u32Field: 1234567899,
         i32Field: -123456789,
         f32Field: 123458.5,
-        u64Field: new BN("9223372036854775810"),
-        i64Field: new BN("-4611686018427387912"),
+        u64Field: 9223372036854775810n,
+        i64Field: -4611686018427387912n,
         f64Field: 1234567892.445,
-        u128Field: new BN("170141183460469231731687303715884105740"),
-        i128Field: new BN("-85070591730234615865843651857942052877"),
+        u128Field: 170141183460469231731687303715884105740n,
+        i128Field: -85070591730234615865843651857942052877n,
         bytesField: Uint8Array.from([5, 10, 255]),
         stringField: "string value",
         pubkeyField: address("GDddEKTjLBqhskzSMYph5o54VYLQfPCR3PoFqKHLJK6s"),
-        vecField: [new BN(1), new BN("123456789123456789")],
+        vecField: [1n, 123456789123456789n],
         vecStructField: [
           new FooStruct({
             field1: 1,
             field2: 2,
-            field3: new BN(333),
+            field3: 333n,
             nested: new BarStruct({
               someField: true,
               otherField: 55,
@@ -346,7 +341,7 @@ it("instruction with args", async () => {
         structField: new FooStruct({
           field1: 1,
           field2: 2,
-          field3: new BN(444),
+          field3: 444n,
           nested: new BarStruct({
             someField: true,
             otherField: 55,
@@ -399,7 +394,7 @@ it("instruction with args", async () => {
     ),
     initializeWithValues2(
       {
-        vecOfOption: [null, new BN(20)],
+        vecOfOption: [null, 20n],
       },
       {
         state: state2,
@@ -426,15 +421,11 @@ it("instruction with args", async () => {
   expect(res.u32Field).toBe(1234567899)
   expect(res.i32Field).toBe(-123456789)
   expect(res.f32Field).toBe(123458.5)
-  expect(res.u64Field.eq(new BN("9223372036854775810"))).toBe(true)
-  expect(res.i64Field.eq(new BN("-4611686018427387912"))).toBe(true)
+  expect(res.u64Field).toBe(9223372036854775810n)
+  expect(res.i64Field).toBe(-4611686018427387912n)
   expect(res.f64Field).toBe(1234567892.445)
-  expect(
-    res.u128Field.eq(new BN("170141183460469231731687303715884105740"))
-  ).toBe(true)
-  expect(
-    res.i128Field.eq(new BN("-85070591730234615865843651857942052877"))
-  ).toBe(true)
+  expect(res.u128Field).toBe(170141183460469231731687303715884105740n)
+  expect(res.i128Field).toBe(-85070591730234615865843651857942052877n)
   expect(res.bytesField).toEqual(Uint8Array.from([5, 10, 255]))
   expect(res.stringField).toBe("string value")
   expect(res.pubkeyField).toEqual(
@@ -443,8 +434,8 @@ it("instruction with args", async () => {
 
   // vecField
   expect(res.vecField.length).toBe(2)
-  expect(res.vecField[0].eq(new BN("1")))
-  expect(res.vecField[1].eq(new BN("123456789123456789")))
+  expect(res.vecField[0]).toBe(1n)
+  expect(res.vecField[1]).toBe(123456789123456789n)
 
   // vecStructField
   expect(res.vecStructField.length).toBe(1)
@@ -563,7 +554,7 @@ it("instruction with args", async () => {
 
   // vecOfOption
   expect(res2.vecOfOption[0]).toBe(null)
-  expect(res2.vecOfOption[1] !== null && res2.vecOfOption[1].eqn(20)).toBe(true)
+  expect(res2.vecOfOption[1]).toBe(20n)
 })
 
 it("optional with some readonly signer", async () => {
@@ -767,20 +758,20 @@ it("toJSON", async () => {
     u32Field: 123456789,
     i32Field: -123456789,
     f32Field: 123456.5,
-    u64Field: new BN("9223372036854775805"),
-    i64Field: new BN("4611686018427387910"),
+    u64Field: 9223372036854775805n,
+    i64Field: 4611686018427387910n,
     f64Field: 1234567891.35,
-    u128Field: new BN("170141183460469231731687303715884105760"),
-    i128Field: new BN("-85070591730234615865843651857942052897"),
+    u128Field: 170141183460469231731687303715884105760n,
+    i128Field: -85070591730234615865843651857942052897n,
     bytesField: Uint8Array.from([1, 255]),
     stringField: "a string",
     pubkeyField: address("EPZP2wrcRtMxrAPJCXVEQaYD9eH7fH7h12YqKDcd4aS7"),
-    vecField: [new BN("10"), new BN("1234567890123456")],
+    vecField: [10n, 1234567890123456n],
     vecStructField: [
       new FooStruct({
         field1: 5,
         field2: 6,
-        field3: new BN(555),
+        field3: 555n,
         nested: new BarStruct({
           someField: true,
           otherField: 15,
@@ -807,7 +798,7 @@ it("toJSON", async () => {
     optionStructField: new FooStruct({
       field1: 8,
       field2: 9,
-      field3: new BN(666),
+      field3: 666n,
       nested: new BarStruct({
         someField: true,
         otherField: 17,
@@ -828,7 +819,7 @@ it("toJSON", async () => {
     structField: new FooStruct({
       field1: 11,
       field2: 12,
-      field3: new BN(777),
+      field3: 777n,
       nested: new BarStruct({
         someField: false,
         otherField: 177,
@@ -1023,11 +1014,11 @@ it("toJSON", async () => {
   expect(stateFromJSON.u32Field).toBe(state.u32Field)
   expect(stateFromJSON.i32Field).toBe(state.i32Field)
   expect(stateFromJSON.f32Field).toBe(state.f32Field)
-  expect(stateFromJSON.u64Field.toString()).toBe(state.u64Field.toString())
-  expect(stateFromJSON.i64Field.toString()).toBe(state.i64Field.toString())
+  expect(stateFromJSON.u64Field).toBe(state.u64Field)
+  expect(stateFromJSON.i64Field).toBe(state.i64Field)
   expect(stateFromJSON.f64Field).toBe(state.f64Field)
-  expect(stateFromJSON.u128Field.toString()).toBe(state.u128Field.toString())
-  expect(stateFromJSON.i128Field.toString()).toBe(state.i128Field.toString())
+  expect(stateFromJSON.u128Field).toBe(state.u128Field)
+  expect(stateFromJSON.i128Field).toBe(state.i128Field)
   expect(stateFromJSON.bytesField).toStrictEqual(state.bytesField)
   expect(stateFromJSON.stringField).toBe(state.stringField)
   expect(stateFromJSON.pubkeyField.toString()).toBe(
@@ -1036,12 +1027,8 @@ it("toJSON", async () => {
 
   // vecField
   expect(stateFromJSON.vecField.length).toBe(2)
-  expect(stateFromJSON.vecField[0].toString()).toBe(
-    state.vecField[0].toString()
-  )
-  expect(stateFromJSON.vecField[1].toString()).toBe(
-    state.vecField[1].toString()
-  )
+  expect(stateFromJSON.vecField[0]).toBe(state.vecField[0])
+  expect(stateFromJSON.vecField[1]).toBe(state.vecField[1])
 
   // vecStructField
   expect(stateFromJSON.vecStructField.length).toBe(1)

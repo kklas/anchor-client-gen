@@ -1,13 +1,13 @@
-import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars
-import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars
-import * as borsh from "@coral-xyz/borsh"
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { address, Address } from "@solana/kit"
+import * as types from "../types"
+import * as borsh from "../utils/borsh"
 import { borshAddress } from "../utils"
-
+/* eslint-enable @typescript-eslint/no-unused-vars */
 export interface FooStructFields {
   field1: number
   field2: number
-  field3: BN
+  field3: bigint
   nested: types.BarStructFields
   vecNested: Array<types.BarStructFields>
   optionNested: types.BarStructFields | null
@@ -29,7 +29,7 @@ export interface FooStructJSON {
 export class FooStruct {
   readonly field1: number
   readonly field2: number
-  readonly field3: BN
+  readonly field3: bigint
   readonly nested: types.BarStruct
   readonly vecNested: Array<types.BarStruct>
   readonly optionNested: types.BarStruct | null
@@ -123,7 +123,7 @@ export class FooStruct {
     return new FooStruct({
       field1: obj.field1,
       field2: obj.field2,
-      field3: new BN(obj.field3),
+      field3: BigInt(obj.field3),
       nested: types.BarStruct.fromJSON(obj.nested),
       vecNested: obj.vecNested.map((item) => types.BarStruct.fromJSON(item)),
       optionNested:

@@ -85,8 +85,7 @@ function genInstructionFiles(
       `/* eslint-disable @typescript-eslint/no-unused-vars */`,
       `import { Address, isSome, AccountMeta, AccountSignerMeta, Instruction, Option, TransactionSigner } from "@solana/kit"`,
       `/* eslint-enable @typescript-eslint/no-unused-vars */`,
-      `import BN from "bn.js" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-      `import * as borsh from "@coral-xyz/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+      `import * as borsh from "../utils/borsh" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
       ...(idl.types && idl.types.length > 0
         ? [
@@ -103,7 +102,9 @@ function genInstructionFiles(
       declarations: [
         {
           name: "DISCRIMINATOR",
-          initializer: `Buffer.from([${genIxIdentifier(ix.name).toString()}])`,
+          initializer: `new Uint8Array([${genIxIdentifier(
+            ix.name
+          ).toString()}])`,
         },
       ],
     })
@@ -334,7 +335,7 @@ function genInstructionFiles(
         declarations: [
           {
             name: "buffer",
-            initializer: "Buffer.alloc(1000)", // TODO: use a tighter buffer.
+            initializer: "new Uint8Array(1000)",
           },
         ],
       })
@@ -362,8 +363,14 @@ function genInstructionFiles(
         declarations: [
           {
             name: "data",
-            initializer:
-              "Buffer.concat([DISCRIMINATOR, buffer]).slice(0, 8 + len)",
+            initializer: (writer) => {
+              writer.write("(() => {")
+              writer.writeLine("const d = new Uint8Array(8 + len)")
+              writer.writeLine("d.set(DISCRIMINATOR)")
+              writer.writeLine("d.set(buffer.subarray(0, len), 8)")
+              writer.writeLine("return d")
+              writer.write("})()")
+            },
           },
         ],
       })

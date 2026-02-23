@@ -10,6 +10,7 @@ import { genInstructions } from "./instructions"
 import { genProgramId } from "./programId"
 import { genTypes } from "./types"
 import { genUtils } from "./utils"
+import { genBorsh } from "./genBorsh"
 import { program } from "commander"
 import * as prettier from "prettier"
 
@@ -40,6 +41,8 @@ async function main() {
 
   const project = new Project()
 
+  console.log("generating borsh...")
+  genBorsh(project, outPath)
   console.log("generating utils...")
   genUtils(project, outPath)
   console.log("generating programId.ts...")

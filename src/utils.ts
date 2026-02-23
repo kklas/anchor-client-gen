@@ -30,7 +30,7 @@ export function genBorshAddressLayout(
 
   src.addImportDeclaration({
     namedImports: ["blob", "Layout"],
-    moduleSpecifier: "buffer-layout",
+    moduleSpecifier: "./borsh",
   })
 
   src.addVariableStatement({
@@ -56,8 +56,8 @@ export function genBorshAddressLayout(
     returnType: "Layout<Address>",
     statements: `return new WrappedLayout(
       blob(32),
-      (b: Buffer) => addressCodec.decode(b),
-      (addr: Address) => Buffer.from(addressCodec.encode(addr)),
+      (b: Uint8Array) => addressCodec.decode(b),
+      (addr: Address) => new Uint8Array(addressCodec.encode(addr)),
       property
     )`,
   })
@@ -116,7 +116,7 @@ export function genBorshAddressLayout(
         parameters: [
           {
             name: "b",
-            type: "Buffer",
+            type: "Uint8Array",
           },
           {
             name: "offset",
@@ -136,7 +136,7 @@ export function genBorshAddressLayout(
           },
           {
             name: "b",
-            type: "Buffer",
+            type: "Uint8Array",
           },
           {
             name: "offset",
@@ -152,7 +152,7 @@ export function genBorshAddressLayout(
         parameters: [
           {
             name: "b",
-            type: "Buffer",
+            type: "Uint8Array",
           },
           {
             name: "offset",
