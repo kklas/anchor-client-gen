@@ -276,15 +276,22 @@ function genAccountFiles(
       returnType: name,
       statements: [
         (writer) => {
-          writer.write(
-            `if (data.length < 8 || !data.subarray(0, 8).every((b, i) => b === ${name}.discriminator[i]))`
-          )
+          writer.write(`if (data.length < ${name}.discriminator.length)`)
           writer.inlineBlock(() => {
             writer.writeLine(`throw new Error("invalid account discriminator")`)
           })
+          writer.write(`for (let i = 0; i < ${name}.discriminator.length; i++)`)
+          writer.inlineBlock(() => {
+            writer.write(`if (data[i] !== ${name}.discriminator[i])`)
+            writer.inlineBlock(() => {
+              writer.writeLine(
+                `throw new Error("invalid account discriminator")`
+              )
+            })
+          })
           writer.blankLine()
           writer.writeLine(
-            `const dec = ${name}.layout.decode(data.subarray(8))`
+            `const dec = ${name}.layout.decode(data.subarray(${name}.discriminator.length))`
           )
 
           writer.blankLine()

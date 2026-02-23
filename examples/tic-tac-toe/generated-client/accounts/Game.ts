@@ -93,14 +93,16 @@ export class Game {
   }
 
   static decode(data: Uint8Array): Game {
-    if (
-      data.length < 8 ||
-      !data.subarray(0, 8).every((b, i) => b === Game.discriminator[i])
-    ) {
+    if (data.length < Game.discriminator.length) {
       throw new Error("invalid account discriminator")
     }
+    for (let i = 0; i < Game.discriminator.length; i++) {
+      if (data[i] !== Game.discriminator[i]) {
+        throw new Error("invalid account discriminator")
+      }
+    }
 
-    const dec = Game.layout.decode(data.subarray(8))
+    const dec = Game.layout.decode(data.subarray(Game.discriminator.length))
 
     return new Game({
       players: dec.players,

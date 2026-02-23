@@ -78,14 +78,16 @@ export class State2 {
   }
 
   static decode(data: Uint8Array): State2 {
-    if (
-      data.length < 8 ||
-      !data.subarray(0, 8).every((b, i) => b === State2.discriminator[i])
-    ) {
+    if (data.length < State2.discriminator.length) {
       throw new Error("invalid account discriminator")
     }
+    for (let i = 0; i < State2.discriminator.length; i++) {
+      if (data[i] !== State2.discriminator[i]) {
+        throw new Error("invalid account discriminator")
+      }
+    }
 
-    const dec = State2.layout.decode(data.subarray(8))
+    const dec = State2.layout.decode(data.subarray(State2.discriminator.length))
 
     return new State2({
       vecOfOption: dec.vecOfOption,

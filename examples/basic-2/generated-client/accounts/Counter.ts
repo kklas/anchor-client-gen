@@ -82,14 +82,18 @@ export class Counter {
   }
 
   static decode(data: Uint8Array): Counter {
-    if (
-      data.length < 8 ||
-      !data.subarray(0, 8).every((b, i) => b === Counter.discriminator[i])
-    ) {
+    if (data.length < Counter.discriminator.length) {
       throw new Error("invalid account discriminator")
     }
+    for (let i = 0; i < Counter.discriminator.length; i++) {
+      if (data[i] !== Counter.discriminator[i]) {
+        throw new Error("invalid account discriminator")
+      }
+    }
 
-    const dec = Counter.layout.decode(data.subarray(8))
+    const dec = Counter.layout.decode(
+      data.subarray(Counter.discriminator.length)
+    )
 
     return new Counter({
       authority: dec.authority,

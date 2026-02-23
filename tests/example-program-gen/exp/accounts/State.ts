@@ -217,14 +217,16 @@ export class State {
   }
 
   static decode(data: Uint8Array): State {
-    if (
-      data.length < 8 ||
-      !data.subarray(0, 8).every((b, i) => b === State.discriminator[i])
-    ) {
+    if (data.length < State.discriminator.length) {
       throw new Error("invalid account discriminator")
     }
+    for (let i = 0; i < State.discriminator.length; i++) {
+      if (data[i] !== State.discriminator[i]) {
+        throw new Error("invalid account discriminator")
+      }
+    }
 
-    const dec = State.layout.decode(data.subarray(8))
+    const dec = State.layout.decode(data.subarray(State.discriminator.length))
 
     return new State({
       boolField: dec.boolField,
