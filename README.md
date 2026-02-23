@@ -48,6 +48,11 @@ This will generate code to `output/directory`:
 ├── accounts
 │   ├── FooAccount.ts
 │   └── index.ts
+├── borsh.ts
+├── errors
+│   ├── anchor.ts
+│   ├── custom.ts
+│   └── index.ts
 ├── instructions
 │   ├── someInstruction.ts
 │   ├── otherInstruction.ts
@@ -56,9 +61,8 @@ This will generate code to `output/directory`:
 │   ├── BarStruct.ts
 │   ├── BazEnum.ts
 │   └── index.ts
-├── errors
-│   ├── anchor.ts
-│   ├── custom.ts
+├── utils
+│   ├── borshAddress.ts
 │   └── index.ts
 └── programId.ts
 ```
@@ -67,34 +71,21 @@ For more examples of the generated code, check out the [examples](https://github
 
 ## Using the generated client
 
-The following packages are required for the generated client to work:
+The generated client includes a self-contained Borsh serialization module (`borsh.ts`) with no external serialization dependencies. The only required runtime dependency is:
 
-- `@solana/web3.js`
-- `bn.js`
-- `@coral-xyz/borsh`
-- `buffer-layout`
+- `@solana/kit`
 
-Install them in your project with:
+Install it in your project with:
 
 ```sh
-// npm
-$ npm install @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
+# npm
+$ npm install @solana/kit
 
-// yarn
-$ yarn add @solana/web3.js bn.js @coral-xyz/borsh buffer-layout
+# yarn
+$ yarn add @solana/kit
 ```
 
-For typescript, the `buffer-layout` types can be found in the `@coral-xyz/borsh` package.
-
-`tsconfig.json`:
-
-```json
-{
-  "compilerOptions": {
-    "types": ["<existing types>", "../node_modules/@coral-xyz/anchor/types"]
-  }
-}
-```
+The generated code uses native `bigint` for 64/128/256-bit integers and `Uint8Array` for byte data.
 
 ### Instructions
 
