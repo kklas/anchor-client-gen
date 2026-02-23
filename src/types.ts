@@ -128,10 +128,12 @@ function genStruct(
 ) {
   // imports
   src.addStatements([
-    `import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-    `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `/* eslint-disable @typescript-eslint/no-unused-vars */`,
+    `import { address, Address } from "@solana/kit"`,
+    `import * as types from "../types"`,
     `import * as borsh from "../utils/borsh"`,
-    `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import { borshAddress } from "../utils"`,
+    `/* eslint-enable @typescript-eslint/no-unused-vars */`,
   ])
 
   // fields interface
@@ -326,10 +328,12 @@ function genEnum(
 ) {
   // imports
   src.addStatements([
-    `import { address, Address } from "@solana/kit" // eslint-disable-line @typescript-eslint/no-unused-vars`,
-    `import * as types from "../types" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `/* eslint-disable @typescript-eslint/no-unused-vars */`,
+    `import { address, Address } from "@solana/kit"`,
+    `import * as types from "../types"`,
     `import * as borsh from "../utils/borsh"`,
-    `import { borshAddress } from "../utils" // eslint-disable-line @typescript-eslint/no-unused-vars`,
+    `import { borshAddress } from "../utils"`,
+    `/* eslint-enable @typescript-eslint/no-unused-vars */`,
   ])
 
   // variants

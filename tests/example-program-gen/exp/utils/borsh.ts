@@ -381,6 +381,31 @@ class StructLayout<T = any> extends Layout<T> {
   }
 }
 
+// --- Bounds checking helpers ---
+
+function decodeLenPrefix(b: Uint8Array, offset: number): number {
+  const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
+  const len = dv.getUint32(offset, true)
+  if (offset + 4 + len > b.byteLength) {
+    throw new RangeError(
+      `Borsh decode: length prefix ${len} exceeds buffer bounds`
+    )
+  }
+  return len
+}
+
+function checkEncodeBounds(
+  b: Uint8Array,
+  offset: number,
+  required: number
+): void {
+  if (offset + required > b.byteLength) {
+    throw new RangeError(
+      `Borsh encode: buffer too small (need ${required} bytes at offset ${offset}, have ${b.byteLength})`
+    )
+  }
+}
+
 // --- Vec ---
 
 class VecLayout<T> extends Layout<T[]> {
@@ -402,8 +427,7 @@ class VecLayout<T> extends Layout<T[]> {
   }
 
   decode(b: Uint8Array, offset = 0): T[] {
-    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
-    const len = dv.getUint32(offset, true)
+    const len = decodeLenPrefix(b, offset)
     const result: T[] = []
     let pos = offset + 4
     for (let i = 0; i < len; i++) {
@@ -415,8 +439,7 @@ class VecLayout<T> extends Layout<T[]> {
 
   getSpan(b?: Uint8Array, offset = 0): number {
     if (!b) return -1
-    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
-    const len = dv.getUint32(offset, true)
+    const len = decodeLenPrefix(b, offset)
     let pos = offset + 4
     for (let i = 0; i < len; i++) {
       pos += this.element.getSpan(b, pos)
@@ -433,15 +456,16 @@ class VecU8Layout extends Layout<Uint8Array> {
   }
 
   encode(src: Uint8Array, b: Uint8Array, offset = 0): number {
+    const required = 4 + src.length
+    checkEncodeBounds(b, offset, required)
     const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     dv.setUint32(offset, src.length, true)
     b.set(src, offset + 4)
-    return 4 + src.length
+    return required
   }
 
   decode(b: Uint8Array, offset = 0): Uint8Array {
-    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
-    const len = dv.getUint32(offset, true)
+    const len = decodeLenPrefix(b, offset)
     return b.slice(offset + 4, offset + 4 + len)
   }
 
@@ -465,15 +489,16 @@ class StrLayout extends Layout<string> {
 
   encode(src: string, b: Uint8Array, offset = 0): number {
     const encoded = textEncoder.encode(src)
+    const required = 4 + encoded.length
+    checkEncodeBounds(b, offset, required)
     const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     dv.setUint32(offset, encoded.length, true)
     b.set(encoded, offset + 4)
-    return 4 + encoded.length
+    return required
   }
 
   decode(b: Uint8Array, offset = 0): string {
-    const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
-    const len = dv.getUint32(offset, true)
+    const len = decodeLenPrefix(b, offset)
     return textDecoder.decode(b.subarray(offset + 4, offset + 4 + len))
   }
 

@@ -1,5 +1,5 @@
 import { Address, getAddressCodec } from "@solana/kit"
-import { blob, Layout } from "../borsh"
+import { blob, Layout } from "./borsh"
 
 const addressCodec = getAddressCodec()
 

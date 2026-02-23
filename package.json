@@ -9,7 +9,7 @@
   "scripts": {
     "watch": "tsc --project tsconfig.build.json --watch",
     "build": "yarn build:cli && yarn build:test-fixture && yarn generate-examples",
-    "build:cli": "rimraf ./dist && tsup src/main.ts --format esm && cp src/borsh.ts dist/",
+    "build:cli": "rimraf ./dist && tsup src/main.ts --format esm && node -e \"require('fs').copyFileSync('src/borsh.ts','dist/borsh.ts')\"",
     "build:test-fixture": "yarn build:example-program && yarn build:test-fixture:copy-idl && yarn build:test-fixture:generate-exp",
     "build:test-fixture:copy-idl": "cp tests/example-program/target/idl/example_program.json tests/example-program-gen/idl.json",
     "build:test-fixture:generate-exp": "rimraf tests/example-program-gen/exp && node ./dist/main.js tests/example-program-gen/idl.json tests/example-program-gen/exp --program-id 3rTQ3R4B2PxZrAyx7EUefySPgZY8RhJf16cZajbmrzp8",
