@@ -4,12 +4,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-non-null-assertion */
 
 export abstract class Layout<T = any> {
-  span: number
+  protected _span: number
   property?: string
 
   constructor(span: number, property?: string) {
-    this.span = span
+    this._span = span
     this.property = property
+  }
+
+  get span(): number {
+    return this._span
   }
 
   abstract encode(src: T, b: Uint8Array, offset?: number): number
@@ -338,17 +342,20 @@ class StructLayout<T = any> extends Layout<T> {
   fields: Layout[]
 
   constructor(fields: Layout[], property?: string) {
-    let totalSpan = 0
-    let allFixed = true
-    for (const field of fields) {
-      if (field.span < 0) {
-        allFixed = false
-        break
-      }
-      totalSpan += field.span
-    }
-    super(allFixed ? totalSpan : -1, property)
+    super(-1, property)
     this.fields = fields
+  }
+
+  get span(): number {
+    if (this._span === -1) {
+      let total = 0
+      for (const field of this.fields) {
+        if (field.span < 0) return -1
+        total += field.span
+      }
+      this._span = total
+    }
+    return this._span
   }
 
   encode(src: any, b: Uint8Array, offset = 0): number {
@@ -565,9 +572,16 @@ class ArrayLayout<T> extends Layout<T[]> {
   private count: number
 
   constructor(element: Layout<T>, count: number, property?: string) {
-    super(element.span >= 0 ? element.span * count : -1, property)
+    super(-1, property)
     this.element = element
     this.count = count
+  }
+
+  get span(): number {
+    if (this._span === -1 && this.element.span >= 0) {
+      this._span = this.element.span * this.count
+    }
+    return this._span
   }
 
   encode(src: T[], b: Uint8Array, offset = 0): number {
