@@ -338,7 +338,16 @@ class StructLayout<T = any> extends Layout<T> {
   fields: Layout[]
 
   constructor(fields: Layout[], property?: string) {
-    super(-1, property)
+    let totalSpan = 0
+    let allFixed = true
+    for (const field of fields) {
+      if (field.span < 0) {
+        allFixed = false
+        break
+      }
+      totalSpan += field.span
+    }
+    super(allFixed ? totalSpan : -1, property)
     this.fields = fields
   }
 
@@ -556,7 +565,7 @@ class ArrayLayout<T> extends Layout<T[]> {
   private count: number
 
   constructor(element: Layout<T>, count: number, property?: string) {
-    super(-1, property)
+    super(element.span >= 0 ? element.span * count : -1, property)
     this.element = element
     this.count = count
   }
@@ -595,7 +604,7 @@ class ArrayLayout<T> extends Layout<T[]> {
 // --- Rust Enum ---
 
 class RustEnumLayout extends Layout<any> {
-  private variants: Layout[]
+  readonly variants: Layout[]
 
   constructor(variants: Layout[], property?: string) {
     super(-1, property)
