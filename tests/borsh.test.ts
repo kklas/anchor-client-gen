@@ -316,8 +316,8 @@ describe("borsh", () => {
       expect(layout.getSpan(buf)).toBe(4 + 5) // 4 bytes length + 5 chars
     })
 
-    it("getSpan without buffer", () => {
-      expect(layout.getSpan()).toBe(-1)
+    it("getSpan without buffer throws", () => {
+      expect(() => layout.getSpan()).toThrow("indeterminate span")
     })
   })
 
