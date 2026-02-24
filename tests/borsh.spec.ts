@@ -68,10 +68,7 @@ describe("borsh layout span", () => {
     })
 
     it("struct containing variable-size field returns -1", () => {
-      const layout = borsh.struct([
-        borsh.u32("fixed"),
-        borsh.str("variable"),
-      ])
+      const layout = borsh.struct([borsh.u32("fixed"), borsh.str("variable")])
       expect(layout.span).toBe(-1)
     })
 
@@ -141,31 +138,20 @@ describe("borsh layout span", () => {
         borsh.bool("someField"),
         borsh.u8("otherField"),
       ])
-      const outer = borsh.struct([
-        borsh.u32("id"),
-        inner.replicate("nested"),
-      ])
+      const outer = borsh.struct([borsh.u32("id"), inner.replicate("nested")])
       expect(inner.span).toBe(2)
       expect(outer.span).toBe(4 + 2)
     })
 
     it("struct with nested variable struct returns -1", () => {
-      const inner = borsh.struct([
-        borsh.str("name"),
-      ])
-      const outer = borsh.struct([
-        borsh.u32("id"),
-        inner.replicate("nested"),
-      ])
+      const inner = borsh.struct([borsh.str("name")])
+      const outer = borsh.struct([borsh.u32("id"), inner.replicate("nested")])
       expect(inner.span).toBe(-1)
       expect(outer.span).toBe(-1)
     })
 
     it("array of fixed structs has correct span", () => {
-      const element = borsh.struct([
-        borsh.u32("x"),
-        borsh.u32("y"),
-      ])
+      const element = borsh.struct([borsh.u32("x"), borsh.u32("y")])
       const layout = borsh.array(element, 10)
       expect(layout.span).toBe(8 * 10)
     })
@@ -195,10 +181,7 @@ describe("borsh layout span", () => {
 
   describe("span caching", () => {
     it("struct span is consistent across multiple reads", () => {
-      const layout = borsh.struct([
-        borsh.u8("a"),
-        borsh.u32("b"),
-      ])
+      const layout = borsh.struct([borsh.u8("a"), borsh.u32("b")])
       const first = layout.span
       const second = layout.span
       expect(first).toBe(5)
