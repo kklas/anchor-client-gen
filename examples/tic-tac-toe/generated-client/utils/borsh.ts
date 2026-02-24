@@ -4,12 +4,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-non-null-assertion */
 
 export abstract class Layout<T = any> {
-  span: number
+  protected _span: number
   property?: string
 
   constructor(span: number, property?: string) {
-    this.span = span
+    this._span = span
     this.property = property
+  }
+
+  get span(): number {
+    return this._span
   }
 
   abstract encode(src: T, b: Uint8Array, offset?: number): number
@@ -342,6 +346,18 @@ class StructLayout<T = any> extends Layout<T> {
     this.fields = fields
   }
 
+  get span(): number {
+    if (this._span === -1) {
+      let total = 0
+      for (const field of this.fields) {
+        if (field.span < 0) return -1
+        total += field.span
+      }
+      this._span = total
+    }
+    return this._span
+  }
+
   encode(src: any, b: Uint8Array, offset = 0): number {
     let pos = offset
     for (const field of this.fields) {
@@ -561,6 +577,13 @@ class ArrayLayout<T> extends Layout<T[]> {
     this.count = count
   }
 
+  get span(): number {
+    if (this._span === -1 && this.element.span >= 0) {
+      this._span = this.element.span * this.count
+    }
+    return this._span
+  }
+
   encode(src: T[], b: Uint8Array, offset = 0): number {
     let pos = offset
     for (let i = 0; i < this.count; i++) {
@@ -595,7 +618,7 @@ class ArrayLayout<T> extends Layout<T[]> {
 // --- Rust Enum ---
 
 class RustEnumLayout extends Layout<any> {
-  private variants: Layout[]
+  readonly variants: Layout[]
 
   constructor(variants: Layout[], property?: string) {
     super(-1, property)
