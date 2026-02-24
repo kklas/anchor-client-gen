@@ -4,22 +4,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-non-null-assertion */
 
 export abstract class Layout<T = any> {
-  protected _span: number
+  span: number
   property?: string
 
   constructor(span: number, property?: string) {
-    this._span = span
+    this.span = span
     this.property = property
-  }
-
-  get span(): number {
-    return this._span
   }
 
   abstract encode(src: T, b: Uint8Array, offset?: number): number
   abstract decode(b: Uint8Array, offset?: number): T
 
   getSpan(_b?: Uint8Array, _offset?: number): number {
+    if (this.span < 0) {
+      throw new RangeError("indeterminate span")
+    }
     return this.span
   }
 
@@ -342,20 +341,14 @@ class StructLayout<T = any> extends Layout<T> {
   fields: Layout[]
 
   constructor(fields: Layout[], property?: string) {
-    super(-1, property)
-    this.fields = fields
-  }
-
-  get span(): number {
-    if (this._span === -1) {
-      let total = 0
-      for (const field of this.fields) {
-        if (field.span < 0) return -1
-        total += field.span
-      }
-      this._span = total
+    let span = -1
+    try {
+      span = fields.reduce((acc, fd) => acc + fd.getSpan(), 0)
+    } catch (e) {
+      // span remains -1 if any field has indeterminate span
     }
-    return this._span
+    super(span, property)
+    this.fields = fields
   }
 
   encode(src: any, b: Uint8Array, offset = 0): number {
@@ -380,15 +373,8 @@ class StructLayout<T = any> extends Layout<T> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) {
-      // Fixed-size struct: sum fixed spans
-      let total = 0
-      for (const field of this.fields) {
-        if (field.span < 0) return -1
-        total += field.span
-      }
-      return total
-    }
+    if (this.span >= 0) return this.span
+    if (!b) throw new RangeError("indeterminate span")
     let pos = offset
     for (const field of this.fields) {
       pos += field.getSpan(b, pos)
@@ -454,7 +440,7 @@ class VecLayout<T> extends Layout<T[]> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) return -1
+    if (!b) throw new RangeError("indeterminate span")
     const len = decodeLenPrefix(b, offset)
     let pos = offset + 4
     for (let i = 0; i < len; i++) {
@@ -486,7 +472,7 @@ class VecU8Layout extends Layout<Uint8Array> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) return -1
+    if (!b) throw new RangeError("indeterminate span")
     const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return 4 + len
@@ -519,7 +505,7 @@ class StrLayout extends Layout<string> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) return -1
+    if (!b) throw new RangeError("indeterminate span")
     const dv = new DataView(b.buffer, b.byteOffset, b.byteLength)
     const len = dv.getUint32(offset, true)
     return 4 + len
@@ -555,7 +541,7 @@ class OptionLayout<T> extends Layout<T | null> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) return -1
+    if (!b) throw new RangeError("indeterminate span")
     const disc = b[offset]
     if (disc === 0) return 1
     if (disc !== 1) {
@@ -572,16 +558,9 @@ class ArrayLayout<T> extends Layout<T[]> {
   private count: number
 
   constructor(element: Layout<T>, count: number, property?: string) {
-    super(-1, property)
+    super(element.span >= 0 ? count * element.span : -1, property)
     this.element = element
     this.count = count
-  }
-
-  get span(): number {
-    if (this._span === -1 && this.element.span >= 0) {
-      this._span = this.element.span * this.count
-    }
-    return this._span
   }
 
   encode(src: T[], b: Uint8Array, offset = 0): number {
@@ -649,7 +628,7 @@ class RustEnumLayout extends Layout<any> {
   }
 
   getSpan(b?: Uint8Array, offset = 0): number {
-    if (!b) return -1
+    if (!b) throw new RangeError("indeterminate span")
     const disc = b[offset]
     if (disc >= this.variants.length) {
       throw new Error(`Invalid enum discriminator: ${disc}`)
