@@ -28,11 +28,19 @@ export interface OptionalAccounts {
   systemProgram: Address
 }
 
-export function optional(
-  accounts: OptionalAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface OptionalProps {
+  accounts: OptionalAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function optional({
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: OptionalProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     {
       address: accounts.optionalState.address,

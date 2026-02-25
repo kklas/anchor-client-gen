@@ -91,12 +91,22 @@ export const layout = borsh.struct([
 ])
 
 /** Initializes an account with specified values */
-export function initializeWithValues(
-  args: InitializeWithValuesArgs,
-  accounts: InitializeWithValuesAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface InitializeWithValuesProps {
+  args: InitializeWithValuesArgs
+  accounts: InitializeWithValuesAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+/** Initializes an account with specified values */
+export function initializeWithValues({
+  args,
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: InitializeWithValuesProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.state.address, role: 3, signer: accounts.state },
     { address: accounts.nested.clock, role: 0 },

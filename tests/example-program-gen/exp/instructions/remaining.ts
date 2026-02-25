@@ -29,12 +29,21 @@ export interface RemainingAccounts {
 
 export const layout = borsh.struct([borsh.u32("expectedRemainingAccounts")])
 
-export function remaining(
-  args: RemainingArgs,
-  accounts: RemainingAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface RemainingProps {
+  args: RemainingArgs
+  accounts: RemainingAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function remaining({
+  args,
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: RemainingProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.payer.address, role: 3, signer: accounts.payer },
     { address: accounts.systemProgram, role: 0 },

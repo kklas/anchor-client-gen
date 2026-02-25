@@ -96,13 +96,16 @@ const fooAccount = generateKeyPairSigner()
 
 // call an instruction
 const ix = someInstruction({
-  fooParam: "...",
-  barParam: "...",
-  ...
-}, {
-  fooAccount: fooAccount, // signer
-  barAccount: address("..."),
-  ...
+  args: {
+    fooParam: "...",
+    barParam: "...",
+    ...
+  },
+  accounts: {
+    fooAccount: fooAccount, // signer
+    barAccount: address("..."),
+    ...
+  }
 })
 
 const blockhash = await rpc
@@ -190,24 +193,30 @@ console.log(tupleEnum.toJSON(), structEnum.toJSON(), discEnum.toJSON())
 ```ts
 // types are used as arguments in instruction calls (where needed):
 const ix = someInstruction({
-  someStructField: barStruct,
-  someEnumField: tupleEnum,
-  ...
-}, {
-  // accounts
-  ...
+  args: {
+    someStructField: barStruct,
+    someEnumField: tupleEnum,
+    ...
+  },
+  accounts: {
+    // accounts
+    ...
+  }
 })
 
 // in case of struct fields, it's also possible to pass them as objects:
-const ix = someInstrution({
-  someStructField: {
-    someField: "...",
-    otherField: "...",
+const ix2 = someInstrution({
+  args: {
+    someStructField: {
+      someField: "...",
+      otherField: "...",
+    },
+    ...,
   },
-  ...,
-}, {
-  // accounts
-  ...
+  accounts: {
+    // accounts
+    ...
+  }
 })
 ```
 

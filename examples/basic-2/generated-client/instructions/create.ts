@@ -27,12 +27,21 @@ export interface CreateAccounts {
 
 export const layout = borsh.struct([borshAddress("authority")])
 
-export function create(
-  args: CreateArgs,
-  accounts: CreateAccounts,
-  remainingAccounts: Array<AccountMeta | AccountSignerMeta> = [],
-  programAddress: Address = PROGRAM_ID
-) {
+export interface CreateProps {
+  args: CreateArgs
+  accounts: CreateAccounts
+  /** @default [] */
+  remainingAccounts?: Array<AccountMeta | AccountSignerMeta>
+  /** @default PROGRAM_ID */
+  programAddress?: Address
+}
+
+export function create({
+  args,
+  accounts,
+  remainingAccounts = [],
+  programAddress = PROGRAM_ID,
+}: CreateProps) {
   const keys: Array<AccountMeta | AccountSignerMeta> = [
     { address: accounts.counter.address, role: 3, signer: accounts.counter },
     { address: accounts.user.address, role: 3, signer: accounts.user },
